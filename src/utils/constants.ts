@@ -47,6 +47,7 @@ export const ROUTES = {
   QUIZZES: '/quizzes',
   QUIZ_DETAIL: (id: string) => `/quizzes/${id}`,
   PROFILE: '/profile',
+  GRAPHQL_PLAYGROUND: '/playground',
 } as const;
 
 // ============================================================================
