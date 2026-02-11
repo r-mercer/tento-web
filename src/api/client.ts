@@ -45,6 +45,11 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = storage.getAccessToken();
     
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 10)}...` : 'none'
+    });
+    
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -64,6 +69,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    console.error(`[API Error] ${originalRequest.method?.toUpperCase()} ${originalRequest.url}`, {
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data
+    });
 
     // If error is not 401 or request already retried, reject immediately
     if (error.response?.status !== 401 || originalRequest._retry) {
