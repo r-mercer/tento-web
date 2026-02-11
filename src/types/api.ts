@@ -66,33 +66,120 @@ export interface UsersListResponse {
 // Quiz Types
 // ============================================================================
 
+export type QuizStatus = 'Draft' | 'Pending' | 'Ready' | 'Complete';
+export type QuizQuestionType = 'Single' | 'Multi' | 'Bool';
+
+export interface QuizQuestionOption {
+  id: string;
+  text: string;
+  correct?: boolean;  // Only in results view (quiz_for_results)
+  explanation?: string;  // Only in results view
+}
+
 export interface QuizQuestion {
   id: string;
-  question: string;
-  options: string[];
-  correct_answer: number;
+  title: string;
+  description: string;
+  question_type: QuizQuestionType;
+  options: QuizQuestionOption[];
+  option_count: number;
+  order: number;
+  topic: string;
+  created_at?: string;
+  modified_at?: string;
 }
 
 export interface Quiz {
   id: string;
-  title: string;
-  description?: string;
-  questions: QuizQuestion[];
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateQuizRequest {
-  title: string;
-  description?: string;
-  questions: Omit<QuizQuestion, 'id'>[];
-}
-
-export interface UpdateQuizRequest {
+  name: string;
+  created_by_user_id: string;
   title?: string;
   description?: string;
+  question_count: number;
+  required_score: number;
+  attempt_limit: number;
+  topic?: string;
+  status: QuizStatus;
   questions?: QuizQuestion[];
+  url: string;
+  created_at?: string;
+  modified_at?: string;
+}
+
+// For quiz taking (answers hidden)
+export interface QuizQuestionOptionForTaking {
+  id: string;
+  text: string;
+  // No 'correct' or 'explanation'
+}
+
+export interface QuizQuestionForTaking {
+  id: string;
+  title: string;
+  description: string;
+  question_type: QuizQuestionType;
+  options: QuizQuestionOptionForTaking[];
+  option_count: number;
+  order: number;
+  topic: string;
+  created_at?: string;
+}
+
+export interface QuizForTaking {
+  id: string;
+  name: string;
+  title?: string;
+  description?: string;
+  question_count: number;
+  required_score: number;
+  topic?: string;
+  status: QuizStatus;
+  questions?: QuizQuestionForTaking[];
+  url: string;
+  created_at?: string;
+}
+
+// ============================================================================
+// Quiz Attempt Types
+// ============================================================================
+
+export interface QuizAttemptResponse {
+  id: string;
+  quiz_id: string;
+  points_earned: number;
+  total_possible: number;
+  passed: boolean;
+  attempt_number: number;
+  submitted_at: string;
+}
+
+export interface QuestionAttemptDetail {
+  question_id: string;
+  user_selected_option_ids: string[];
+  correct_option_ids: string[];
+  is_correct: boolean;
+  points_earned: number;
+  explanation: string;
+}
+
+export interface QuizAttemptReview {
+  attempt: QuizAttemptResponse;
+  quiz: Quiz;  // Full quiz with answers
+  question_results: QuestionAttemptDetail[];
+}
+
+// ============================================================================
+// Quiz Submission
+// ============================================================================
+
+export interface QuestionAnswerSubmission {
+  question_id: string;
+  selected_option_ids: string[];
+}
+
+export interface SubmitQuizAttemptPayload {
+  quiz_id: string;
+  answers: QuestionAnswerSubmission[];
 }
 
 // ============================================================================
@@ -134,10 +221,14 @@ export interface PaginationParams {
   sort_order?: 'asc' | 'desc';
 }
 
+export interface PaginationMetadata {
+  offset: number;
+  limit: number;
+  total: number;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  total_pages: number;
+  pagination: PaginationMetadata;
 }
+

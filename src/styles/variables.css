@@ -1,0 +1,81 @@
+:root {
+  /* ============ Colors ============ */
+  --color-primary: #646cff;
+  --color-primary-hover: #7d87ff;
+  --color-secondary: #535bf2;
+  
+  --color-success: #4caf50;
+  --color-success-light: #81c784;
+  --color-error: #f44336;
+  --color-error-light: #ef5350;
+  --color-warning: #ff9800;
+  --color-warning-light: #ffb74d;
+  
+  --color-background: #242424;
+  --color-surface: #1a1a1a;
+  --color-surface-elevated: #2a2a2a;
+  
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-text-tertiary: #707070;
+  
+  --color-border: #404040;
+  --color-border-light: #505050;
+  
+  /* ============ Spacing ============ */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* ============ Typography ============ */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* ============ Border Radius ============ */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  
+  /* ============ Transitions ============ */
+  --transition-fast: 100ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ============ Shadows ============ */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-background: #ffffff;
+    --color-surface: #f5f5f5;
+    --color-surface-elevated: #eeeeee;
+    --color-text-primary: #242424;
+    --color-text-secondary: #666666;
+    --color-text-tertiary: #999999;
+    --color-border: #e0e0e0;
+    --color-border-light: #d0d0d0;
+  }
+}

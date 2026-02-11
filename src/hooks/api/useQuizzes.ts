@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import * as quizzesApi from '../../api/quizzes';
-import type { CreateQuizRequest, UpdateQuizRequest, Quiz } from '../../types/api';
+import type {} from '../../types/api';
 
 // ============================================================================
 // Query Hooks
@@ -34,36 +34,38 @@ export function useQuiz(id: string) {
 
 /**
  * Create a new quiz
+ * TODO: Uncomment when quiz creation API is ready
  */
-export function useCreateQuiz() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CreateQuizRequest) => quizzesApi.createQuiz(data),
-    onSuccess: () => {
-      // Invalidate quizzes list to refetch
-      queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
-    },
-  });
-}
+// export function useCreateQuiz() {
+//   const queryClient = useQueryClient();
+//
+//   return useMutation({
+//     mutationFn: (data: CreateQuizRequest) => quizzesApi.createQuiz(data),
+//     onSuccess: () => {
+//       // Invalidate quizzes list to refetch
+//       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
+//     },
+//   });
+// }
 
 /**
  * Update a quiz
+ * TODO: Uncomment when quiz update API is ready
  */
-export function useUpdateQuiz(id: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: UpdateQuizRequest) => quizzesApi.updateQuiz(id, data),
-    onSuccess: (updatedQuiz: Quiz) => {
-      // Update quiz in cache
-      queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
-      
-      // Invalidate quizzes list to refetch
-      queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
-    },
-  });
-}
+// export function useUpdateQuiz(id: string) {
+//   const queryClient = useQueryClient();
+//
+//   return useMutation({
+//     mutationFn: (data: UpdateQuizRequest) => quizzesApi.updateQuiz(id, data),
+//     onSuccess: (updatedQuiz: Quiz) => {
+//       // Update quiz in cache
+//       queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
+//       
+//       // Invalidate quizzes list to refetch
+//       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
+//     },
+//   });
+// }
 
 /**
  * Delete a quiz

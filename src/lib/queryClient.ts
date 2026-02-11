@@ -44,6 +44,13 @@ export const queryKeys = {
   // Quizzes
   quizzes: ['quizzes'] as const,
   quiz: (id: string) => ['quizzes', id] as const,
+  quizForTaking: (id: string) => ['quizzes', id, 'taking'] as const,
+  quizForResults: (id: string) => ['quizzes', id, 'results'] as const,
+  
+  // Quiz Attempts
+  quizAttempts: (quizId?: string, offset: number = 0, limit: number = 10) =>
+    ['quizzes', quizId || 'all', 'attempts', offset, limit] as const,
+  quizAttempt: (attemptId: string) => ['attempts', attemptId] as const,
   
   // Auth
   currentUser: ['auth', 'currentUser'] as const,

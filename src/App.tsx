@@ -1,20 +1,17 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth';
-import { ROUTES, GH_CLIENT_ID, GH_REDIRECT_URI } from './utils/constants';
-import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { handleGithubCallback } from './api/auth';
-import { GraphQLPlaygroundPage } from './pages/GraphQLPlaygroundPage';
-
-// ============================================================================
-// Placeholder Components
-// ============================================================================
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./hooks/useAuth";
+import { ROUTES, GH_CLIENT_ID, GH_REDIRECT_URI } from "./utils/constants";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { handleGithubCallback } from "./api/auth";
+import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
+import { QuizPage, QuizHistoryPage } from "./components/quiz";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuth();
-  
+
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h1>Tento - Home</h1>
       {isAuthenticated ? (
         <div>
@@ -34,12 +31,12 @@ function HomePage() {
 
 function LoginPage() {
   const handleLogin = () => {
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GH_CLIENT_ID}&redirect_uri=${encodeURIComponent(GH_REDIRECT_URI || '')}&scope=read:user user:email`;
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GH_CLIENT_ID}&redirect_uri=${encodeURIComponent(GH_REDIRECT_URI || "")}&scope=read:user user:email`;
     window.location.href = githubAuthUrl;
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h1>Login</h1>
       <button onClick={handleLogin}>Login with GitHub</button>
     </div>
@@ -52,8 +49,8 @@ function AuthCallbackPage() {
   const { login } = useAuth();
 
   useEffect(() => {
-    const code = searchParams.get('code');
-    
+    const code = searchParams.get("code");
+
     if (!code) {
       navigate(ROUTES.LOGIN);
       return;
@@ -62,15 +59,15 @@ function AuthCallbackPage() {
     const authenticate = async () => {
       try {
         const response = await handleGithubCallback(code);
-        
+
         login(response.token, response.refresh_token, {
           username: response.username,
           email: response.email,
         });
-        
+
         navigate(ROUTES.DASHBOARD);
       } catch (error) {
-        console.error('Authentication failed:', error);
+        console.error("Authentication failed:", error);
         navigate(ROUTES.LOGIN);
       }
     };
@@ -79,7 +76,7 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <p>Authenticating...</p>
     </div>
   );
@@ -89,7 +86,7 @@ function DashboardPage() {
   const { user, logout } = useAuth();
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h1>Dashboard</h1>
       <p>Welcome, {user?.username}!</p>
       <button onClick={logout}>Logout</button>
@@ -99,7 +96,7 @@ function DashboardPage() {
 
 function UsersPage() {
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h1>Users</h1>
       <p>Users list coming soon...</p>
     </div>
@@ -108,7 +105,7 @@ function UsersPage() {
 
 function QuizzesPage() {
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h1>Quizzes</h1>
       <p>Quizzes list coming soon...</p>
     </div>
@@ -127,7 +124,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div style={{ padding: '2rem' }}>Loading...</div>;
+    return <div style={{ padding: "2rem" }}>Loading...</div>;
   }
 
   if (!isAuthenticated) {
@@ -147,7 +144,7 @@ function App() {
       <Route path={ROUTES.HOME} element={<HomePage />} />
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
-      
+
       <Route
         path={ROUTES.DASHBOARD}
         element={
@@ -156,7 +153,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
+
       <Route
         path={ROUTES.USERS}
         element={
@@ -165,7 +162,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
+
       <Route
         path={ROUTES.QUIZZES}
         element={
@@ -174,7 +171,25 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
+
+      <Route
+        path="/quizzes/:id/take"
+        element={
+          <ProtectedRoute>
+            <QuizPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/quizzes/:id/history"
+        element={
+          <ProtectedRoute>
+            <QuizHistoryPage />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path={ROUTES.GRAPHQL_PLAYGROUND}
         element={
