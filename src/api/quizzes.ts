@@ -2,6 +2,9 @@ import apiClient from './client';
 import { ENDPOINTS } from '../utils/constants';
 import { graphqlClient } from './graphql-client';
 import {
+  ALL_QUIZZES_QUERY,
+  GET_QUIZ_QUERY,
+  USER_QUIZZES_QUERY,
   QUIZ_FOR_TAKING_QUERY,
   QUIZ_FOR_RESULTS_QUERY,
   QUIZ_ATTEMPTS_QUERY,
@@ -26,16 +29,32 @@ import type {
  * Get all quizzes
  */
 export async function getAllQuizzes(): Promise<Quiz[]> {
-  const response = await apiClient.get<Quiz[]>(ENDPOINTS.QUIZZES);
-  return response.data;
+  const response = await graphqlClient.request<{ quizzes: Quiz[] }>(
+    ALL_QUIZZES_QUERY
+  );
+  return response.quizzes;
 }
 
 /**
  * Get a single quiz by ID
  */
 export async function getQuiz(id: string): Promise<Quiz> {
-  const response = await apiClient.get<Quiz>(ENDPOINTS.QUIZ(id));
-  return response.data;
+  const response = await graphqlClient.request<{ quiz: Quiz }>(
+    GET_QUIZ_QUERY,
+    { id }
+  );
+  return response.quiz;
+}
+
+/**
+ * Get all quizzes owned by a specific user
+ */
+export async function getUserQuizzes(userId: string): Promise<Quiz[]> {
+  const response = await graphqlClient.request<{ userQuizzes: Quiz[] }>(
+    USER_QUIZZES_QUERY,
+    { userId }
+  );
+  return response.userQuizzes;
 }
 
 /**

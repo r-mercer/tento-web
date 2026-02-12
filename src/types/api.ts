@@ -29,7 +29,7 @@ export interface User {
   full_name?: string;
   github_id?: string;
   avatar_url?: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
   created_at: string;
   updated_at: string;
 }
@@ -44,7 +44,7 @@ export interface UpdateUserRequest {
   username?: string;
   email?: string;
   full_name?: string;
-  role?: 'admin' | 'user';
+  role?: "admin" | "user";
 }
 
 export interface UserResponse {
@@ -52,7 +52,7 @@ export interface UserResponse {
   username: string;
   email: string;
   full_name?: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
   created_at: string;
   updated_at: string;
 }
@@ -66,14 +66,14 @@ export interface UsersListResponse {
 // Quiz Types
 // ============================================================================
 
-export type QuizStatus = 'Draft' | 'Pending' | 'Ready' | 'Complete';
-export type QuizQuestionType = 'Single' | 'Multi' | 'Bool';
+export type QuizStatus = "Draft" | "Pending" | "Ready" | "Complete";
+export type QuizQuestionType = "Single" | "Multi" | "Bool";
 
 export interface QuizQuestionOption {
   id: string;
   text: string;
-  correct?: boolean;  // Only in results view (quiz_for_results)
-  explanation?: string;  // Only in results view
+  correct?: boolean; // Only in results view (quiz_for_results)
+  explanation?: string; // Only in results view
 }
 
 export interface QuizQuestion {
@@ -108,6 +108,7 @@ export interface Quiz {
 
 export interface CreateQuizDraftRequest {
   name: string;
+  created_by_user_id: string;
   question_count: number;
   required_score: number;
   attempt_limit: number;
@@ -172,7 +173,7 @@ export interface QuestionAttemptDetail {
 
 export interface QuizAttemptReview {
   attempt: QuizAttemptResponse;
-  quiz: Quiz;  // Full quiz with answers
+  quiz: Quiz; // Full quiz with answers
   question_results: QuestionAttemptDetail[];
 }
 
@@ -226,7 +227,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
 }
 
 export interface PaginationMetadata {
@@ -239,4 +240,3 @@ export interface PaginatedResponse<T> {
   data: T[];
   pagination: PaginationMetadata;
 }
-

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateQuizDraft } from "../hooks/api/useQuizzes";
+import { useAuth } from "../contexts/AuthContext";
 import { ROUTES } from "../utils/constants";
 import styles from "./CreateQuizPage.module.css";
 import type { CreateQuizDraftRequest } from "../types/api";
@@ -9,9 +10,11 @@ import type { CreateQuizDraftRequest } from "../types/api";
 export function CreateQuizPage() {
   const navigate = useNavigate();
   const createQuizMutation = useCreateQuizDraft();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState<CreateQuizDraftRequest>({
     name: "",
+    created_by_user_id: user?.id || "",
     question_count: 5,
     required_score: 3,
     attempt_limit: 3,
@@ -71,10 +74,10 @@ export function CreateQuizPage() {
     }
 
     try {
-      const createdQuiz = await createQuizMutation.mutateAsync(formData);
+      await createQuizMutation.mutateAsync(formData);
 
-      // Navigate to the quiz detail or quizzes list
-      navigate(ROUTES.QUIZ_DETAIL(createdQuiz.id));
+      // Navigate to the user's quizzes list
+      navigate(ROUTES.QUIZZES);
     } catch (error) {
       console.error("Failed to create quiz draft:", error);
     }

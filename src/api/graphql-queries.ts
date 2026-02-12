@@ -4,6 +4,80 @@ import { gql } from 'graphql-request';
 // Quiz Queries
 // ============================================================================
 
+export const ALL_QUIZZES_QUERY = gql`
+  query GetAllQuizzes {
+    quizzes {
+      id
+      name
+      createdByUserId
+      title
+      description
+      questionCount
+      requiredScore
+      attemptLimit
+      topic
+      status
+      url
+      createdAt
+      modifiedAt
+    }
+  }
+`;
+
+export const GET_QUIZ_QUERY = gql`
+  query GetQuiz($id: ID!) {
+    quiz(id: $id) {
+      id
+      name
+      createdByUserId
+      title
+      description
+      questionCount
+      requiredScore
+      attemptLimit
+      topic
+      status
+      url
+      createdAt
+      modifiedAt
+      questions {
+        id
+        title
+        description
+        questionType
+        order
+        topic
+        options {
+          id
+          text
+          correct
+          explanation
+        }
+      }
+    }
+  }
+`;
+
+export const USER_QUIZZES_QUERY = gql`
+  query GetUserQuizzes($userId: ID!) {
+    userQuizzes(userId: $userId) {
+      id
+      name
+      createdByUserId
+      title
+      description
+      questionCount
+      requiredScore
+      attemptLimit
+      topic
+      status
+      url
+      createdAt
+      modifiedAt
+    }
+  }
+`;
+
 export const QUIZ_FOR_TAKING_QUERY = gql`
   query GetQuizForTaking($id: ID!) {
     quizForTaking(id: $id) {

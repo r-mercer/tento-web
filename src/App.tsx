@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-import { useQuizzes } from "./hooks/api/useQuizzes";
+import { useUserQuizzes } from "./hooks/api/useQuizzes";
 import { ROUTES, GH_CLIENT_ID, GH_REDIRECT_URI } from "./utils/constants";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -149,7 +149,8 @@ function UsersPage() {
 }
 
 function QuizzesPage() {
-  const { data: quizzes, isLoading } = useQuizzes();
+  const { user } = useAuth();
+  const { data: quizzes, isLoading } = useUserQuizzes(user?.id || "");
 
   if (isLoading) {
     return (
@@ -169,7 +170,7 @@ function QuizzesPage() {
           marginBottom: "2rem",
         }}
       >
-        <h1>Quizzes</h1>
+        <h1>My Quizzes</h1>
         <a
           href={ROUTES.QUIZ_CREATE}
           style={{
@@ -187,7 +188,7 @@ function QuizzesPage() {
 
       {quizzes && quizzes.length > 0 ? (
         <div style={{ display: "grid", gap: "1rem" }}>
-          {quizzes.map((quiz) => (
+          {quizzes.map((quiz: any) => (
             <div
               key={quiz.id}
               style={{

@@ -28,6 +28,17 @@ export function useQuiz(id: string) {
   });
 }
 
+/**
+ * Get all quizzes owned by a specific user
+ */
+export function useUserQuizzes(userId: string) {
+  return useQuery({
+    queryKey: queryKeys.userQuizzes(userId),
+    queryFn: () => quizzesApi.getUserQuizzes(userId),
+    enabled: !!userId,
+  });
+}
+
 // ============================================================================
 // Mutation Hooks
 // ============================================================================
