@@ -106,6 +106,14 @@ export interface Quiz {
   modified_at?: string;
 }
 
+export interface CreateQuizDraftRequest {
+  name: string;
+  question_count: number;
+  required_score: number;
+  attempt_limit: number;
+  url: string;
+}
+
 // For quiz taking (answers hidden)
 export interface QuizQuestionOptionForTaking {
   id: string;

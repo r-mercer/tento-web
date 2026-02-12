@@ -15,6 +15,7 @@ import type {
   QuizAttemptReview,
   SubmitQuizAttemptPayload,
   PaginatedResponse,
+  CreateQuizDraftRequest,
 } from '../types/api';
 
 // ============================================================================
@@ -38,13 +39,12 @@ export async function getQuiz(id: string): Promise<Quiz> {
 }
 
 /**
- * Create a new quiz
- * TODO: Implement when quiz creation API is ready
+ * Create a new quiz draft
  */
-// export async function createQuiz(data: CreateQuizRequest): Promise<Quiz> {
-//   const response = await apiClient.post<Quiz>(ENDPOINTS.QUIZZES, data);
-//   return response.data;
-// }
+export async function createQuizDraft(data: CreateQuizDraftRequest): Promise<Quiz> {
+  const response = await apiClient.post<Quiz>(ENDPOINTS.QUIZ_DRAFTS, data);
+  return response.data;
+}
 
 /**
  * Update a quiz by ID

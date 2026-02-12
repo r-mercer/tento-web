@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import * as quizzesApi from '../../api/quizzes';
-import type {} from '../../types/api';
+import type { CreateQuizDraftRequest, Quiz } from '../../types/api';
 
 // ============================================================================
 // Query Hooks
@@ -33,20 +33,19 @@ export function useQuiz(id: string) {
 // ============================================================================
 
 /**
- * Create a new quiz
- * TODO: Uncomment when quiz creation API is ready
+ * Create a new quiz draft
  */
-// export function useCreateQuiz() {
-//   const queryClient = useQueryClient();
-//
-//   return useMutation({
-//     mutationFn: (data: CreateQuizRequest) => quizzesApi.createQuiz(data),
-//     onSuccess: () => {
-//       // Invalidate quizzes list to refetch
-//       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
-//     },
-//   });
-// }
+export function useCreateQuizDraft() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateQuizDraftRequest) => quizzesApi.createQuizDraft(data),
+    onSuccess: () => {
+      // Invalidate quizzes list to refetch
+      queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
+    },
+  });
+}
 
 /**
  * Update a quiz

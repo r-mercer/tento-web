@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
+import { useQuizzes } from "./hooks/api/useQuizzes";
 import { ROUTES, GH_CLIENT_ID, GH_REDIRECT_URI } from "./utils/constants";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleGithubCallback } from "./api/auth";
 import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
+import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { QuizPage, QuizHistoryPage } from "./components/quiz";
 
 function HomePage() {
@@ -89,7 +91,50 @@ function DashboardPage() {
     <div style={{ padding: "2rem" }}>
       <h1>Dashboard</h1>
       <p>Welcome, {user?.username}!</p>
-      <button onClick={logout}>Logout</button>
+
+      <div
+        style={{
+          marginTop: "2rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+          maxWidth: "400px",
+        }}
+      >
+        <a
+          href={ROUTES.QUIZ_CREATE}
+          style={{
+            padding: "1rem",
+            backgroundColor: "var(--color-primary)",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "8px",
+            textAlign: "center",
+            fontWeight: "600",
+          }}
+        >
+          Create New Quiz
+        </a>
+
+        <a
+          href={ROUTES.QUIZZES}
+          style={{
+            padding: "1rem",
+            backgroundColor: "var(--color-surface)",
+            color: "var(--color-text-primary)",
+            textDecoration: "none",
+            borderRadius: "8px",
+            textAlign: "center",
+            border: "2px solid var(--color-border)",
+          }}
+        >
+          View All Quizzes
+        </a>
+      </div>
+
+      <button onClick={logout} style={{ marginTop: "2rem" }}>
+        Logout
+      </button>
     </div>
   );
 }
@@ -104,10 +149,123 @@ function UsersPage() {
 }
 
 function QuizzesPage() {
+  const { data: quizzes, isLoading } = useQuizzes();
+
+  if (isLoading) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <p>Loading quizzes...</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Quizzes</h1>
-      <p>Quizzes list coming soon...</p>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "2rem",
+        }}
+      >
+        <h1>Quizzes</h1>
+        <a
+          href={ROUTES.QUIZ_CREATE}
+          style={{
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "var(--color-primary)",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "8px",
+            fontWeight: "600",
+          }}
+        >
+          Create Quiz
+        </a>
+      </div>
+
+      {quizzes && quizzes.length > 0 ? (
+        <div style={{ display: "grid", gap: "1rem" }}>
+          {quizzes.map((quiz) => (
+            <div
+              key={quiz.id}
+              style={{
+                padding: "1.5rem",
+                backgroundColor: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                borderRadius: "8px",
+              }}
+            >
+              <h3 style={{ margin: "0 0 0.5rem 0" }}>{quiz.name}</h3>
+              <p
+                style={{
+                  margin: "0 0 1rem 0",
+                  color: "var(--color-text-secondary)",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {quiz.question_count} questions • Passing score:{" "}
+                {quiz.required_score} • Status: {quiz.status}
+              </p>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <a
+                  href={ROUTES.QUIZ_TAKE(quiz.id)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "var(--color-primary)",
+                    color: "white",
+                    textDecoration: "none",
+                    borderRadius: "6px",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Take Quiz
+                </a>
+                <a
+                  href={ROUTES.QUIZ_HISTORY(quiz.id)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "transparent",
+                    color: "var(--color-text-primary)",
+                    textDecoration: "none",
+                    borderRadius: "6px",
+                    border: "1px solid var(--color-border)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  View History
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ textAlign: "center", padding: "3rem" }}>
+          <p
+            style={{
+              color: "var(--color-text-secondary)",
+              marginBottom: "1rem",
+            }}
+          >
+            No quizzes yet. Create your first quiz to get started!
+          </p>
+          <a
+            href={ROUTES.QUIZ_CREATE}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "var(--color-primary)",
+              color: "white",
+              textDecoration: "none",
+              borderRadius: "8px",
+              fontWeight: "600",
+              display: "inline-block",
+            }}
+          >
+            Create Your First Quiz
+          </a>
+        </div>
+      )}
     </div>
   );
 }
@@ -168,6 +326,15 @@ function App() {
         element={
           <ProtectedRoute>
             <QuizzesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.QUIZ_CREATE}
+        element={
+          <ProtectedRoute>
+            <CreateQuizPage />
           </ProtectedRoute>
         }
       />

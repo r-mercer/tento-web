@@ -27,6 +27,7 @@ export const ENDPOINTS = {
   // Quizzes
   QUIZZES: '/api/quizzes',
   QUIZ: (id: string) => `/api/quizzes/${id}`,
+  QUIZ_DRAFTS: '/api/quizzes/drafts',
   
   // GraphQL
   GRAPHQL: '/graphql',
@@ -45,6 +46,7 @@ export const ROUTES = {
   USERS: '/users',
   USER_DETAIL: (id: string) => `/users/${id}`,
   QUIZZES: '/quizzes',
+  QUIZ_CREATE: '/quizzes/create',
   QUIZ_DETAIL: (id: string) => `/quizzes/${id}`,
   QUIZ_TAKE: (id: string) => `/quizzes/${id}/take`,
   QUIZ_HISTORY: (id: string) => `/quizzes/${id}/history`,
