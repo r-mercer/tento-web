@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import * as quizzesApi from '../../api/quizzes';
-import type { CreateQuizDraftRequest, Quiz } from '../../types/api';
+import type { CreateQuizDraftRequest } from '../../types/api';
 
 // ============================================================================
 // Query Hooks
@@ -67,7 +67,7 @@ export function useCreateQuizDraft() {
 //
 //   return useMutation({
 //     mutationFn: (data: UpdateQuizRequest) => quizzesApi.updateQuiz(id, data),
-//     onSuccess: (updatedQuiz: Quiz) => {
+//     onSuccess: (updatedQuiz) => {
 //       // Update quiz in cache
 //       queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
 //       
