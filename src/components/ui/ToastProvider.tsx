@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { MessageBar, MessageBarType } from "@fluentui/react";
+import { MessageBar } from "@fluentui/react-components";
 
 type Toast = {
   id: number;
@@ -38,12 +38,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div key={t.id} style={{ marginBottom: 8 }}>
             <MessageBar
-              messageBarType={
+              intent={
                 t.type === "success"
-                  ? MessageBarType.success
+                  ? "success"
                   : t.type === "error"
-                    ? MessageBarType.error
-                    : MessageBarType.info
+                  ? "error"
+                  : "info"
               }
             >
               {t.message}

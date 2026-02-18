@@ -1,6 +1,6 @@
 import styles from "./quiz.module.css";
 import { ExplanationCard } from "./ExplanationCard";
-import { DefaultButton } from "@fluentui/react";
+import { Button } from '@fluentui/react-components';
 
 interface BooleanOptionProps {
   option: {
@@ -31,14 +31,14 @@ export function BooleanOption({
 
   return (
     <div>
-      <DefaultButton
+      <Button
         className={buttonClassName}
         onClick={() => !isSubmitted && onChange(option.id)}
         disabled={isSubmitted}
         aria-pressed={isSelected}
       >
         {option.text}
-      </DefaultButton>
+      </Button>
       <ExplanationCard
         explanation={option.explanation}
         isCorrect={isCorrect}

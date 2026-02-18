@@ -1,5 +1,5 @@
 import styles from "./quiz.module.css";
-import { PrimaryButton, DefaultButton } from "@fluentui/react";
+import { Button } from '@fluentui/react-components';
 import type { QuizAttemptResponse, Quiz } from "../../types/api";
 
 interface ResultsViewProps {
@@ -46,20 +46,21 @@ export function ResultsView({
       </div>
 
       <div className={styles.resultsViewActions}>
-        <PrimaryButton
-          className={`${styles.button} ${styles["button--primary"]}`}
+        <Button
+          appearance="primary"
+          className={`${styles.button} ${styles['button--primary']}`}
           onClick={onRetake}
           disabled={!canRetake}
-          title={!canRetake ? "Attempt limit reached" : "Retake this quiz"}
+          title={!canRetake ? 'Attempt limit reached' : 'Retake this quiz'}
         >
           Retake Quiz
-        </PrimaryButton>
-        <DefaultButton
-          className={`${styles.button} ${styles["button--secondary"]}`}
+        </Button>
+        <Button
+          className={`${styles.button} ${styles['button--secondary']}`}
           onClick={onReview}
         >
           Review Answers
-        </DefaultButton>
+        </Button>
       </div>
     </div>
   );

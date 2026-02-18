@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./quiz.module.css";
-import { PrimaryButton, DefaultButton } from "@fluentui/react";
+import { Button } from '@fluentui/react-components';
 import {
   useQuizForTaking,
   useQuizForResults,
@@ -252,32 +252,34 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         />
 
         <div className={styles.navigationButtons}>
-          <DefaultButton
+          <Button
             className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
             type="button"
           >
             Previous
-          </DefaultButton>
+          </Button>
 
           {isLastQuestion ? (
-            <PrimaryButton
+            <Button
+              appearance="primary"
               className={`${styles.button} ${styles["button--primary"]}`}
               onClick={handleSubmit}
               disabled={submitMutation.isPending}
               type="button"
             >
               {submitMutation.isPending ? "Submitting..." : "Submit Quiz"}
-            </PrimaryButton>
+            </Button>
           ) : (
-            <PrimaryButton
+            <Button
+              appearance="primary"
               className={`${styles.button} ${styles["button--primary"]}`}
               onClick={handleNext}
               type="button"
             >
               Next
-            </PrimaryButton>
+            </Button>
           )}
         </div>
 

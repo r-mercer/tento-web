@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import { QuizEditor } from "../components/quiz/QuizEditor";
 import styles from "../components/quiz/quiz.module.css";

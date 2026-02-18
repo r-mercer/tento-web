@@ -65,7 +65,7 @@ export function useUpdateQuiz(id: string) {
     mutationFn: (data: unknown) => quizzesApi.updateQuiz(data),
     onMutate: async (newData: any) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.quiz(id) });
-      const previous = queryClient.getQueryData(queryKeys.quiz(id));
+      const previous = queryClient.getQueryData(queryKeys.quiz(id)) as any;
 
       // Build an optimistic version by shallow-merging fields
       let optimistic = previous as any;
@@ -73,8 +73,8 @@ export function useUpdateQuiz(id: string) {
         optimistic = { ...previous, ...newData };
 
         // If questions are included, merge per-question and per-option text
-        if (previous.questions && newData.questions) {
-          const byId = new Map((previous.questions as any[]).map((q) => [q.id, q]));
+        if ((previous as any).questions && newData.questions) {
+          const byId = new Map(((previous as any).questions as any[]).map((q) => [q.id, q]));
           optimistic.questions = newData.questions.map((nq: any) => {
             const existing = byId.get(nq.id) || {};
             const mergedOptions = (existing.options || []).map((opt: any) => {

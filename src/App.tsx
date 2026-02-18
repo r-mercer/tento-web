@@ -10,6 +10,8 @@ import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { EditQuizPage } from "./pages/EditQuizPage";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import { QuizPage, QuizHistoryPage } from "./components/quiz";
+import { FluentProvider } from "@fluentui/react-components";
+import { lightTheme } from "./styles/fluentTheme";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuth();
@@ -713,85 +715,87 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
 function App() {
   return (
-    <ToastProvider>
-      <Routes>
-        <Route path={ROUTES.HOME} element={<HomePage />} />
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+    <FluentProvider theme={lightTheme}>
+      <ToastProvider>
+        <Routes>
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
 
-        <Route
-          path={ROUTES.DASHBOARD}
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.DASHBOARD}
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.USERS}
-          element={
-            <ProtectedRoute>
-              <UsersPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.USERS}
+            element={
+              <ProtectedRoute>
+                <UsersPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.QUIZZES}
-          element={
-            <ProtectedRoute>
-              <QuizzesPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.QUIZZES}
+            element={
+              <ProtectedRoute>
+                <QuizzesPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.QUIZ_CREATE}
-          element={
-            <ProtectedRoute>
-              <CreateQuizPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.QUIZ_CREATE}
+            element={
+              <ProtectedRoute>
+                <CreateQuizPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/quizzes/:id/take"
-          element={
-            <ProtectedRoute>
-              <QuizPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/quizzes/:id/take"
+            element={
+              <ProtectedRoute>
+                <QuizPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/quizzes/:id/edit"
-          element={
-            <ProtectedRoute>
-              <EditQuizPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/quizzes/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditQuizPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/quizzes/:id/history"
-          element={
-            <ProtectedRoute>
-              <QuizHistoryPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/quizzes/:id/history"
+            element={
+              <ProtectedRoute>
+                <QuizHistoryPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.GRAPHQL_PLAYGROUND}
-          element={
-            <ProtectedRoute>
-              <GraphQLPlaygroundPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </ToastProvider>
+          <Route
+            path={ROUTES.GRAPHQL_PLAYGROUND}
+            element={
+              <ProtectedRoute>
+                <GraphQLPlaygroundPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </ToastProvider>
+    </FluentProvider>
   );
 }
 

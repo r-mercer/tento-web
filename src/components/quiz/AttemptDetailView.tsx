@@ -1,5 +1,5 @@
 import styles from "./quiz.module.css";
-import { DefaultButton } from "@fluentui/react";
+import { Button } from "@fluentui/react-components";
 import { useQuizAttempt } from "../../hooks/api/useQuizAttempts";
 import { QuestionResultCard } from "./QuestionResultCard";
 
@@ -45,14 +45,14 @@ export function AttemptDetailView({
       <div className={styles.quizFormContainer}>
         {/* Header */}
         <div className={styles.quizFormHeader}>
-          <DefaultButton
+          <Button
             className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={onBack}
             type="button"
             style={{ marginBottom: "var(--spacing-md)" }}
           >
             ← Back to Attempts
-          </DefaultButton>
+          </Button>
           <h1 className={styles.quizFormTitle}>{quiz.name} - Attempt Review</h1>
           <p className={styles.quizFormDescription}>
             Attempt #{attempt.attempt_number} •{" "}
@@ -154,13 +154,13 @@ export function AttemptDetailView({
             borderTop: "1px solid var(--color-border)",
           }}
         >
-          <DefaultButton
-            className={`${styles.button} ${styles["button--secondary"]}`}
+          <Button
+            className={`${styles.button} ${styles['button--secondary']}`}
             onClick={onBack}
             type="button"
           >
             ← Back to Attempts
-          </DefaultButton>
+          </Button>
         </div>
       </div>
     </div>

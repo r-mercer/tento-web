@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { DefaultButton } from "@fluentui/react";
 import styles from "./quiz.module.css";
 import { useQuizAttempts } from "../../hooks/api/useQuizAttempts";
+import { Button } from "@fluentui/react-components";
 
 interface QuizAttemptsListProps {
   quizId: string;
@@ -144,22 +144,22 @@ export function QuizAttemptsList({
           {pagination.total} attempts
         </div>
         <div style={{ display: "flex", gap: "var(--spacing-md)" }}>
-          <DefaultButton
-            className={`${styles.button} ${styles["button--secondary"]}`}
+          <Button
+            className={`${styles.button} ${styles['button--secondary']}`}
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={!hasPreviousPage}
             type="button"
           >
             Previous
-          </DefaultButton>
-          <DefaultButton
-            className={`${styles.button} ${styles["button--secondary"]}`}
+          </Button>
+          <Button
+            className={`${styles.button} ${styles['button--secondary']}`}
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={!hasNextPage}
             type="button"
           >
             Next
-          </DefaultButton>
+          </Button>
         </div>
       </div>
     </div>
