@@ -1,4 +1,4 @@
-import styles from './quiz.module.css';
+import { ProgressBar, Text } from "@fluentui/react-components";
 
 interface ProgressIndicatorProps {
   current: number;
@@ -6,23 +6,15 @@ interface ProgressIndicatorProps {
   answered: number;
 }
 
-/**
- * Displays quiz progress with question counter and visual progress bar
- */
 export function ProgressIndicator({ current, total, answered }: ProgressIndicatorProps) {
   const percentage = (current / total) * 100;
 
   return (
-    <div className={styles.progressIndicator}>
-      <div className={styles.progressLabel}>
+    <div style={{ marginBottom: "1rem" }}>
+      <Text style={{ display: "block", marginBottom: "0.5rem" }}>
         Question {current} of {total} ({answered} answered)
-      </div>
-      <div className={styles.progressBar}>
-        <div
-          className={styles.progressBarFill}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+      </Text>
+      <ProgressBar value={percentage / 100} style={{ height: "8px" }} />
     </div>
   );
 }

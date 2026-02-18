@@ -4,8 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { useCreateQuizDraft } from "../hooks/api/useQuizzes";
 import { useAuth } from "../contexts/AuthContext";
 import { ROUTES } from "../utils/constants";
-import styles from "./CreateQuizPage.module.css";
+import { AppCard } from "../components/ui/AppCard";
 import type { CreateQuizDraftRequest } from "../types/api";
+import {
+  Field,
+  Input,
+  SpinButton,
+  Button,
+  Title1,
+  Body1,
+  MessageBar,
+  MessageBarBody,
+} from "@fluentui/react-components";
 
 export function CreateQuizPage() {
   const navigate = useNavigate();
@@ -75,8 +85,6 @@ export function CreateQuizPage() {
 
     try {
       await createQuizMutation.mutateAsync(formData);
-
-      // Navigate to the user's quizzes list
       navigate(ROUTES.QUIZZES);
     } catch (error) {
       console.error("Failed to create quiz draft:", error);
@@ -88,158 +96,122 @@ export function CreateQuizPage() {
     value: string | number,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   return (
-    <div className={styles.createQuizPage}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Create New Quiz</h1>
-          <p className={styles.subtitle}>
-            Create a quiz draft from a URL. The AI will generate questions
-            automatically.
-          </p>
-        </header>
+    <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
+      <header style={{ marginBottom: "2rem" }}>
+        <Title1>Create New Quiz</Title1>
+        <Body1
+          style={{ color: "var(--color-text-secondary)", display: "block", marginTop: "0.5rem" }}
+        >
+          Create a quiz draft from a URL. The AI will generate questions automatically.
+        </Body1>
+      </header>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label htmlFor="name" className={styles.label}>
-              Quiz Name <span className={styles.required}>*</span>
-            </label>
-            <input
-              id="name"
-              type="text"
+      <form onSubmit={handleSubmit}>
+        <AppCard style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <Field
+            label="Quiz Name"
+            required
+            validationState={errors.name ? "error" : "none"}
+            validationMessage={errors.name}
+            hint="Give your quiz a descriptive name (max 100 characters)"
+          >
+            <Input
               value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+              onChange={(_e, data) => handleInputChange("name", data.value)}
               placeholder="e.g., React Fundamentals Quiz"
               maxLength={100}
             />
-            {errors.name && (
-              <span className={styles.errorText}>{errors.name}</span>
-            )}
-            <span className={styles.helperText}>
-              Give your quiz a descriptive name (max 100 characters)
-            </span>
-          </div>
+          </Field>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="url" className={styles.label}>
-              Source URL <span className={styles.required}>*</span>
-            </label>
-            <input
-              id="url"
+          <Field
+            label="Source URL"
+            required
+            validationState={errors.url ? "error" : "none"}
+            validationMessage={errors.url}
+            hint="Provide a URL for the AI to generate quiz questions from"
+          >
+            <Input
               type="url"
               value={formData.url}
-              onChange={(e) => handleInputChange("url", e.target.value)}
-              className={`${styles.input} ${errors.url ? styles.inputError : ""}`}
+              onChange={(_e, data) => handleInputChange("url", data.value)}
               placeholder="https://example.com/article"
             />
-            {errors.url && (
-              <span className={styles.errorText}>{errors.url}</span>
-            )}
-            <span className={styles.helperText}>
-              Provide a URL for the AI to generate quiz questions from
-            </span>
-          </div>
+          </Field>
 
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="question_count" className={styles.label}>
-                Number of Questions <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="question_count"
-                type="number"
-                min="1"
-                max="50"
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+            <Field
+              label="Number of Questions"
+              required
+              validationState={errors.question_count ? "error" : "none"}
+              validationMessage={errors.question_count}
+            >
+              <SpinButton
                 value={formData.question_count}
-                onChange={(e) =>
-                  handleInputChange("question_count", parseInt(e.target.value))
-                }
-                className={`${styles.input} ${errors.question_count ? styles.inputError : ""}`}
+                onChange={(_e, data) => handleInputChange("question_count", data.value ?? 1)}
+                min={1}
+                max={50}
               />
-              {errors.question_count && (
-                <span className={styles.errorText}>
-                  {errors.question_count}
-                </span>
-              )}
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="required_score" className={styles.label}>
-                Passing Score <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="required_score"
-                type="number"
-                min="0"
-                max={formData.question_count}
+            <Field
+              label="Passing Score"
+              required
+              validationState={errors.required_score ? "error" : "none"}
+              validationMessage={errors.required_score}
+            >
+              <SpinButton
                 value={formData.required_score}
-                onChange={(e) =>
-                  handleInputChange("required_score", parseInt(e.target.value))
-                }
-                className={`${styles.input} ${errors.required_score ? styles.inputError : ""}`}
+                onChange={(_e, data) => handleInputChange("required_score", data.value ?? 0)}
+                min={0}
+                max={formData.question_count}
               />
-              {errors.required_score && (
-                <span className={styles.errorText}>
-                  {errors.required_score}
-                </span>
-              )}
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="attempt_limit" className={styles.label}>
-                Attempt Limit <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="attempt_limit"
-                type="number"
-                min="1"
-                max="10"
+            <Field
+              label="Attempt Limit"
+              required
+              validationState={errors.attempt_limit ? "error" : "none"}
+              validationMessage={errors.attempt_limit}
+            >
+              <SpinButton
                 value={formData.attempt_limit}
-                onChange={(e) =>
-                  handleInputChange("attempt_limit", parseInt(e.target.value))
-                }
-                className={`${styles.input} ${errors.attempt_limit ? styles.inputError : ""}`}
+                onChange={(_e, data) => handleInputChange("attempt_limit", data.value ?? 1)}
+                min={1}
+                max={10}
               />
-              {errors.attempt_limit && (
-                <span className={styles.errorText}>{errors.attempt_limit}</span>
-              )}
-            </div>
+            </Field>
           </div>
 
-          <div className={styles.formActions}>
-            <button
-              type="button"
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <Button
+              appearance="secondary"
               onClick={() => navigate(ROUTES.QUIZZES)}
-              className={styles.buttonSecondary}
               disabled={createQuizMutation.isPending}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
+              appearance="primary"
               type="submit"
-              className={styles.buttonPrimary}
               disabled={createQuizMutation.isPending}
             >
-              {createQuizMutation.isPending
-                ? "Creating..."
-                : "Create Quiz Draft"}
-            </button>
+              {createQuizMutation.isPending ? "Creating..." : "Create Quiz Draft"}
+            </Button>
           </div>
 
           {createQuizMutation.isError && (
-            <div className={styles.errorMessage}>
-              Failed to create quiz draft. Please try again.
-            </div>
+            <MessageBar intent="error">
+              <MessageBarBody>Failed to create quiz draft. Please try again.</MessageBarBody>
+            </MessageBar>
           )}
-        </form>
-      </div>
+        </AppCard>
+      </form>
     </div>
   );
 }

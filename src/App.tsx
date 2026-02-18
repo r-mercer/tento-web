@@ -10,25 +10,41 @@ import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { EditQuizPage } from "./pages/EditQuizPage";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import { QuizPage, QuizHistoryPage } from "./components/quiz";
-import { FluentProvider } from "@fluentui/react-components";
+import { AppCard } from "./components/ui/AppCard";
+import {
+  FluentProvider,
+  Title1,
+  Title2,
+  Title3,
+  Body1,
+  Body2,
+  Text,
+  Button,
+  Link,
+  Spinner,
+  Badge,
+  MessageBar,
+  MessageBarBody,
+} from "@fluentui/react-components";
 import { lightTheme } from "./styles/fluentTheme";
+import type { Quiz, QuizStatus } from "./types/api";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuth();
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Tento - Home</h1>
+      <Title1>Tento - Home</Title1>
       {isAuthenticated ? (
         <div>
-          <p>Welcome, {user?.username}!</p>
-          <p>Email: {user?.email}</p>
-          <a href={ROUTES.DASHBOARD}>Go to Dashboard</a>
+          <Body1>Welcome, {user?.username}!</Body1>
+          <Body1>Email: {user?.email}</Body1>
+          <Link href={ROUTES.DASHBOARD}>Go to Dashboard</Link>
         </div>
       ) : (
         <div>
-          <p>Please login to continue</p>
-          <a href={ROUTES.LOGIN}>Login with GitHub</a>
+          <Body1>Please login to continue</Body1>
+          <Link href={ROUTES.LOGIN}>Login with GitHub</Link>
         </div>
       )}
     </div>
@@ -43,8 +59,10 @@ function LoginPage() {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Login</h1>
-      <button onClick={handleLogin}>Login with GitHub</button>
+      <Title1>Login</Title1>
+      <Button appearance="primary" onClick={handleLogin}>
+        Login with GitHub
+      </Button>
     </div>
   );
 }
@@ -83,9 +101,70 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <p>Authenticating...</p>
+    <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <Spinner size="small" />
+      <Body1>Authenticating...</Body1>
     </div>
+  );
+}
+
+function getStatusBadgeColor(status: QuizStatus): "success" | "warning" | "important" | "informative" | "subtle" {
+  switch (status) {
+    case "Ready":
+      return "success";
+    case "Draft":
+      return "warning";
+    case "Complete":
+      return "informative";
+    default:
+      return "subtle";
+  }
+}
+
+function QuizCard({ quiz }: { quiz: Quiz }) {
+  return (
+    <AppCard style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div>
+        <Title3 style={{ marginBottom: "0.25rem" }}>{quiz.name}</Title3>
+        {quiz.title && (
+          <Body2 style={{ color: "var(--color-text-secondary)" }}>
+            {quiz.title}
+          </Body2>
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: "1rem", fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
+        <Text>{quiz.question_count} questions</Text>
+        <Text>{quiz.required_score} to pass</Text>
+      </div>
+
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <Badge
+          appearance="filled"
+          color={getStatusBadgeColor(quiz.status)}
+        >
+          {quiz.status}
+        </Badge>
+      </div>
+
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <Button
+          appearance="primary"
+          as="a"
+          href={ROUTES.QUIZ_TAKE(quiz.id)}
+          style={{ flex: 1 }}
+        >
+          Take Quiz
+        </Button>
+        <Button
+          appearance="outline"
+          as="a"
+          href={ROUTES.QUIZ_EDIT(quiz.id)}
+        >
+          Edit
+        </Button>
+      </div>
+    </AppCard>
   );
 }
 
@@ -104,25 +183,14 @@ function DashboardPage() {
         }}
       >
         <div>
-          <h1 style={{ margin: "0 0 0.5rem 0" }}>Dashboard</h1>
-          <p style={{ margin: 0, color: "var(--color-text-secondary)" }}>
+          <Title1 style={{ marginBottom: "0.5rem" }}>Dashboard</Title1>
+          <Body1 style={{ color: "var(--color-text-secondary)" }}>
             Welcome, {user?.username}!
-          </p>
+          </Body1>
         </div>
-        <button
-          onClick={logout}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "var(--color-error, #ef4444)",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "500",
-          }}
-        >
+        <Button appearance="subtle" onClick={logout}>
           Logout
-        </button>
+        </Button>
       </div>
 
       <div
@@ -135,64 +203,41 @@ function DashboardPage() {
           marginBottom: "3rem",
         }}
       >
-        <a
+        <Button
+          appearance="primary"
+          as="a"
           href={ROUTES.QUIZ_CREATE}
-          style={{
-            padding: "1rem",
-            backgroundColor: "var(--color-primary)",
-            color: "white",
-            textDecoration: "none",
-            borderRadius: "8px",
-            textAlign: "center",
-            fontWeight: "600",
-            transition: "opacity 0.2s",
-          }}
+          size="large"
         >
           + Create New Quiz
-        </a>
+        </Button>
 
-        <a
+        <Button
+          appearance="outline"
+          as="a"
           href={ROUTES.QUIZZES}
-          style={{
-            padding: "1rem",
-            backgroundColor: "var(--color-surface)",
-            color: "var(--color-text-primary)",
-            textDecoration: "none",
-            borderRadius: "8px",
-            textAlign: "center",
-            border: "2px solid var(--color-border)",
-            fontWeight: "600",
-            transition: "border-color 0.2s",
-          }}
+          size="large"
         >
           View All Quizzes
-        </a>
+        </Button>
       </div>
 
-      {/* Recent Quizzes Section */}
       <div>
-        <h2>Your Recent Quizzes</h2>
+        <Title2>Your Recent Quizzes</Title2>
 
         {isLoading && (
-          <div style={{ padding: "2rem", textAlign: "center" }}>
-            <p style={{ color: "var(--color-text-secondary)" }}>
+          <div style={{ padding: "2rem", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
+            <Spinner size="small" />
+            <Body1 style={{ color: "var(--color-text-secondary)" }}>
               Loading quizzes...
-            </p>
+            </Body1>
           </div>
         )}
 
         {error && (
-          <div
-            style={{
-              padding: "1rem",
-              backgroundColor: "var(--color-error-bg, #fee)",
-              color: "var(--color-error, #c00)",
-              borderRadius: "8px",
-              marginBottom: "1rem",
-            }}
-          >
-            <p>Error loading quizzes. Please try again later.</p>
-          </div>
+          <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+            <MessageBarBody>Error loading quizzes. Please try again later.</MessageBarBody>
+          </MessageBar>
         )}
 
         {!isLoading && quizzes && quizzes.length > 0 ? (
@@ -203,133 +248,28 @@ function DashboardPage() {
               gap: "1rem",
             }}
           >
-            {quizzes.slice(0, 3).map((quiz: any) => (
-              <div
-                key={quiz.id}
-                style={{
-                  padding: "1.5rem",
-                  backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                }}
-              >
-                <div>
-                  <h3 style={{ margin: "0 0 0.25rem 0" }}>{quiz.name}</h3>
-                  {quiz.title && (
-                    <p
-                      style={{
-                        margin: 0,
-                        color: "var(--color-text-secondary)",
-                        fontSize: "0.85rem",
-                      }}
-                    >
-                      {quiz.title}
-                    </p>
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    fontSize: "0.85rem",
-                    color: "var(--color-text-secondary)",
-                  }}
-                >
-                  <span>📝 {quiz.question_count} questions</span>
-                  <span>✓ {quiz.required_score} to pass</span>
-                </div>
-
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <span
-                    style={{
-                      padding: "0.25rem 0.5rem",
-                      backgroundColor:
-                        quiz.status === "Ready"
-                          ? "var(--color-success-bg, #efe)"
-                          : quiz.status === "Draft"
-                            ? "var(--color-warning-bg, #ffe)"
-                            : "var(--color-info-bg, #eef)",
-                      color:
-                        quiz.status === "Ready"
-                          ? "var(--color-success, #060)"
-                          : quiz.status === "Draft"
-                            ? "var(--color-warning, #880)"
-                            : "var(--color-info, #008)",
-                      borderRadius: "4px",
-                      fontSize: "0.75rem",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {quiz.status}
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <a
-                    href={ROUTES.QUIZ_TAKE(quiz.id)}
-                    style={{
-                      flex: 1,
-                      padding: "0.5rem 1rem",
-                      backgroundColor: "var(--color-primary)",
-                      color: "white",
-                      textDecoration: "none",
-                      borderRadius: "6px",
-                      fontSize: "0.85rem",
-                      fontWeight: "600",
-                      textAlign: "center",
-                      transition: "opacity 0.2s",
-                    }}
-                  >
-                    Take Quiz
-                  </a>
-                  <a
-                    href={ROUTES.QUIZ_EDIT(quiz.id)}
-                    style={{
-                      padding: "0.5rem 1rem",
-                      backgroundColor: "transparent",
-                      color: "var(--color-primary)",
-                      textDecoration: "none",
-                      borderRadius: "6px",
-                      fontSize: "0.85rem",
-                      fontWeight: "600",
-                      textAlign: "center",
-                      border: "1px solid var(--color-border)",
-                    }}
-                  >
-                    Edit
-                  </a>
-                </div>
-              </div>
+            {quizzes.slice(0, 3).map((quiz: Quiz) => (
+              <QuizCard key={quiz.id} quiz={quiz} />
             ))}
           </div>
         ) : !isLoading && (!quizzes || quizzes.length === 0) ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
-            <p
+            <Body1
               style={{
                 color: "var(--color-text-secondary)",
                 marginBottom: "1rem",
+                display: "block",
               }}
             >
               No quizzes yet. Create your first quiz to get started!
-            </p>
-            <a
+            </Body1>
+            <Button
+              appearance="primary"
+              as="a"
               href={ROUTES.QUIZ_CREATE}
-              style={{
-                padding: "0.75rem 1.5rem",
-                backgroundColor: "var(--color-primary)",
-                color: "white",
-                textDecoration: "none",
-                borderRadius: "8px",
-                fontWeight: "600",
-                display: "inline-block",
-              }}
             >
               Create Your First Quiz
-            </a>
+            </Button>
           </div>
         ) : null}
       </div>
@@ -340,8 +280,8 @@ function DashboardPage() {
 function UsersPage() {
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Users</h1>
-      <p>Users list coming soon...</p>
+      <Title1>Users</Title1>
+      <Body1>Users list coming soon...</Body1>
     </div>
   );
 }
@@ -360,70 +300,47 @@ function QuizzesPage() {
           marginBottom: "2rem",
         }}
       >
-        <h1 style={{ margin: 0 }}>My Quizzes</h1>
-        <a
-          href={ROUTES.QUIZ_CREATE}
-          style={{
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "var(--color-primary)",
-            color: "white",
-            textDecoration: "none",
-            borderRadius: "8px",
-            fontWeight: "600",
-            transition: "opacity 0.2s",
-          }}
-        >
+        <Title1>My Quizzes</Title1>
+        <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
           + Create Quiz
-        </a>
+        </Button>
       </div>
 
       {isLoading && (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <div
-            style={{
-              display: "inline-block",
-              padding: "1rem",
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            <p style={{ marginBottom: "0.5rem" }}>Loading quizzes...</p>
-            <p style={{ fontSize: "0.85rem", margin: 0 }}>
-              This may take a moment...
-            </p>
-          </div>
+        <div style={{ padding: "2rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+          <Spinner size="small" />
+          <Body1 style={{ color: "var(--color-text-secondary)" }}>
+            Loading quizzes...
+          </Body1>
+          <Body2 style={{ color: "var(--color-text-secondary)" }}>
+            This may take a moment...
+          </Body2>
         </div>
       )}
 
       {error && (
-        <div
-          style={{
-            padding: "1rem",
-            backgroundColor: "var(--color-error-bg, #fee)",
-            color: "var(--color-error, #c00)",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            border: "1px solid var(--color-error, #c00)",
-          }}
-        >
-          <strong>Error loading quizzes</strong>
-          <p style={{ margin: "0.5rem 0 0 0" }}>
+        <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+          <MessageBarBody>
+            <strong>Error loading quizzes</strong>
+            <br />
             {error instanceof Error
               ? error.message
               : "Failed to load quizzes. Please try again."}
-          </p>
-        </div>
+          </MessageBarBody>
+        </MessageBar>
       )}
 
       {!isLoading && quizzes && quizzes.length > 0 ? (
         <div>
-          <p
+          <Body1
             style={{
               color: "var(--color-text-secondary)",
               marginBottom: "1.5rem",
+              display: "block",
             }}
           >
             You have {quizzes.length} quiz{quizzes.length !== 1 ? "zes" : ""}
-          </p>
+          </Body1>
           <div
             style={{
               display: "grid",
@@ -431,61 +348,33 @@ function QuizzesPage() {
               gap: "1.5rem",
             }}
           >
-            {quizzes.map((quiz: any) => (
-              <div
+            {quizzes.map((quiz: Quiz) => (
+              <AppCard
                 key={quiz.id}
                 style={{
-                  padding: "1.5rem",
-                  backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "8px",
                   display: "flex",
                   flexDirection: "column",
                   gap: "1rem",
                   transition: "box-shadow 0.2s, border-color 0.2s",
                   cursor: "pointer",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0, 0, 0, 0.1)";
-                  e.currentTarget.style.borderColor = "var(--color-primary)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.borderColor = "var(--color-border)";
-                }}
               >
                 <div>
-                  <h3
-                    style={{
-                      margin: "0 0 0.25rem 0",
-                      fontSize: "1.1rem",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {quiz.name}
-                  </h3>
+                  <Title3 style={{ marginBottom: "0.25rem" }}>{quiz.name}</Title3>
                   {quiz.title && (
-                    <p
-                      style={{
-                        margin: 0,
-                        color: "var(--color-text-secondary)",
-                        fontSize: "0.9rem",
-                      }}
-                    >
+                    <Body2 style={{ color: "var(--color-text-secondary)" }}>
                       {quiz.title}
-                    </p>
+                    </Body2>
                   )}
                   {quiz.description && (
-                    <p
+                    <Body2
                       style={{
-                        margin: "0.5rem 0 0 0",
                         color: "var(--color-text-secondary)",
-                        fontSize: "0.85rem",
+                        marginTop: "0.5rem",
                       }}
                     >
                       {quiz.description}
-                    </p>
+                    </Body2>
                   )}
                 </div>
 
@@ -499,61 +388,40 @@ function QuizzesPage() {
                   }}
                 >
                   <div>
-                    <p style={{ margin: 0, fontSize: "0.75rem" }}>Questions</p>
-                    <p style={{ margin: "0.25rem 0 0 0", fontWeight: "600" }}>
+                    <Text size={200}>Questions</Text>
+                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
                       {quiz.question_count}
-                    </p>
+                    </Text>
                   </div>
                   <div>
-                    <p style={{ margin: 0, fontSize: "0.75rem" }}>Pass Score</p>
-                    <p style={{ margin: "0.25rem 0 0 0", fontWeight: "600" }}>
+                    <Text size={200}>Pass Score</Text>
+                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
                       {quiz.required_score}%
-                    </p>
+                    </Text>
                   </div>
                   <div>
-                    <p style={{ margin: 0, fontSize: "0.75rem" }}>Attempts</p>
-                    <p style={{ margin: "0.25rem 0 0 0", fontWeight: "600" }}>
+                    <Text size={200}>Attempts</Text>
+                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
                       {quiz.attempt_limit}
-                    </p>
+                    </Text>
                   </div>
                   {quiz.topic && (
                     <div>
-                      <p style={{ margin: 0, fontSize: "0.75rem" }}>Topic</p>
-                      <p style={{ margin: "0.25rem 0 0 0", fontWeight: "600" }}>
+                      <Text size={200}>Topic</Text>
+                      <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
                         {quiz.topic}
-                      </p>
+                      </Text>
                     </div>
                   )}
                 </div>
 
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <span
-                    style={{
-                      padding: "0.25rem 0.75rem",
-                      backgroundColor:
-                        quiz.status === "Ready"
-                          ? "var(--color-success-bg, #efe)"
-                          : quiz.status === "Draft"
-                            ? "var(--color-warning-bg, #ffe)"
-                            : quiz.status === "Complete"
-                              ? "var(--color-info-bg, #eef)"
-                              : "var(--color-border)",
-                      color:
-                        quiz.status === "Ready"
-                          ? "var(--color-success, #060)"
-                          : quiz.status === "Draft"
-                            ? "var(--color-warning, #880)"
-                            : quiz.status === "Complete"
-                              ? "var(--color-info, #008)"
-                              : "var(--color-text-primary)",
-                      borderRadius: "4px",
-                      fontSize: "0.8rem",
-                      fontWeight: "600",
-                      whiteSpace: "nowrap",
-                    }}
+                  <Badge
+                    appearance="filled"
+                    color={getStatusBadgeColor(quiz.status)}
                   >
                     {quiz.status}
-                  </span>
+                  </Badge>
                 </div>
 
                 <div
@@ -563,125 +431,53 @@ function QuizzesPage() {
                     marginTop: "auto",
                   }}
                 >
-                  <a
+                  <Button
+                    appearance="primary"
+                    as="a"
                     href={ROUTES.QUIZ_TAKE(quiz.id)}
-                    style={{
-                      flex: 1,
-                      padding: "0.75rem 1rem",
-                      backgroundColor: "var(--color-primary)",
-                      color: "white",
-                      textDecoration: "none",
-                      borderRadius: "6px",
-                      fontSize: "0.9rem",
-                      fontWeight: "600",
-                      textAlign: "center",
-                      transition: "opacity 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = "0.9";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = "1";
-                    }}
+                    style={{ flex: 1 }}
                   >
                     Take Quiz
-                  </a>
-                  <a
+                  </Button>
+                  <Button
+                    appearance="outline"
+                    as="a"
                     href={ROUTES.QUIZ_EDIT(quiz.id)}
-                    style={{
-                      flex: 1,
-                      padding: "0.75rem 1rem",
-                      backgroundColor: "transparent",
-                      color: "var(--color-primary)",
-                      textDecoration: "none",
-                      borderRadius: "6px",
-                      border: "1px solid var(--color-primary)",
-                      fontSize: "0.9rem",
-                      fontWeight: "600",
-                      textAlign: "center",
-                      transition: "all 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        "var(--color-primary)";
-                      e.currentTarget.style.color = "white";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = "var(--color-primary)";
-                    }}
+                    style={{ flex: 1 }}
                   >
                     Edit
-                  </a>
-                  <a
+                  </Button>
+                  <Button
+                    appearance="outline"
+                    as="a"
                     href={ROUTES.QUIZ_HISTORY(quiz.id)}
-                    style={{
-                      flex: 1,
-                      padding: "0.75rem 1rem",
-                      backgroundColor: "transparent",
-                      color: "var(--color-primary)",
-                      textDecoration: "none",
-                      borderRadius: "6px",
-                      border: "1px solid var(--color-primary)",
-                      fontSize: "0.9rem",
-                      fontWeight: "600",
-                      textAlign: "center",
-                      transition: "all 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        "var(--color-primary)";
-                      e.currentTarget.style.color = "white";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = "var(--color-primary)";
-                    }}
+                    style={{ flex: 1 }}
                   >
                     History
-                  </a>
+                  </Button>
                 </div>
-              </div>
+              </AppCard>
             ))}
           </div>
         </div>
       ) : !isLoading && (!quizzes || quizzes.length === 0) ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "3rem",
-            backgroundColor: "var(--color-surface)",
-            borderRadius: "8px",
-            border: "1px solid var(--color-border)",
-          }}
-        >
-          <h2 style={{ color: "var(--color-text-secondary)" }}>
+        <AppCard style={{ textAlign: "center", padding: "3rem" }}>
+          <Title2 style={{ color: "var(--color-text-secondary)" }}>
             No quizzes yet
-          </h2>
-          <p
+          </Title2>
+          <Body1
             style={{
               color: "var(--color-text-secondary)",
               marginBottom: "1rem",
+              display: "block",
             }}
           >
             Create your first quiz to get started!
-          </p>
-          <a
-            href={ROUTES.QUIZ_CREATE}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "var(--color-primary)",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "8px",
-              fontWeight: "600",
-              display: "inline-block",
-              transition: "opacity 0.2s",
-            }}
-          >
+          </Body1>
+          <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
             Create Your First Quiz
-          </a>
-        </div>
+          </Button>
+        </AppCard>
       ) : null}
     </div>
   );
@@ -699,7 +495,12 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div style={{ padding: "2rem" }}>Loading...</div>;
+    return (
+      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Spinner size="small" />
+        <Body1>Loading...</Body1>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
