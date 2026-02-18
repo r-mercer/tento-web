@@ -5,6 +5,7 @@
 export interface AuthResponse {
   token: string;
   refresh_token: string;
+  id: string;
   username: string;
   email: string;
 }

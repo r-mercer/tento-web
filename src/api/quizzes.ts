@@ -1,6 +1,7 @@
 import apiClient from './client';
 import { ENDPOINTS } from '../utils/constants';
 import { graphqlClient } from './graphql-client';
+import * as usersApi from './users';
 import {
   ALL_QUIZZES_QUERY,
   GET_QUIZ_QUERY,
@@ -50,9 +51,25 @@ export async function getQuiz(id: string): Promise<Quiz> {
  * Get all quizzes owned by a specific user
  */
 export async function getUserQuizzes(userId: string): Promise<Quiz[]> {
+  // If userId looks like a username (not UUID and not 24-char ObjectId hex),
+  // resolve it via the REST users endpoint to obtain the canonical id.
+  const isUuid = (s: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
+  const isObjectId = (s: string) => /^[0-9a-f]{24}$/i.test(s);
+
+  let effectiveId = userId;
+  if (userId && !isUuid(userId) && !isObjectId(userId)) {
+    try {
+      const user = await usersApi.getUser(userId);
+      effectiveId = user.id;
+    } catch (e) {
+      // If resolving username failed, pass the original value and let the server handle it.
+      effectiveId = userId;
+    }
+  }
+
   const response = await graphqlClient.request<{ userQuizzes: Quiz[] }>(
     USER_QUIZZES_QUERY,
-    { userId }
+    { userId: effectiveId }
   );
   return response.userQuizzes;
 }

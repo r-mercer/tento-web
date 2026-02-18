@@ -9,17 +9,17 @@ export const ALL_QUIZZES_QUERY = gql`
     quizzes {
       id
       name
-      created_by_user_id
+      created_by_user_id: createdByUserId
       title
       description
-      question_count
-      required_score
-      attempt_limit
+      question_count: questionCount
+      required_score: requiredScore
+      attempt_limit: attemptLimit
       topic
       status
       url
-      created_at
-      modified_at
+      created_at: createdAt
+      modified_at: modifiedAt
     }
   }
 `;
@@ -29,22 +29,22 @@ export const GET_QUIZ_QUERY = gql`
     quiz(id: $id) {
       id
       name
-      created_by_user_id
+      created_by_user_id: createdByUserId
       title
       description
-      question_count
-      required_score
-      attempt_limit
+      question_count: questionCount
+      required_score: requiredScore
+      attempt_limit: attemptLimit
       topic
       status
       url
-      created_at
-      modified_at
+      created_at: createdAt
+      modified_at: modifiedAt
       questions {
         id
         title
         description
-        question_type
+        question_type: questionType
         order
         topic
         options {
@@ -63,17 +63,17 @@ export const USER_QUIZZES_QUERY = gql`
     userQuizzes(userId: $userId) {
       id
       name
-      created_by_user_id
+      created_by_user_id: createdByUserId
       title
       description
-      question_count
-      required_score
-      attempt_limit
+      question_count: questionCount
+      required_score: requiredScore
+      attempt_limit: attemptLimit
       topic
       status
       url
-      created_at
-      modified_at
+      created_at: createdAt
+      modified_at: modifiedAt
     }
   }
 `;
@@ -85,8 +85,8 @@ export const QUIZ_FOR_TAKING_QUERY = gql`
       name
       title
       description
-      question_count
-      required_score
+      question_count: questionCount
+      required_score: requiredScore
       topic
       status
       url
@@ -115,21 +115,21 @@ export const QUIZ_FOR_RESULTS_QUERY = gql`
       created_by_user_id
       title
       description
-      question_count
-      required_score
-      attempt_limit
+      question_count: questionCount
+      required_score: requiredScore
+      attempt_limit: attemptLimit
       topic
       status
-      url
-      created_at
-      modified_at
-      questions {
         id
         title
         description
-        question_type
+        question_type: questionType
         order
         topic
+        options {
+          id
+          text
+        }
         options {
           id
           text
@@ -146,12 +146,12 @@ export const QUIZ_ATTEMPTS_QUERY = gql`
     quizAttempts(quizId: $quizId, offset: $offset, limit: $limit) {
       data {
         id
-        quiz_id
-        points_earned
-        total_possible
+        quiz_id: quizId
+        points_earned: pointsEarned
+        total_possible: totalPossible
         passed
-        attempt_number
-        submitted_at
+        attempt_number: attemptNumber
+        submitted_at: submittedAt
       }
       pagination {
         offset
@@ -167,29 +167,29 @@ export const QUIZ_ATTEMPT_QUERY = gql`
     quizAttempt(attemptId: $attemptId) {
       attempt {
         id
-        quiz_id
-        points_earned
-        total_possible
+        quiz_id: quizId
+        points_earned: pointsEarned
+        total_possible: totalPossible
         passed
-        attempt_number
-        submitted_at
+        attempt_number: attemptNumber
+        submitted_at: submittedAt
       }
       quiz {
         id
         name
-        created_by_user_id
+        created_by_user_id: createdByUserId
         title
         description
-        question_count
-        required_score
-        attempt_limit
+        question_count: questionCount
+        required_score: requiredScore
+        attempt_limit: attemptLimit
         topic
         status
         questions {
           id
           title
           description
-          question_type
+          question_type: questionType
           order
           options {
             id
@@ -200,11 +200,11 @@ export const QUIZ_ATTEMPT_QUERY = gql`
         }
       }
       questionResults {
-        question_id
-        user_selected_option_ids
-        correct_option_ids
-        is_correct
-        points_earned
+        question_id: questionId
+        user_selected_option_ids: userSelectedOptionIds
+        correct_option_ids: correctOptionIds
+        is_correct: isCorrect
+        points_earned: pointsEarned
         explanation
       }
     }

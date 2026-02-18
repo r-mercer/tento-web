@@ -63,6 +63,7 @@ function AuthCallbackPage() {
         const response = await handleGithubCallback(code);
 
         login(response.token, response.refresh_token, {
+          id: response.id,
           username: response.username,
           email: response.email,
         });
@@ -167,7 +168,7 @@ function DashboardPage() {
       {/* Recent Quizzes Section */}
       <div>
         <h2>Your Recent Quizzes</h2>
-        
+
         {isLoading && (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <p style={{ color: "var(--color-text-secondary)" }}>
@@ -246,14 +247,14 @@ function DashboardPage() {
                         quiz.status === "Ready"
                           ? "var(--color-success-bg, #efe)"
                           : quiz.status === "Draft"
-                          ? "var(--color-warning-bg, #ffe)"
-                          : "var(--color-info-bg, #eef)",
+                            ? "var(--color-warning-bg, #ffe)"
+                            : "var(--color-info-bg, #eef)",
                       color:
                         quiz.status === "Ready"
                           ? "var(--color-success, #060)"
                           : quiz.status === "Draft"
-                          ? "var(--color-warning, #880)"
-                          : "var(--color-info, #008)",
+                            ? "var(--color-warning, #880)"
+                            : "var(--color-info, #008)",
                       borderRadius: "4px",
                       fontSize: "0.75rem",
                       fontWeight: "600",
@@ -287,7 +288,12 @@ function DashboardPage() {
           </div>
         ) : !isLoading && (!quizzes || quizzes.length === 0) ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
-            <p style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
+            <p
+              style={{
+                color: "var(--color-text-secondary)",
+                marginBottom: "1rem",
+              }}
+            >
               No quizzes yet. Create your first quiz to get started!
             </p>
             <a
@@ -381,14 +387,21 @@ function QuizzesPage() {
         >
           <strong>Error loading quizzes</strong>
           <p style={{ margin: "0.5rem 0 0 0" }}>
-            {error instanceof Error ? error.message : "Failed to load quizzes. Please try again."}
+            {error instanceof Error
+              ? error.message
+              : "Failed to load quizzes. Please try again."}
           </p>
         </div>
       )}
 
       {!isLoading && quizzes && quizzes.length > 0 ? (
         <div>
-          <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem" }}>
+          <p
+            style={{
+              color: "var(--color-text-secondary)",
+              marginBottom: "1.5rem",
+            }}
+          >
             You have {quizzes.length} quiz{quizzes.length !== 1 ? "zes" : ""}
           </p>
           <div
@@ -501,18 +514,18 @@ function QuizzesPage() {
                         quiz.status === "Ready"
                           ? "var(--color-success-bg, #efe)"
                           : quiz.status === "Draft"
-                          ? "var(--color-warning-bg, #ffe)"
-                          : quiz.status === "Complete"
-                          ? "var(--color-info-bg, #eef)"
-                          : "var(--color-border)",
+                            ? "var(--color-warning-bg, #ffe)"
+                            : quiz.status === "Complete"
+                              ? "var(--color-info-bg, #eef)"
+                              : "var(--color-border)",
                       color:
                         quiz.status === "Ready"
                           ? "var(--color-success, #060)"
                           : quiz.status === "Draft"
-                          ? "var(--color-warning, #880)"
-                          : quiz.status === "Complete"
-                          ? "var(--color-info, #008)"
-                          : "var(--color-text-primary)",
+                            ? "var(--color-warning, #880)"
+                            : quiz.status === "Complete"
+                              ? "var(--color-info, #008)"
+                              : "var(--color-text-primary)",
                       borderRadius: "4px",
                       fontSize: "0.8rem",
                       fontWeight: "600",
@@ -598,7 +611,12 @@ function QuizzesPage() {
           <h2 style={{ color: "var(--color-text-secondary)" }}>
             No quizzes yet
           </h2>
-          <p style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
+          <p
+            style={{
+              color: "var(--color-text-secondary)",
+              marginBottom: "1rem",
+            }}
+          >
             Create your first quiz to get started!
           </p>
           <a
