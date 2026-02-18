@@ -62,20 +62,17 @@ export function useCreateQuizDraft() {
  * Update a quiz
  * TODO: Uncomment when quiz update API is ready
  */
-// export function useUpdateQuiz(id: string) {
-//   const queryClient = useQueryClient();
-//
-//   return useMutation({
-//     mutationFn: (data: UpdateQuizRequest) => quizzesApi.updateQuiz(id, data),
-//     onSuccess: (updatedQuiz) => {
-//       // Update quiz in cache
-//       queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
-//       
-//       // Invalidate quizzes list to refetch
-//       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
-//     },
-//   });
-// }
+export function useUpdateQuiz(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: unknown) => quizzesApi.updateQuiz(data),
+    onSuccess: (updatedQuiz: any) => {
+      queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
+      queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
+    },
+  });
+}
 
 /**
  * Delete a quiz

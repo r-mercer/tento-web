@@ -1,16 +1,20 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './quiz.module.css';
-import { useQuizForTaking, useQuizForResults, useSubmitQuizAttempt } from '../../hooks/api/useQuizAttempts';
-import { ProgressIndicator } from './ProgressIndicator';
-import { QuestionCard } from './QuestionCard';
-import { ResultsView } from './ResultsView';
-import { ROUTES } from '../../utils/constants';
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./quiz.module.css";
+import {
+  useQuizForTaking,
+  useQuizForResults,
+  useSubmitQuizAttempt,
+} from "../../hooks/api/useQuizAttempts";
+import { ProgressIndicator } from "./ProgressIndicator";
+import { QuestionCard } from "./QuestionCard";
+import { ResultsView } from "./ResultsView";
+import { ROUTES } from "../../utils/constants";
 import type {
   QuizAttemptResponse,
   SubmitQuizAttemptPayload,
   QuestionAnswerSubmission,
-} from '../../types/api';
+} from "../../types/api";
 
 interface QuizFormProps {
   quizId: string;
@@ -22,17 +26,19 @@ interface QuizFormProps {
  */
 export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const navigate = useNavigate();
-  
+
   // Quiz data
   const { data: quizForTaking, isLoading, error } = useQuizForTaking(quizId);
   const { data: quizForResults } = useQuizForResults(
     quizId,
-    false // Initially disabled
+    false, // Initially disabled
   );
 
   // State management
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(new Map());
+  const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(
+    new Map(),
+  );
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [attempt, setAttempt] = useState<QuizAttemptResponse | null>(null);
   const [showResults, setShowResults] = useState(false);
@@ -75,7 +81,9 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   // Get current question from shuffled list
   const currentQuestionData =
-    shuffledQuestions.length > 0 ? shuffledQuestions[currentQuestionIndex] : null;
+    shuffledQuestions.length > 0
+      ? shuffledQuestions[currentQuestionIndex]
+      : null;
 
   // Handle answer change
   const handleAnswerChange = (optionId: string, isChecked?: boolean) => {
@@ -86,7 +94,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
     let newAnswers: string[];
 
-    if (currentQuestionData.question_type === 'Single' || currentQuestionData.question_type === 'Bool') {
+    if (
+      currentQuestionData.question_type === "Single" ||
+      currentQuestionData.question_type === "Bool"
+    ) {
       // Single choice or boolean - replace answer
       newAnswers = [optionId];
     } else {
@@ -120,10 +131,12 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     if (!quizForTaking || !shuffledQuestions) return;
 
     // Build submission payload
-    const answers: QuestionAnswerSubmission[] = shuffledQuestions.map((question) => ({
-      question_id: question.id,
-      selected_option_ids: userAnswers.get(question.id) || [],
-    }));
+    const answers: QuestionAnswerSubmission[] = shuffledQuestions.map(
+      (question) => ({
+        question_id: question.id,
+        selected_option_ids: userAnswers.get(question.id) || [],
+      }),
+    );
 
     const payload: SubmitQuizAttemptPayload = {
       quiz_id: quizId,
@@ -137,7 +150,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       setShouldFetchResults(true);
       onAttemptComplete?.(result);
     } catch (err) {
-      console.error('Failed to submit quiz:', err);
+      console.error("Failed to submit quiz:", err);
     }
   };
 
@@ -191,7 +204,9 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         <div className={styles.quizFormContainer}>
           <div className={styles.quizFormHeader}>
             <h1 className={styles.quizFormTitle}>{quizForResults.name}</h1>
-            <p className={styles.quizFormDescription}>{quizForResults.description}</p>
+            <p className={styles.quizFormDescription}>
+              {quizForResults.description}
+            </p>
           </div>
           <ResultsView
             attempt={attempt}
@@ -217,7 +232,9 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       <div className={styles.quizFormContainer}>
         <div className={styles.quizFormHeader}>
           <h1 className={styles.quizFormTitle}>{quizForTaking.name}</h1>
-          <p className={styles.quizFormDescription}>{quizForTaking.description}</p>
+          <p className={styles.quizFormDescription}>
+            {quizForTaking.description}
+          </p>
         </div>
 
         <ProgressIndicator
@@ -235,7 +252,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
         <div className={styles.navigationButtons}>
           <button
-            className={`${styles.button} ${styles['button--secondary']}`}
+            className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
             type="button"
@@ -245,16 +262,16 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
           {isLastQuestion ? (
             <button
-              className={`${styles.button} ${styles['button--primary']}`}
+              className={`${styles.button} ${styles["button--primary"]}`}
               onClick={handleSubmit}
               disabled={submitMutation.isPending}
               type="button"
             >
-              {submitMutation.isPending ? 'Submitting...' : 'Submit Quiz'}
+              {submitMutation.isPending ? "Submitting..." : "Submit Quiz"}
             </button>
           ) : (
             <button
-              className={`${styles.button} ${styles['button--primary']}`}
+              className={`${styles.button} ${styles["button--primary"]}`}
               onClick={handleNext}
               type="button"
             >

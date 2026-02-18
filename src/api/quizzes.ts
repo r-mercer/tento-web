@@ -11,6 +11,7 @@ import {
   QUIZ_ATTEMPTS_QUERY,
   QUIZ_ATTEMPT_QUERY,
   SUBMIT_QUIZ_ATTEMPT_MUTATION,
+  UPDATE_QUIZ_MUTATION,
 } from './graphql-queries';
 import type {
   Quiz,
@@ -124,4 +125,12 @@ export async function submitQuizAttempt(
     input: payload,
   });
   return response.submitQuizAttempt;
+}
+
+export async function updateQuiz(input: unknown): Promise<Quiz> {
+  const response = await graphqlClient.request<{ updateQuiz: Quiz }>(
+    UPDATE_QUIZ_MUTATION,
+    { input }
+  );
+  return response.updateQuiz;
 }

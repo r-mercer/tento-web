@@ -12,3 +12,4 @@ export { OptionComponent } from './OptionComponent';
 export { QuizAttemptsList } from './QuizAttemptsList';
 export { AttemptDetailView } from './AttemptDetailView';
 export { QuestionResultCard } from './QuestionResultCard';
+export { QuizEditor } from './QuizEditor';

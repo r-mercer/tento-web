@@ -224,3 +224,22 @@ export const SUBMIT_QUIZ_ATTEMPT_MUTATION = gql`
     }
   }
 `;
+
+export const UPDATE_QUIZ_MUTATION = gql`
+  mutation UpdateQuiz($input: UpdateQuizInput!) {
+    updateQuiz(input: $input) {
+      id
+      title
+      description
+      questions {
+        id
+        title
+        description
+        options {
+          id
+          text
+        }
+      }
+    }
+  }
+`;
