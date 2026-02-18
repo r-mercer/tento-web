@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuiz, useUpdateQuiz } from "../../hooks/api/useQuizzes";
 import { useToast } from "../ui/ToastProvider";
+import { TextField, PrimaryButton } from "@fluentui/react";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
 type Props = {
@@ -84,18 +85,19 @@ export function QuizEditor({ quizId, onSaved }: Props) {
       {/* toast notifications shown via ToastProvider */}
 
       <div>
-        <label>Title</label>
-        <input
+        <TextField
+          label="Title"
           value={localQuiz.title ?? ""}
-          onChange={(e) => updateField("title", e.target.value)}
+          onChange={(_, v) => updateField("title", v ?? "")}
         />
       </div>
 
       <div>
-        <label>Description</label>
-        <textarea
+        <TextField
+          label="Description"
+          multiline
           value={localQuiz.description ?? ""}
-          onChange={(e) => updateField("description", e.target.value)}
+          onChange={(_, v) => updateField("description", v ?? "")}
         />
       </div>
 
@@ -107,20 +109,19 @@ export function QuizEditor({ quizId, onSaved }: Props) {
           style={{ border: "1px solid #eee", padding: 8, marginBottom: 8 }}
         >
           <div>
-            <label>Question Title</label>
-            <input
+            <TextField
+              label="Question Title"
               value={question.title ?? ""}
-              onChange={(e) => updateQuestion(qi, { title: e.target.value })}
+              onChange={(_, v) => updateQuestion(qi, { title: v ?? "" })}
             />
           </div>
 
           <div>
-            <label>Question Description</label>
-            <textarea
+            <TextField
+              label="Question Description"
+              multiline
               value={question.description ?? ""}
-              onChange={(e) =>
-                updateQuestion(qi, { description: e.target.value })
-              }
+              onChange={(_, v) => updateQuestion(qi, { description: v ?? "" })}
             />
           </div>
 
@@ -128,9 +129,9 @@ export function QuizEditor({ quizId, onSaved }: Props) {
             <strong>Options</strong>
             {question.options?.map((opt: QuizQuestionOption, oi: number) => (
               <div key={opt.id} style={{ marginLeft: 8 }}>
-                <input
+                <TextField
                   value={opt.text ?? ""}
-                  onChange={(e) => updateOption(qi, oi, e.target.value)}
+                  onChange={(_, v) => updateOption(qi, oi, v ?? "")}
                 />
               </div>
             ))}
@@ -138,10 +139,10 @@ export function QuizEditor({ quizId, onSaved }: Props) {
         </div>
       ))}
 
-      <div>
-        <button onClick={handleSave} disabled={updateMutation.isLoading}>
+      <div style={{ marginTop: 12 }}>
+        <PrimaryButton onClick={handleSave} disabled={updateMutation.isLoading}>
           {updateMutation.isLoading ? "Saving…" : "Save Changes"}
-        </button>
+        </PrimaryButton>
       </div>
     </div>
   );

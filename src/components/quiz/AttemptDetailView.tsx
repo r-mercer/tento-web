@@ -1,6 +1,7 @@
-import styles from './quiz.module.css';
-import { useQuizAttempt } from '../../hooks/api/useQuizAttempts';
-import { QuestionResultCard } from './QuestionResultCard';
+import styles from "./quiz.module.css";
+import { DefaultButton } from "@fluentui/react";
+import { useQuizAttempt } from "../../hooks/api/useQuizAttempts";
+import { QuestionResultCard } from "./QuestionResultCard";
 
 interface AttemptDetailViewProps {
   attemptId: string;
@@ -10,14 +11,15 @@ interface AttemptDetailViewProps {
 /**
  * Displays detailed breakdown of a single quiz attempt with all question results
  */
-export function AttemptDetailView({ attemptId, onBack }: AttemptDetailViewProps) {
+export function AttemptDetailView({
+  attemptId,
+  onBack,
+}: AttemptDetailViewProps) {
   const { data: reviewData, isLoading, error } = useQuizAttempt(attemptId);
 
   if (isLoading) {
     return (
-      <div className={styles.loadingSpinner}>
-        Loading attempt details...
-      </div>
+      <div className={styles.loadingSpinner}>Loading attempt details...</div>
     );
   }
 
@@ -30,56 +32,66 @@ export function AttemptDetailView({ attemptId, onBack }: AttemptDetailViewProps)
   }
 
   if (!reviewData) {
-    return (
-      <div className={styles.errorMessage}>
-        Attempt not found.
-      </div>
-    );
+    return <div className={styles.errorMessage}>Attempt not found.</div>;
   }
 
   const { attempt, quiz, question_results } = reviewData;
-  const percentage = Math.round((attempt.points_earned / attempt.total_possible) * 100);
+  const percentage = Math.round(
+    (attempt.points_earned / attempt.total_possible) * 100,
+  );
 
   return (
     <div className={styles.quizForm}>
       <div className={styles.quizFormContainer}>
         {/* Header */}
         <div className={styles.quizFormHeader}>
-          <button
-            className={`${styles.button} ${styles['button--secondary']}`}
+          <DefaultButton
+            className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={onBack}
             type="button"
-            style={{ marginBottom: 'var(--spacing-md)' }}
+            style={{ marginBottom: "var(--spacing-md)" }}
           >
             ← Back to Attempts
-          </button>
+          </DefaultButton>
           <h1 className={styles.quizFormTitle}>{quiz.name} - Attempt Review</h1>
           <p className={styles.quizFormDescription}>
-            Attempt #{attempt.attempt_number} • {new Date(attempt.submitted_at).toLocaleDateString()}
+            Attempt #{attempt.attempt_number} •{" "}
+            {new Date(attempt.submitted_at).toLocaleDateString()}
           </p>
         </div>
 
         {/* Summary Card */}
         <div
           style={{
-            backgroundColor: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--border-radius-md)',
-            padding: 'var(--spacing-lg)',
-            marginBottom: 'var(--spacing-lg)',
+            backgroundColor: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--border-radius-md)",
+            padding: "var(--spacing-lg)",
+            marginBottom: "var(--spacing-lg)",
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <div>
-              <h2 style={{ margin: '0 0 var(--spacing-sm) 0', fontSize: 'var(--font-size-lg)' }}>
+              <h2
+                style={{
+                  margin: "0 0 var(--spacing-sm) 0",
+                  fontSize: "var(--font-size-lg)",
+                }}
+              >
                 Score: {attempt.points_earned}/{attempt.total_possible}
               </h2>
               <p
                 style={{
                   margin: 0,
-                  fontSize: 'var(--font-size-2xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--color-primary)',
+                  fontSize: "var(--font-size-2xl)",
+                  fontWeight: "var(--font-weight-bold)",
+                  color: "var(--color-primary)",
                 }}
               >
                 {percentage}%
@@ -87,28 +99,38 @@ export function AttemptDetailView({ attemptId, onBack }: AttemptDetailViewProps)
             </div>
             <span
               style={{
-                display: 'inline-block',
-                padding: 'var(--spacing-sm) var(--spacing-md)',
-                borderRadius: 'var(--border-radius-md)',
-                backgroundColor: attempt.passed ? 'var(--color-success)' : 'var(--color-error)',
-                color: 'white',
-                fontWeight: 'var(--font-weight-medium)',
+                display: "inline-block",
+                padding: "var(--spacing-sm) var(--spacing-md)",
+                borderRadius: "var(--border-radius-md)",
+                backgroundColor: attempt.passed
+                  ? "var(--color-success)"
+                  : "var(--color-error)",
+                color: "white",
+                fontWeight: "var(--font-weight-medium)",
               }}
             >
-              {attempt.passed ? 'Passed' : 'Failed'}
+              {attempt.passed ? "Passed" : "Failed"}
             </span>
           </div>
         </div>
 
         {/* Questions Results */}
         <div>
-          <h2 style={{ marginTop: 0, marginBottom: 'var(--spacing-lg)' }}>
+          <h2 style={{ marginTop: 0, marginBottom: "var(--spacing-lg)" }}>
             Questions ({question_results.length})
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "var(--spacing-lg)",
+            }}
+          >
             {question_results.map((result) => {
-              const question = quiz.questions?.find((q) => q.id === result.question_id);
+              const question = quiz.questions?.find(
+                (q) => q.id === result.question_id,
+              );
               if (!question) return null;
 
               return (
@@ -125,20 +147,20 @@ export function AttemptDetailView({ attemptId, onBack }: AttemptDetailViewProps)
         {/* Action Buttons */}
         <div
           style={{
-            display: 'flex',
-            gap: 'var(--spacing-md)',
-            marginTop: 'var(--spacing-xl)',
-            paddingTop: 'var(--spacing-lg)',
-            borderTop: '1px solid var(--color-border)',
+            display: "flex",
+            gap: "var(--spacing-md)",
+            marginTop: "var(--spacing-xl)",
+            paddingTop: "var(--spacing-lg)",
+            borderTop: "1px solid var(--color-border)",
           }}
         >
-          <button
-            className={`${styles.button} ${styles['button--secondary']}`}
+          <DefaultButton
+            className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={onBack}
             type="button"
           >
             ← Back to Attempts
-          </button>
+          </DefaultButton>
         </div>
       </div>
     </div>

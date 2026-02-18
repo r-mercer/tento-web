@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
+import { MessageBar, MessageBarType } from "@fluentui/react";
 
 type Toast = {
   id: number;
@@ -25,25 +26,28 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ push }}>
       {children}
-      <div style={{ position: "fixed", right: 16, top: 16, zIndex: 9999 }}>
+      <div
+        style={{
+          position: "fixed",
+          right: 16,
+          top: 16,
+          zIndex: 9999,
+          width: 360,
+        }}
+      >
         {toasts.map((t) => (
-          <div
-            key={t.id}
-            style={{
-              marginBottom: 8,
-              padding: "8px 12px",
-              borderRadius: 6,
-              color: "#fff",
-              backgroundColor:
+          <div key={t.id} style={{ marginBottom: 8 }}>
+            <MessageBar
+              messageBarType={
                 t.type === "success"
-                  ? "#059669"
+                  ? MessageBarType.success
                   : t.type === "error"
-                    ? "#dc2626"
-                    : "#2563eb",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            }}
-          >
-            {t.message}
+                    ? MessageBarType.error
+                    : MessageBarType.info
+              }
+            >
+              {t.message}
+            </MessageBar>
           </div>
         ))}
       </div>

@@ -1,5 +1,6 @@
-import styles from './quiz.module.css';
-import type { QuizAttemptResponse, Quiz } from '../../types/api';
+import styles from "./quiz.module.css";
+import { PrimaryButton, DefaultButton } from "@fluentui/react";
+import type { QuizAttemptResponse, Quiz } from "../../types/api";
 
 interface ResultsViewProps {
   attempt: QuizAttemptResponse;
@@ -17,7 +18,9 @@ export function ResultsView({
   onRetake,
   onReview,
 }: ResultsViewProps) {
-  const percentage = Math.round((attempt.points_earned / attempt.total_possible) * 100);
+  const percentage = Math.round(
+    (attempt.points_earned / attempt.total_possible) * 100,
+  );
   const isPassed = attempt.passed;
   const canRetake = attempt.attempt_number < quiz.attempt_limit;
 
@@ -28,31 +31,35 @@ export function ResultsView({
         <div className={styles.scoreDisplay}>
           {attempt.points_earned}/{attempt.total_possible}
         </div>
-        <div>{percentage}% ({percentage}%)</div>
+        <div>
+          {percentage}% ({percentage}%)
+        </div>
         <div
           className={`${styles.statusBadge} ${
-            isPassed ? styles['statusBadge--passed'] : styles['statusBadge--failed']
+            isPassed
+              ? styles["statusBadge--passed"]
+              : styles["statusBadge--failed"]
           }`}
         >
-          {isPassed ? 'Passed' : 'Failed'}
+          {isPassed ? "Passed" : "Failed"}
         </div>
       </div>
 
       <div className={styles.resultsViewActions}>
-        <button
-          className={`${styles.button} ${styles['button--primary']}`}
+        <PrimaryButton
+          className={`${styles.button} ${styles["button--primary"]}`}
           onClick={onRetake}
           disabled={!canRetake}
-          title={!canRetake ? 'Attempt limit reached' : 'Retake this quiz'}
+          title={!canRetake ? "Attempt limit reached" : "Retake this quiz"}
         >
           Retake Quiz
-        </button>
-        <button
-          className={`${styles.button} ${styles['button--secondary']}`}
+        </PrimaryButton>
+        <DefaultButton
+          className={`${styles.button} ${styles["button--secondary"]}`}
           onClick={onReview}
         >
           Review Answers
-        </button>
+        </DefaultButton>
       </div>
     </div>
   );
