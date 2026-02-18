@@ -1,9 +1,5 @@
 import { gql } from 'graphql-request';
 
-// ============================================================================
-// Quiz Queries
-// ============================================================================
-
 export const ALL_QUIZZES_QUERY = gql`
   query GetAllQuizzes {
     quizzes {

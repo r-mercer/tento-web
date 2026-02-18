@@ -3,10 +3,6 @@ import { API_BASE_URL, ENDPOINTS } from '../utils/constants';
 import { storage } from '../utils/storage';
 import type { RefreshTokenResponse } from '../types/api';
 
-// ============================================================================
-// Axios Instance Configuration
-// ============================================================================
-
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
@@ -15,32 +11,15 @@ export const apiClient = axios.create({
   },
 });
 
-// ============================================================================
-// Token Refresh State
-// ============================================================================
-
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
-
-/**
- * Add subscriber to wait for token refresh
- */
 function subscribeTokenRefresh(callback: (token: string) => void) {
   refreshSubscribers.push(callback);
 }
-
-/**
- * Notify all subscribers when token is refreshed
- */
 function onTokenRefreshed(token: string) {
   refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
 }
-
-// ============================================================================
-// Request Interceptor
-// ============================================================================
-
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = storage.getAccessToken();
@@ -60,10 +39,6 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// ============================================================================
-// Response Interceptor with Token Refresh
-// ============================================================================
 
 apiClient.interceptors.response.use(
   (response) => response,

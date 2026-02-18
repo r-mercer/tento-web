@@ -2,19 +2,10 @@ import { GraphQLClient } from 'graphql-request';
 import { API_BASE_URL, ENDPOINTS } from '../utils/constants';
 import { storage } from '../utils/storage';
 
-// ============================================================================
-// GraphQL Client Configuration
-// ============================================================================
-
-/**
- * Create a GraphQL client with dynamic authentication headers
- */
 function createGraphQLClient(): GraphQLClient {
   const client = new GraphQLClient(`${API_BASE_URL}${ENDPOINTS.GRAPHQL}`, {
     headers: {},
   });
-
-  // Add request middleware to inject authorization header
   client.requestConfig.requestMiddleware = async (request) => {
     const token = storage.getAccessToken();
     

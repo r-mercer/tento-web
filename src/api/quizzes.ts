@@ -22,13 +22,6 @@ import type {
   CreateQuizDraftRequest,
 } from '../types/api';
 
-// ============================================================================
-// REST Quiz Functions (existing)
-// ============================================================================
-
-/**
- * Get all quizzes
- */
 export async function getAllQuizzes(): Promise<Quiz[]> {
   const response = await graphqlClient.request<{ quizzes: Quiz[] }>(
     ALL_QUIZZES_QUERY
@@ -36,9 +29,6 @@ export async function getAllQuizzes(): Promise<Quiz[]> {
   return response.quizzes;
 }
 
-/**
- * Get a single quiz by ID
- */
 export async function getQuiz(id: string): Promise<Quiz> {
   const response = await graphqlClient.request<{ quiz: Quiz }>(
     GET_QUIZ_QUERY,
@@ -47,9 +37,6 @@ export async function getQuiz(id: string): Promise<Quiz> {
   return response.quiz;
 }
 
-/**
- * Get all quizzes owned by a specific user
- */
 export async function getUserQuizzes(userId: string): Promise<Quiz[]> {
   // If userId looks like a username (not UUID and not 24-char ObjectId hex),
   // resolve it via the REST users endpoint to obtain the canonical id.
@@ -74,37 +61,19 @@ export async function getUserQuizzes(userId: string): Promise<Quiz[]> {
   return response.userQuizzes;
 }
 
-/**
- * Create a new quiz draft
- */
 export async function createQuizDraft(data: CreateQuizDraftRequest): Promise<Quiz> {
   const response = await apiClient.post<Quiz>(ENDPOINTS.QUIZ_DRAFTS, data);
   return response.data;
 }
 
-/**
- * Update a quiz by ID
- * TODO: Implement when quiz update API is ready
- */
 // export async function updateQuiz(id: string, data: UpdateQuizRequest): Promise<Quiz> {
 //   const response = await apiClient.put<Quiz>(ENDPOINTS.QUIZ(id), data);
 //   return response.data;
 // }
 
-/**
- * Delete a quiz by ID
- */
 export async function deleteQuiz(id: string): Promise<void> {
   await apiClient.delete(ENDPOINTS.QUIZ(id));
 }
-
-// ============================================================================
-// GraphQL Quiz Queries
-// ============================================================================
-
-/**
- * Get quiz for taking (without answers)
- */
 export async function getQuizForTaking(id: string): Promise<QuizForTaking> {
   const response = await graphqlClient.request<{ quizForTaking: QuizForTaking }>(
     QUIZ_FOR_TAKING_QUERY,
@@ -113,10 +82,6 @@ export async function getQuizForTaking(id: string): Promise<QuizForTaking> {
   return response.quizForTaking;
 }
 
-/**
- * Get quiz for results review (with answers)
- * Authorization: User must be quiz creator OR have attempted quiz
- */
 export async function getQuizForResults(id: string): Promise<Quiz> {
   const response = await graphqlClient.request<{ quizForResults: Quiz }>(
     QUIZ_FOR_RESULTS_QUERY,
@@ -125,13 +90,6 @@ export async function getQuizForResults(id: string): Promise<Quiz> {
   return response.quizForResults;
 }
 
-// ============================================================================
-// GraphQL Quiz Attempt Queries
-// ============================================================================
-
-/**
- * Get user's quiz attempts
- */
 export async function getQuizAttempts(
   quizId?: string,
   limit: number = 10,
@@ -147,9 +105,6 @@ export async function getQuizAttempts(
   return response.quizAttempts;
 }
 
-/**
- * Get single attempt with detailed results
- */
 export async function getQuizAttempt(
   attemptId: string
 ): Promise<QuizAttemptReview> {
@@ -160,13 +115,6 @@ export async function getQuizAttempt(
   return response.quizAttempt;
 }
 
-// ============================================================================
-// GraphQL Quiz Attempt Mutations
-// ============================================================================
-
-/**
- * Submit quiz attempt and receive graded response
- */
 export async function submitQuizAttempt(
   payload: SubmitQuizAttemptPayload
 ): Promise<QuizAttemptResponse> {
