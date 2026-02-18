@@ -1,38 +1,37 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { API_BASE_URL, ENDPOINTS } from '../utils/constants';
-import { storage } from '../utils/storage';
-import type { RefreshTokenResponse } from '../types/api';
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { API_BASE_URL, ENDPOINTS } from "../utils/constants";
+import { storage } from "../utils/storage";
+import { authEvents } from "../utils/auth-events";
+import type { RefreshTokenResponse } from "../types/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
-function subscribeTokenRefresh(callback: (token: string) => void) {
+
+function subscribeTokenRefresh(callback: (token: string) => void): void {
   refreshSubscribers.push(callback);
 }
-function onTokenRefreshed(token: string) {
+
+function onTokenRefreshed(token: string): void {
   refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
 }
+
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = storage.getAccessToken();
-    
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      hasToken: !!token,
-      tokenPreview: token ? `${token.substring(0, 10)}...` : 'none'
-    });
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
@@ -45,18 +44,10 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    console.error(`[API Error] ${originalRequest.method?.toUpperCase()} ${originalRequest.url}`, {
-      status: error.response?.status,
-      message: error.message,
-      data: error.response?.data
-    });
-
-    // If error is not 401 or request already retried, reject immediately
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    // If already refreshing, queue this request
     if (isRefreshing) {
       return new Promise((resolve) => {
         subscribeTokenRefresh((token: string) => {
@@ -75,13 +66,11 @@ apiClient.interceptors.response.use(
 
     if (!refreshToken) {
       isRefreshing = false;
-      storage.clear();
-      window.location.href = '/login';
+      authEvents.emit("session-expired", { reason: "no-refresh-token" });
       return Promise.reject(error);
     }
 
     try {
-      // Call refresh endpoint
       const response = await axios.post<RefreshTokenResponse>(
         `${API_BASE_URL}${ENDPOINTS.AUTH_REFRESH}`,
         { refresh_token: refreshToken }
@@ -89,32 +78,23 @@ apiClient.interceptors.response.use(
 
       const { token: newAccessToken, refresh_token: newRefreshToken } = response.data;
 
-      // Store new tokens
       storage.setTokens(newAccessToken, newRefreshToken);
 
-      // Update authorization header
       if (originalRequest.headers) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       }
 
-      // Notify all waiting requests
       onTokenRefreshed(newAccessToken);
       isRefreshing = false;
+      authEvents.emit("token-refreshed");
 
-      // Retry original request
       return apiClient(originalRequest);
     } catch (refreshError) {
-      // Refresh failed - clear tokens and redirect to login
       isRefreshing = false;
-      storage.clear();
-      window.location.href = '/login';
+      authEvents.emit("session-expired", { reason: "refresh-failed" });
       return Promise.reject(refreshError);
     }
   }
 );
-
-// ============================================================================
-// Export
-// ============================================================================
 
 export default apiClient;

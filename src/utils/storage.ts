@@ -1,71 +1,60 @@
 import { STORAGE_KEYS } from './constants';
-
-// ============================================================================
-// Token Storage
-// ============================================================================
+import { getTokenExpiration } from './jwt';
 
 export const storage = {
-  /**
-   * Get access token from localStorage
-   */
   getAccessToken(): string | null {
     return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   },
 
-  /**
-   * Set access token in localStorage
-   */
   setAccessToken(token: string): void {
     localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+    
+    const expiresAt = getTokenExpiration(token);
+    if (expiresAt) {
+      this.setTokenExpiration(expiresAt);
+    }
   },
 
-  /**
-   * Remove access token from localStorage
-   */
   removeAccessToken(): void {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   },
 
-  /**
-   * Get refresh token from localStorage
-   */
   getRefreshToken(): string | null {
     return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
   },
 
-  /**
-   * Set refresh token in localStorage
-   */
   setRefreshToken(token: string): void {
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, token);
   },
 
-  /**
-   * Remove refresh token from localStorage
-   */
   removeRefreshToken(): void {
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   },
 
-  /**
-   * Set both access and refresh tokens
-   */
   setTokens(accessToken: string, refreshToken: string): void {
     this.setAccessToken(accessToken);
     this.setRefreshToken(refreshToken);
   },
 
-  /**
-   * Remove both access and refresh tokens
-   */
   clearTokens(): void {
     this.removeAccessToken();
     this.removeRefreshToken();
+    this.removeTokenExpiration();
   },
 
-  /**
-   * Get user data from localStorage
-   */
+  getTokenExpiration(): number | null {
+    const expiresAt = localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRATION);
+    return expiresAt ? parseInt(expiresAt, 10) : null;
+  },
+
+  setTokenExpiration(expiresAt: number): void {
+    localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRATION, expiresAt.toString());
+  },
+
+  removeTokenExpiration(): void {
+    localStorage.removeItem(STORAGE_KEYS.TOKEN_EXPIRATION);
+  },
+
   getUser<T>(): T | null {
     const userData = localStorage.getItem(STORAGE_KEYS.USER);
     if (!userData) return null;
@@ -77,23 +66,14 @@ export const storage = {
     }
   },
 
-  /**
-   * Set user data in localStorage
-   */
   setUser<T>(user: T): void {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   },
 
-  /**
-   * Remove user data from localStorage
-   */
   removeUser(): void {
     localStorage.removeItem(STORAGE_KEYS.USER);
   },
 
-  /**
-   * Clear all stored data
-   */
   clear(): void {
     this.clearTokens();
     this.removeUser();

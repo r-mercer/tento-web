@@ -63,6 +63,7 @@ export const STORAGE_KEYS = {
   ACCESS_TOKEN: 'tento_access_token',
   REFRESH_TOKEN: 'tento_refresh_token',
   USER: 'tento_user',
+  TOKEN_EXPIRATION: 'tento_token_expiration',
 } as const;
 
 // ============================================================================

@@ -1,10 +1,13 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { storage } from '../utils/storage';
-import type { User } from '../types/api';
-
-// ============================================================================
-// Auth Context Types
-// ============================================================================
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { storage } from "../utils/storage";
+import { authEvents } from "../utils/auth-events";
+import { isTokenExpired, getTimeUntilExpiry } from "../utils/jwt";
+import { useInactivityTimeout } from "../hooks/useInactivityTimeout";
+import { useSessionValidation } from "../hooks/useSessionValidation";
+import { refreshAccessToken } from "../api/auth";
+import { ROUTES } from "../utils/constants";
+import type { User } from "../types/api";
 
 interface AuthContextType {
   user: User | null;
@@ -14,66 +17,96 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// ============================================================================
-// Auth Context
-// ============================================================================
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// ============================================================================
-// Auth Provider
-// ============================================================================
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => {
+    const token = storage.getAccessToken();
+    const storedUser = storage.getUser<User>();
+    
+    if (token && isTokenExpired(token)) {
+      storage.clear();
+      return null;
+    }
+    
+    return token && storedUser ? storedUser : null;
+  });
+  
+  const [isLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Initialize auth state from storage on mount
+  useInactivityTimeout(30);
+  useSessionValidation(5);
+
   useEffect(() => {
-    const initializeAuth = () => {
+    const unsubscribe = authEvents.on("session-expired", () => {
+      storage.clear();
+      setUser(null);
+      navigate(ROUTES.LOGIN, { replace: true });
+    });
+
+    return unsubscribe;
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkAndRefreshToken = async () => {
       const token = storage.getAccessToken();
-      const storedUser = storage.getUser<User>();
+      if (!token) return;
 
-      if (token && storedUser) {
-        setUser(storedUser);
+      const timeUntilExpiry = getTimeUntilExpiry(token);
+      const buffer = 5 * 60 * 1000;
+
+      if (timeUntilExpiry > 0 && timeUntilExpiry <= buffer) {
+        try {
+          const refreshToken = storage.getRefreshToken();
+          if (!refreshToken) {
+            authEvents.emit("session-expired", { reason: "no-refresh-token" });
+            return;
+          }
+
+          const response = await refreshAccessToken(refreshToken);
+          storage.setTokens(response.token, response.refresh_token);
+          authEvents.emit("token-refreshed");
+        } catch {
+          authEvents.emit("session-expired", { reason: "refresh-failed" });
+        }
       }
-
-      setIsLoading(false);
     };
 
-    initializeAuth();
-  }, []);
+    const interval = setInterval(checkAndRefreshToken, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
-  const login = (token: string, refreshToken: string, userData: Partial<User>) => {
-    // Store tokens
+  const login = useCallback((token: string, refreshToken: string, userData: Partial<User>) => {
     storage.setTokens(token, refreshToken);
 
-    // Create user object with defaults
     const fullUser: User = {
-      id: userData.id || '',
-      username: userData.username || '',
-      email: userData.email || '',
+      id: userData.id || "",
+      username: userData.username || "",
+      email: userData.email || "",
       full_name: userData.full_name,
       github_id: userData.github_id,
       avatar_url: userData.avatar_url,
-      role: userData.role || 'user',
+      role: userData.role || "user",
       created_at: userData.created_at || new Date().toISOString(),
       updated_at: userData.updated_at || new Date().toISOString(),
     };
 
-    // Store user data
     storage.setUser(fullUser);
     setUser(fullUser);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     storage.clear();
     setUser(null);
-  };
+    authEvents.emit("logout");
+  }, []);
 
   const value: AuthContextType = {
     user,
@@ -86,17 +119,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// ============================================================================
-// useAuth Hook
-// ============================================================================
-
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  
+
   return context;
 }
