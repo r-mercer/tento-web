@@ -49,8 +49,7 @@ export async function getUserQuizzes(userId: string): Promise<Quiz[]> {
     try {
       const user = await usersApi.getUser(userId);
       effectiveId = user.id;
-    } catch (e) {
-      // If resolving username failed, pass the original value and let the server handle it.
+    } catch {
       effectiveId = userId;
     }
   }

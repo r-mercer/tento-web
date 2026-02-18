@@ -1,5 +1,14 @@
-import styles from "./quiz.module.css";
-import { Button } from "@fluentui/react-components";
+import {
+  Button,
+  Title1,
+  Title2,
+  Body1,
+  Badge,
+  Spinner,
+  MessageBar,
+  MessageBarBody,
+  Card,
+} from "@fluentui/react-components";
 import { useQuizAttempt } from "../../hooks/api/useQuizAttempts";
 import { QuestionResultCard } from "./QuestionResultCard";
 
@@ -8,160 +17,91 @@ interface AttemptDetailViewProps {
   onBack: () => void;
 }
 
-/**
- * Displays detailed breakdown of a single quiz attempt with all question results
- */
-export function AttemptDetailView({
-  attemptId,
-  onBack,
-}: AttemptDetailViewProps) {
+export function AttemptDetailView({ attemptId, onBack }: AttemptDetailViewProps) {
   const { data: reviewData, isLoading, error } = useQuizAttempt(attemptId);
 
   if (isLoading) {
     return (
-      <div className={styles.loadingSpinner}>Loading attempt details...</div>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Spinner size="small" />
+        <Body1>Loading attempt details...</Body1>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.errorMessage}>
-        Failed to load attempt details. Please try again.
-      </div>
+      <MessageBar intent="error">
+        <MessageBarBody>Failed to load attempt details. Please try again.</MessageBarBody>
+      </MessageBar>
     );
   }
 
   if (!reviewData) {
-    return <div className={styles.errorMessage}>Attempt not found.</div>;
+    return (
+      <MessageBar intent="warning">
+        <MessageBarBody>Attempt not found.</MessageBarBody>
+      </MessageBar>
+    );
   }
 
   const { attempt, quiz, question_results } = reviewData;
-  const percentage = Math.round(
-    (attempt.points_earned / attempt.total_possible) * 100,
-  );
+  const percentage = Math.round((attempt.points_earned / attempt.total_possible) * 100);
 
   return (
-    <div className={styles.quizForm}>
-      <div className={styles.quizFormContainer}>
-        {/* Header */}
-        <div className={styles.quizFormHeader}>
-          <Button
-            className={`${styles.button} ${styles["button--secondary"]}`}
-            onClick={onBack}
-            type="button"
-            style={{ marginBottom: "var(--spacing-md)" }}
-          >
-            ← Back to Attempts
-          </Button>
-          <h1 className={styles.quizFormTitle}>{quiz.name} - Attempt Review</h1>
-          <p className={styles.quizFormDescription}>
-            Attempt #{attempt.attempt_number} •{" "}
-            {new Date(attempt.submitted_at).toLocaleDateString()}
-          </p>
-        </div>
+    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <Button appearance="outline" onClick={onBack} style={{ marginBottom: "1rem" }}>
+        ← Back to Attempts
+      </Button>
 
-        {/* Summary Card */}
-        <div
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "var(--border-radius-md)",
-            padding: "var(--spacing-lg)",
-            marginBottom: "var(--spacing-lg)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <h2
-                style={{
-                  margin: "0 0 var(--spacing-sm) 0",
-                  fontSize: "var(--font-size-lg)",
-                }}
-              >
-                Score: {attempt.points_earned}/{attempt.total_possible}
-              </h2>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: "var(--font-size-2xl)",
-                  fontWeight: "var(--font-weight-bold)",
-                  color: "var(--color-primary)",
-                }}
-              >
-                {percentage}%
-              </p>
-            </div>
-            <span
-              style={{
-                display: "inline-block",
-                padding: "var(--spacing-sm) var(--spacing-md)",
-                borderRadius: "var(--border-radius-md)",
-                backgroundColor: attempt.passed
-                  ? "var(--color-success)"
-                  : "var(--color-error)",
-                color: "white",
-                fontWeight: "var(--font-weight-medium)",
-              }}
-            >
-              {attempt.passed ? "Passed" : "Failed"}
-            </span>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <Title1 style={{ marginBottom: "0.5rem" }}>{quiz.name} - Attempt Review</Title1>
+        <Body1 style={{ color: "var(--color-text-secondary)" }}>
+          Attempt #{attempt.attempt_number} • {new Date(attempt.submitted_at).toLocaleDateString()}
+        </Body1>
+      </div>
+
+      <Card style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <Title2 style={{ marginBottom: "0.25rem" }}>
+              Score: {attempt.points_earned}/{attempt.total_possible}
+            </Title2>
+            <Title1 style={{ color: "var(--color-primary)" }}>{percentage}%</Title1>
           </div>
+          <Badge appearance="filled" color={attempt.passed ? "success" : "danger"} size="large">
+            {attempt.passed ? "Passed" : "Failed"}
+          </Badge>
         </div>
+      </Card>
 
-        {/* Questions Results */}
-        <div>
-          <h2 style={{ marginTop: 0, marginBottom: "var(--spacing-lg)" }}>
-            Questions ({question_results.length})
-          </h2>
+      <div>
+        <Title2 style={{ marginBottom: "1rem" }}>Questions ({question_results.length})</Title2>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "var(--spacing-lg)",
-            }}
-          >
-            {question_results.map((result) => {
-              const question = quiz.questions?.find(
-                (q) => q.id === result.question_id,
-              );
-              if (!question) return null;
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          {question_results.map((result) => {
+            const question = quiz.questions?.find((q) => q.id === result.question_id);
+            if (!question) return null;
 
-              return (
-                <QuestionResultCard
-                  key={result.question_id}
-                  question={question}
-                  result={result}
-                />
-              );
-            })}
-          </div>
+            return (
+              <QuestionResultCard key={result.question_id} question={question} result={result} />
+            );
+          })}
         </div>
+      </div>
 
-        {/* Action Buttons */}
-        <div
-          style={{
-            display: "flex",
-            gap: "var(--spacing-md)",
-            marginTop: "var(--spacing-xl)",
-            paddingTop: "var(--spacing-lg)",
-            borderTop: "1px solid var(--color-border)",
-          }}
-        >
-          <Button
-            className={`${styles.button} ${styles['button--secondary']}`}
-            onClick={onBack}
-            type="button"
-          >
-            ← Back to Attempts
-          </Button>
-        </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          marginTop: "2rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid var(--color-border)",
+        }}
+      >
+        <Button appearance="outline" onClick={onBack}>
+          ← Back to Attempts
+        </Button>
       </div>
     </div>
   );

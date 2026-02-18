@@ -1,5 +1,7 @@
-import styles from "./quiz.module.css";
-import { RadioGroup, Radio, Checkbox } from "@fluentui/react-components";
+import { Card, Title2, Body1 } from "@fluentui/react-components";
+import { SingleChoiceOptions } from "./SingleChoiceOptions";
+import { MultiChoiceOptions } from "./MultiChoiceOptions";
+import { BooleanOptions } from "./BooleanOptions";
 import type { QuizQuestionForTaking, QuizQuestion } from "../../types/api";
 
 interface QuestionCardProps {
@@ -9,9 +11,6 @@ interface QuestionCardProps {
   onAnswerChange: (optionId: string, isChecked?: boolean) => void;
 }
 
-/**
- * Question card component that displays a question and its options
- */
 export function QuestionCard({
   question,
   userAnswerIds,
@@ -19,61 +18,53 @@ export function QuestionCard({
   onAnswerChange,
 }: QuestionCardProps) {
   const options = question.options || [];
+  const selectedValue = userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
 
-  // Single choice and Bool questions use RadioGroup (radio-like)
-  if (
-    question.question_type === "Single" ||
-    question.question_type === "Bool"
-  ) {
-    const selectedValue =
-      userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
-
-    return (
-      <div className={styles.questionCard}>
-        <h2 className={styles.questionCardTitle}>{question.title}</h2>
-        {question.description && (
-          <p className={styles.questionCardDescription}>
-            {question.description}
-          </p>
-        )}
-        <div className={styles.questionCardOptions}>
-          <RadioGroup
-            value={selectedValue}
-            onChange={(_, data) => {
-              if (!isSubmitted && data.value) onAnswerChange(data.value);
-            }}
+  const renderOptions = () => {
+    switch (question.question_type) {
+      case "Single":
+        return (
+          <SingleChoiceOptions
+            options={options}
+            selectedValue={selectedValue}
             disabled={isSubmitted}
-          >
-            {options.map((option) => (
-              <Radio key={option.id} value={option.id} label={option.text} />
-            ))}
-          </RadioGroup>
-        </div>
-      </div>
-    );
-  }
+            onChange={(optionId) => onAnswerChange(optionId)}
+          />
+        );
+      case "Bool":
+        return (
+          <BooleanOptions
+            options={options}
+            selectedValue={selectedValue}
+            disabled={isSubmitted}
+            onChange={(optionId) => onAnswerChange(optionId)}
+          />
+        );
+      case "Multi":
+        return (
+          <MultiChoiceOptions
+            options={options}
+            selectedValues={userAnswerIds}
+            disabled={isSubmitted}
+            onChange={(optionId, isChecked) => onAnswerChange(optionId, isChecked)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-  // Multi-choice uses checkboxes per option
   return (
-    <div className={styles.questionCard}>
-      <h2 className={styles.questionCardTitle}>{question.title}</h2>
+    <Card style={{ padding: "1.5rem", marginBottom: "1rem" }}>
+      <Title2 style={{ marginBottom: "0.25rem" }}>{question.title}</Title2>
       {question.description && (
-        <p className={styles.questionCardDescription}>{question.description}</p>
+        <Body1 style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
+          {question.description}
+        </Body1>
       )}
-      <div className={styles.questionCardOptions}>
-        {options.map((option) => (
-          <div key={option.id} style={{ marginBottom: 8 }}>
-            <Checkbox
-              label={option.text}
-              checked={userAnswerIds.includes(option.id)}
-              onChange={(_, checked) =>
-                !isSubmitted && onAnswerChange(option.id, !!checked)
-              }
-              disabled={isSubmitted}
-            />
-          </div>
-        ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {renderOptions()}
       </div>
-    </div>
+    </Card>
   );
 }

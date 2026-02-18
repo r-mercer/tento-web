@@ -1,7 +1,17 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useQuiz, useUpdateQuiz } from "../../hooks/api/useQuizzes";
 import { useToast } from "../ui/ToastProvider";
-import { Input, Textarea, Button } from "@fluentui/react-components";
+import {
+  Field,
+  Input,
+  Textarea,
+  Button,
+  Title2,
+  Title3,
+  Spinner,
+  Divider,
+  Card,
+} from "@fluentui/react-components";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
 type Props = {
@@ -15,43 +25,42 @@ export function QuizEditor({ quizId, onSaved }: Props) {
 
   const toast = useToast();
 
-  const [localQuiz, setLocalQuiz] = useState<Quiz | null>(null);
+  const localQuiz = useMemo(() => quiz, [quiz]);
 
-  useEffect(() => {
-    if (quiz) setLocalQuiz(quiz);
-  }, [quiz]);
-
-  if (isLoading || !localQuiz) return <div>Loading editor...</div>;
-
-  function updateField<K extends keyof Quiz>(key: K, value: Quiz[K]) {
-    setLocalQuiz((q) => (q ? { ...q, [key]: value } : q));
+  if (isLoading || !localQuiz) {
+    return (
+      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Spinner size="small" />
+        <span>Loading editor...</span>
+      </div>
+    );
   }
 
-  function updateQuestion(index: number, patch: Partial<QuizQuestion>) {
-    setLocalQuiz((q) => {
-      if (!q || !q.questions) return q;
-      const questions = q.questions.map((qq, i) =>
-        i === index ? { ...qq, ...patch } : qq,
+  const updateField = <K extends keyof Quiz>(key: K, value: Quiz[K]) => {
+    updateMutation.mutate({ [key]: value } as Partial<Quiz>);
+  };
+
+  const updateQuestion = (index: number, patch: Partial<QuizQuestion>) => {
+    if (!localQuiz.questions) return;
+    const questions = localQuiz.questions.map((q, i) =>
+      i === index ? { ...q, ...patch } : q,
+    );
+    updateMutation.mutate({ questions } as Partial<Quiz>);
+  };
+
+  const updateOption = (qIndex: number, oIndex: number, text: string) => {
+    if (!localQuiz.questions) return;
+    const questions = localQuiz.questions.map((q, i) => {
+      if (i !== qIndex) return q;
+      const options = q.options?.map((opt, oi) =>
+        oi === oIndex ? { ...opt, text } : opt,
       );
-      return { ...q, questions } as Quiz;
+      return { ...q, options };
     });
-  }
+    updateMutation.mutate({ questions } as Partial<Quiz>);
+  };
 
-  function updateOption(qIndex: number, oIndex: number, text: string) {
-    setLocalQuiz((q) => {
-      if (!q || !q.questions) return q;
-      const questions = q.questions.map((qq, i) => {
-        if (i !== qIndex) return qq;
-        const options = qq.options.map((opt, oi) =>
-          oi === oIndex ? { ...opt, text } : opt,
-        );
-        return { ...qq, options } as QuizQuestion;
-      });
-      return { ...q, questions } as Quiz;
-    });
-  }
-
-  async function handleSave() {
+  const handleSave = async () => {
     if (!localQuiz) return;
 
     const payload = {
@@ -71,83 +80,78 @@ export function QuizEditor({ quizId, onSaved }: Props) {
       const updated = await updateMutation.mutateAsync(payload);
       toast.success("Saved");
       if (onSaved) onSaved(updated);
-    } catch (err: any) {
-      const msg = err?.message || "Save failed";
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Save failed";
       toast.error(msg);
       console.error("Failed to save quiz", err);
     }
-  }
+  };
 
   return (
-    <div>
-      <h2>Edit Quiz</h2>
+    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <Title2 style={{ marginBottom: "1.5rem" }}>Edit Quiz</Title2>
 
-      {/* toast notifications shown via ToastProvider */}
+      <Card style={{ padding: "1.5rem", marginBottom: "1rem" }}>
+        <Field label="Title" style={{ marginBottom: "1rem" }}>
+          <Input
+            value={localQuiz.title ?? ""}
+            onChange={(_, v) => updateField("title", v.value)}
+          />
+        </Field>
 
-      <div>
-        <label>Title</label>
-        <Input
-          value={localQuiz.title ?? ""}
-          onChange={(_, v) => updateField("title", v?.value ?? "")}
-        />
-      </div>
+        <Field label="Description">
+          <Textarea
+            value={localQuiz.description ?? ""}
+            onChange={(_, v) => updateField("description", v.value)}
+            resize="vertical"
+          />
+        </Field>
+      </Card>
 
-      <div>
-        <label>Description</label>
-        <Textarea
-          value={localQuiz.description ?? ""}
-          onChange={(_, v) => updateField("description", v?.value ?? "")}
-        />
-      </div>
-
-      <hr />
+      <Divider style={{ margin: "1.5rem 0" }} />
 
       {(localQuiz.questions || []).map((question, qi) => (
-        <div
-          key={question.id}
-          style={{ border: "1px solid #eee", padding: 8, marginBottom: 8 }}
-        >
-          <div>
-            <label>Question Title</label>
+        <Card key={question.id} style={{ padding: "1.5rem", marginBottom: "1rem" }}>
+          <Title3 style={{ marginBottom: "1rem" }}>Question {qi + 1}</Title3>
+
+          <Field label="Question Title" style={{ marginBottom: "1rem" }}>
             <Input
               value={question.title ?? ""}
-              onChange={(_, v) => updateQuestion(qi, { title: v?.value ?? "" })}
+              onChange={(_, v) => updateQuestion(qi, { title: v.value })}
             />
-          </div>
+          </Field>
 
-          <div>
-            <label>Question Description</label>
+          <Field label="Question Description" style={{ marginBottom: "1rem" }}>
             <Textarea
               value={question.description ?? ""}
-              onChange={(_, v) =>
-                updateQuestion(qi, { description: v?.value ?? "" })
-              }
+              onChange={(_, v) => updateQuestion(qi, { description: v.value })}
+              resize="vertical"
             />
-          </div>
+          </Field>
 
-          <div>
-            <strong>Options</strong>
-            {question.options?.map((opt: QuizQuestionOption, oi: number) => (
-              <div key={opt.id} style={{ marginLeft: 8 }}>
+          <Field label="Options">
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+              {question.options?.map((opt: QuizQuestionOption, oi: number) => (
                 <Input
+                  key={opt.id}
                   value={opt.text ?? ""}
-                  onChange={(_, v) => updateOption(qi, oi, v?.value ?? "")}
+                  onChange={(_, v) => updateOption(qi, oi, v.value)}
+                  placeholder={`Option ${oi + 1}`}
                 />
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </Field>
+        </Card>
       ))}
 
-      <div style={{ marginTop: 12 }}>
-        <Button
-          appearance="primary"
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-        >
-          {updateMutation.isPending ? "Saving…" : "Save Changes"}
-        </Button>
-      </div>
+      <Button
+        appearance="primary"
+        onClick={handleSave}
+        disabled={updateMutation.isPending}
+        size="large"
+      >
+        {updateMutation.isPending ? "Saving..." : "Save Changes"}
+      </Button>
     </div>
   );
 }

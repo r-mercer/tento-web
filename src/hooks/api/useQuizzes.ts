@@ -1,15 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../../lib/queryClient';
-import * as quizzesApi from '../../api/quizzes';
-import type { CreateQuizDraftRequest } from '../../types/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../lib/queryClient";
+import * as quizzesApi from "../../api/quizzes";
+import type { CreateQuizDraftRequest, Quiz, QuizQuestion } from "../../types/api";
 
-// ============================================================================
-// Query Hooks
-// ============================================================================
+interface UpdateQuizVariables {
+  id?: string;
+  title?: string;
+  description?: string;
+  questions?: Array<{
+    id: string;
+    title?: string;
+    description?: string;
+    options?: Array<{ id: string; text: string }>;
+  }>;
+}
 
-/**
- * Get all quizzes
- */
+interface MutationContext {
+  previous: Quiz | undefined;
+}
+
 export function useQuizzes() {
   return useQuery({
     queryKey: queryKeys.quizzes,
@@ -17,9 +26,6 @@ export function useQuizzes() {
   });
 }
 
-/**
- * Get a single quiz by ID
- */
 export function useQuiz(id: string) {
   return useQuery({
     queryKey: queryKeys.quiz(id),
@@ -28,9 +34,6 @@ export function useQuiz(id: string) {
   });
 }
 
-/**
- * Get all quizzes owned by a specific user
- */
 export function useUserQuizzes(userId: string) {
   return useQuery({
     queryKey: queryKeys.userQuizzes(userId),
@@ -39,20 +42,12 @@ export function useUserQuizzes(userId: string) {
   });
 }
 
-// ============================================================================
-// Mutation Hooks
-// ============================================================================
-
-/**
- * Create a new quiz draft
- */
 export function useCreateQuizDraft() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateQuizDraftRequest) => quizzesApi.createQuizDraft(data),
     onSuccess: () => {
-      // Invalidate quizzes list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
     },
   });
@@ -62,39 +57,45 @@ export function useUpdateQuiz(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: unknown) => quizzesApi.updateQuiz(data),
-    onMutate: async (newData: any) => {
+    mutationFn: (data: UpdateQuizVariables) => quizzesApi.updateQuiz(data),
+    onMutate: async (newData: UpdateQuizVariables) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.quiz(id) });
-      const previous = queryClient.getQueryData(queryKeys.quiz(id)) as any;
+      const previous = queryClient.getQueryData<Quiz>(queryKeys.quiz(id));
 
-      // Build an optimistic version by shallow-merging fields
-      let optimistic = previous as any;
+      let optimistic: Quiz | undefined = previous;
       if (previous) {
-        optimistic = { ...previous, ...newData };
+        optimistic = { ...previous, ...newData } as Quiz;
 
-        // If questions are included, merge per-question and per-option text
-        if ((previous as any).questions && newData.questions) {
-          const byId = new Map(((previous as any).questions as any[]).map((q) => [q.id, q]));
-          optimistic.questions = newData.questions.map((nq: any) => {
-            const existing = byId.get(nq.id) || {};
-            const mergedOptions = (existing.options || []).map((opt: any) => {
-              const patchedOpt = (nq.options || []).find((o: any) => o.id === opt.id);
+        if (previous.questions && newData.questions) {
+          const byId = new Map<string, QuizQuestion>(
+            previous.questions.map((q) => [q.id, q])
+          );
+          optimistic.questions = newData.questions.map((nq) => {
+            const existing = byId.get(nq.id);
+            if (!existing) return nq as QuizQuestion;
+
+            const mergedOptions = existing.options.map((opt) => {
+              const patchedOpt = nq.options?.find((o) => o.id === opt.id);
               return patchedOpt ? { ...opt, ...patchedOpt } : opt;
             });
-            return { ...existing, ...nq, options: mergedOptions.length ? mergedOptions : existing.options } as any;
+            return {
+              ...existing,
+              ...nq,
+              options: mergedOptions.length ? mergedOptions : existing.options,
+            } as QuizQuestion;
           });
         }
       }
 
       queryClient.setQueryData(queryKeys.quiz(id), optimistic);
-      return { previous };
+      return { previous } as MutationContext;
     },
-    onError: (_err, _newData, context: any) => {
+    onError: (_err, _newData, context: MutationContext | undefined) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKeys.quiz(id), context.previous);
       }
     },
-    onSuccess: (updatedQuiz: any) => {
+    onSuccess: (updatedQuiz: Quiz) => {
       queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
     },
@@ -104,19 +105,13 @@ export function useUpdateQuiz(id: string) {
   });
 }
 
-/**
- * Delete a quiz
- */
 export function useDeleteQuiz() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => quizzesApi.deleteQuiz(id),
+    mutationFn: (quizId: string) => quizzesApi.deleteQuiz(quizId),
     onSuccess: (_, deletedId: string) => {
-      // Remove quiz from cache
       queryClient.removeQueries({ queryKey: queryKeys.quiz(deletedId) });
-      
-      // Invalidate quizzes list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
     },
   });

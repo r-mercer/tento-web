@@ -1,7 +1,15 @@
 import { useState } from "react";
-import styles from "./quiz.module.css";
 import { useQuizAttempts } from "../../hooks/api/useQuizAttempts";
-import { Button } from "@fluentui/react-components";
+import {
+  Button,
+  Badge,
+  Body1,
+  Text,
+  Spinner,
+  MessageBar,
+  MessageBarBody,
+  Card,
+} from "@fluentui/react-components";
 
 interface QuizAttemptsListProps {
   quizId: string;
@@ -9,9 +17,6 @@ interface QuizAttemptsListProps {
   selectedAttemptId?: string;
 }
 
-/**
- * Displays paginated list of quiz attempts for a specific quiz
- */
 export function QuizAttemptsList({
   quizId,
   onSelectAttempt,
@@ -21,30 +26,31 @@ export function QuizAttemptsList({
   const limit = 10;
   const offset = currentPage * limit;
 
-  const {
-    data: attemptsData,
-    isLoading,
-    error,
-  } = useQuizAttempts(quizId, limit, offset);
+  const { data: attemptsData, isLoading, error } = useQuizAttempts(quizId, limit, offset);
 
   if (isLoading) {
-    return <div className={styles.loadingSpinner}>Loading attempts...</div>;
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Spinner size="small" />
+        <Body1>Loading attempts...</Body1>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className={styles.errorMessage}>
-        Failed to load attempts. Please try again.
-      </div>
+      <MessageBar intent="error">
+        <MessageBarBody>Failed to load attempts. Please try again.</MessageBarBody>
+      </MessageBar>
     );
   }
 
   if (!attemptsData || attemptsData.data.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "var(--spacing-lg)" }}>
-        <p style={{ color: "var(--color-text-secondary)" }}>
+      <div style={{ textAlign: "center", padding: "1.5rem" }}>
+        <Body1 style={{ color: "var(--color-text-secondary)" }}>
           No attempts yet. Start by taking the quiz!
-        </p>
+        </Body1>
       </div>
     );
   }
@@ -56,61 +62,43 @@ export function QuizAttemptsList({
 
   return (
     <div>
-      <div className={styles.attemptsList}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         {attempts.map((attempt) => (
-          <div
+          <Card
             key={attempt.id}
-            className={styles.attemptsListItem}
             onClick={() => onSelectAttempt(attempt.id)}
             style={{
-              backgroundColor:
-                selectedAttemptId === attempt.id
-                  ? "var(--color-primary)"
-                  : "inherit",
-              color: selectedAttemptId === attempt.id ? "white" : "inherit",
+              padding: "1rem",
               cursor: "pointer",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor:
+                selectedAttemptId === attempt.id ? "var(--color-primary)" : undefined,
+              color: selectedAttemptId === attempt.id ? "white" : undefined,
             }}
           >
             <div>
-              <div className={styles.attemptScore}>
-                <span style={{ marginRight: "var(--spacing-md)" }}>
-                  Attempt #{attempt.attempt_number}
-                </span>
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "var(--spacing-xs) var(--spacing-sm)",
-                    borderRadius: "var(--border-radius-sm)",
-                    backgroundColor: attempt.passed
-                      ? "var(--color-success)"
-                      : "var(--color-error)",
-                    color: "white",
-                    fontSize: "var(--font-size-sm)",
-                    fontWeight: "var(--font-weight-medium)",
-                  }}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
+                <Text weight="semibold">Attempt #{attempt.attempt_number}</Text>
+                <Badge
+                  appearance="filled"
+                  color={attempt.passed ? "success" : "danger"}
+                  size="small"
                 >
                   {attempt.passed ? "Passed" : "Failed"}
-                </span>
+                </Badge>
               </div>
-              <div style={{ marginTop: "var(--spacing-sm)" }}>
-                <span style={{ fontWeight: "var(--font-weight-semibold)" }}>
+              <div>
+                <Text weight="semibold">
                   {attempt.points_earned}/{attempt.total_possible} points
-                </span>
-                <span
-                  style={{
-                    marginLeft: "var(--spacing-md)",
-                    fontSize: "var(--font-size-sm)",
-                  }}
-                >
-                  (
-                  {Math.round(
-                    (attempt.points_earned / attempt.total_possible) * 100,
-                  )}
-                  %)
-                </span>
+                </Text>
+                <Text size={200} style={{ marginLeft: "0.5rem" }}>
+                  ({Math.round((attempt.points_earned / attempt.total_possible) * 100)}%)
+                </Text>
               </div>
             </div>
-            <div className={styles.attemptDate}>
+            <Text size={200}>
               {new Date(attempt.submitted_at).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "short",
@@ -118,45 +106,36 @@ export function QuizAttemptsList({
                 hour: "2-digit",
                 minute: "2-digit",
               })}
-            </div>
-          </div>
+            </Text>
+          </Card>
         ))}
       </div>
 
-      {/* Pagination Controls */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginTop: "var(--spacing-lg)",
-          padding: "var(--spacing-md)",
+          marginTop: "1.5rem",
+          paddingTop: "1rem",
           borderTop: "1px solid var(--color-border)",
         }}
       >
-        <div
-          style={{
-            fontSize: "var(--font-size-sm)",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          Showing {offset + 1}-{Math.min(offset + limit, pagination.total)} of{" "}
-          {pagination.total} attempts
-        </div>
-        <div style={{ display: "flex", gap: "var(--spacing-md)" }}>
+        <Text size={200} style={{ color: "var(--color-text-secondary)" }}>
+          Showing {offset + 1}-{Math.min(offset + limit, pagination.total)} of {pagination.total} attempts
+        </Text>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
           <Button
-            className={`${styles.button} ${styles["button--secondary"]}`}
+            appearance="outline"
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={!hasPreviousPage}
-            type="button"
           >
             Previous
           </Button>
           <Button
-            className={`${styles.button} ${styles["button--secondary"]}`}
+            appearance="outline"
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={!hasNextPage}
-            type="button"
           >
             Next
           </Button>

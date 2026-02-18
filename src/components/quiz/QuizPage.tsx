@@ -1,52 +1,45 @@
-import { useParams } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { QuizForm } from './QuizForm';
-import styles from './quiz.module.css';
-import type { QuizAttemptResponse } from '../../types/api';
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { QuizForm } from "./QuizForm";
+import { Body1, Spinner, MessageBar, MessageBarBody } from "@fluentui/react-components";
+import type { QuizAttemptResponse } from "../../types/api";
 
-/**
- * Page-level container for quiz viewing and taking
- * Handles routing for quiz/:id/take mode
- */
 export function QuizPage() {
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
 
   if (!id) {
     return (
-      <div className={styles.quizForm}>
-        <div className={styles.errorMessage}>Quiz not found</div>
+      <div style={{ padding: "2rem" }}>
+        <MessageBar intent="error">
+          <MessageBarBody>Quiz not found</MessageBarBody>
+        </MessageBar>
       </div>
     );
   }
 
   if (authLoading) {
     return (
-      <div className={styles.quizForm}>
-        <div className={styles.loadingSpinner}>Loading...</div>
+      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Spinner size="small" />
+        <Body1>Loading...</Body1>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className={styles.quizForm}>
-        <div className={styles.errorMessage}>
-          Please log in to take this quiz
-        </div>
+      <div style={{ padding: "2rem" }}>
+        <MessageBar intent="warning">
+          <MessageBarBody>Please log in to take this quiz</MessageBarBody>
+        </MessageBar>
       </div>
     );
   }
 
   const handleAttemptComplete = (attempt: QuizAttemptResponse) => {
-    console.log('Quiz attempt completed:', attempt);
-    // Could navigate to history page or show additional UI here
+    console.log("Quiz attempt completed:", attempt);
   };
 
-  return (
-    <QuizForm
-      quizId={id}
-      onAttemptComplete={handleAttemptComplete}
-    />
-  );
+  return <QuizForm quizId={id} onAttemptComplete={handleAttemptComplete} />;
 }
