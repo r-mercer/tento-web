@@ -145,7 +145,7 @@ export function QuizAttemptsList({
         </div>
         <div style={{ display: "flex", gap: "var(--spacing-md)" }}>
           <Button
-            className={`${styles.button} ${styles['button--secondary']}`}
+            className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={!hasPreviousPage}
             type="button"
@@ -153,7 +153,7 @@ export function QuizAttemptsList({
             Previous
           </Button>
           <Button
-            className={`${styles.button} ${styles['button--secondary']}`}
+            className={`${styles.button} ${styles["button--secondary"]}`}
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={!hasNextPage}
             type="button"

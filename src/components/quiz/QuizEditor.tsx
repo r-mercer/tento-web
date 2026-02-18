@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuiz, useUpdateQuiz } from "../../hooks/api/useQuizzes";
 import { useToast } from "../ui/ToastProvider";
-import { Input, Textarea, Button } from '@fluentui/react-components';
+import { Input, Textarea, Button } from "@fluentui/react-components";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
 type Props = {
@@ -119,7 +119,9 @@ export function QuizEditor({ quizId, onSaved }: Props) {
             <label>Question Description</label>
             <Textarea
               value={question.description ?? ""}
-              onChange={(_, v) => updateQuestion(qi, { description: v?.value ?? "" })}
+              onChange={(_, v) =>
+                updateQuestion(qi, { description: v?.value ?? "" })
+              }
             />
           </div>
 
@@ -138,7 +140,11 @@ export function QuizEditor({ quizId, onSaved }: Props) {
       ))}
 
       <div style={{ marginTop: 12 }}>
-        <Button appearance="primary" onClick={handleSave} disabled={updateMutation.isPending}>
+        <Button
+          appearance="primary"
+          onClick={handleSave}
+          disabled={updateMutation.isPending}
+        >
           {updateMutation.isPending ? "Saving…" : "Save Changes"}
         </Button>
       </div>

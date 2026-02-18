@@ -42,8 +42,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 t.type === "success"
                   ? "success"
                   : t.type === "error"
-                  ? "error"
-                  : "info"
+                    ? "error"
+                    : "info"
               }
             >
               {t.message}

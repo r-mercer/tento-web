@@ -1,5 +1,5 @@
 import styles from "./quiz.module.css";
-import { RadioGroup, Radio, Checkbox } from '@fluentui/react-components';
+import { RadioGroup, Radio, Checkbox } from "@fluentui/react-components";
 import type { QuizQuestionForTaking, QuizQuestion } from "../../types/api";
 
 interface QuestionCardProps {
@@ -25,7 +25,8 @@ export function QuestionCard({
     question.question_type === "Single" ||
     question.question_type === "Bool"
   ) {
-    const selectedValue = userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
+    const selectedValue =
+      userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
 
     return (
       <div className={styles.questionCard}>

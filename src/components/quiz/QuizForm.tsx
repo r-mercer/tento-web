@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./quiz.module.css";
-import { Button } from '@fluentui/react-components';
+import { Button } from "@fluentui/react-components";
 import {
   useQuizForTaking,
   useQuizForResults,

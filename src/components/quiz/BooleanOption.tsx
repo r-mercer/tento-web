@@ -1,6 +1,6 @@
 import styles from "./quiz.module.css";
 import { ExplanationCard } from "./ExplanationCard";
-import { Button } from '@fluentui/react-components';
+import { Button } from "@fluentui/react-components";
 
 interface BooleanOptionProps {
   option: {
