@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuiz, useUpdateQuiz } from "../../hooks/api/useQuizzes";
+import { useToast } from "../ui/ToastProvider";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
 export function QuizEditor({ quizId, onSaved }: Props) {
   const { data: quiz, isLoading } = useQuiz(quizId);
   const updateMutation = useUpdateQuiz(quizId);
+
+  const toast = useToast();
 
   const [localQuiz, setLocalQuiz] = useState<Quiz | null>(null);
 
@@ -65,16 +68,20 @@ export function QuizEditor({ quizId, onSaved }: Props) {
 
     try {
       const updated = await updateMutation.mutateAsync(payload);
+      toast.success("Saved");
       if (onSaved) onSaved(updated);
-    } catch (err) {
+    } catch (err: any) {
+      const msg = err?.message || "Save failed";
+      toast.error(msg);
       console.error("Failed to save quiz", err);
-      // Minimal error handling; UI could be improved later
     }
   }
 
   return (
     <div>
       <h2>Edit Quiz</h2>
+
+      {/* toast notifications shown via ToastProvider */}
 
       <div>
         <label>Title</label>

@@ -7,6 +7,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleGithubCallback } from "./api/auth";
 import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
+import { EditQuizPage } from "./pages/EditQuizPage";
+import { ToastProvider } from "./components/ui/ToastProvider";
 import { QuizPage, QuizHistoryPage } from "./components/quiz";
 
 function HomePage() {
@@ -281,6 +283,22 @@ function DashboardPage() {
                     }}
                   >
                     Take Quiz
+                  </a>
+                  <a
+                    href={ROUTES.QUIZ_EDIT(quiz.id)}
+                    style={{
+                      padding: "0.5rem 1rem",
+                      backgroundColor: "transparent",
+                      color: "var(--color-primary)",
+                      textDecoration: "none",
+                      borderRadius: "6px",
+                      fontSize: "0.85rem",
+                      fontWeight: "600",
+                      textAlign: "center",
+                      border: "1px solid var(--color-border)",
+                    }}
+                  >
+                    Edit
                   </a>
                 </div>
               </div>
@@ -567,6 +585,33 @@ function QuizzesPage() {
                     Take Quiz
                   </a>
                   <a
+                    href={ROUTES.QUIZ_EDIT(quiz.id)}
+                    style={{
+                      flex: 1,
+                      padding: "0.75rem 1rem",
+                      backgroundColor: "transparent",
+                      color: "var(--color-primary)",
+                      textDecoration: "none",
+                      borderRadius: "6px",
+                      border: "1px solid var(--color-primary)",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      textAlign: "center",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        "var(--color-primary)";
+                      e.currentTarget.style.color = "white";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--color-primary)";
+                    }}
+                  >
+                    Edit
+                  </a>
+                  <a
                     href={ROUTES.QUIZ_HISTORY(quiz.id)}
                     style={{
                       flex: 1,
@@ -668,74 +713,85 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
 function App() {
   return (
-    <Routes>
-      <Route path={ROUTES.HOME} element={<HomePage />} />
-      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-      <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+    <ToastProvider>
+      <Routes>
+        <Route path={ROUTES.HOME} element={<HomePage />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
 
-      <Route
-        path={ROUTES.DASHBOARD}
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path={ROUTES.DASHBOARD}
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path={ROUTES.USERS}
-        element={
-          <ProtectedRoute>
-            <UsersPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path={ROUTES.USERS}
+          element={
+            <ProtectedRoute>
+              <UsersPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path={ROUTES.QUIZZES}
-        element={
-          <ProtectedRoute>
-            <QuizzesPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path={ROUTES.QUIZZES}
+          element={
+            <ProtectedRoute>
+              <QuizzesPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path={ROUTES.QUIZ_CREATE}
-        element={
-          <ProtectedRoute>
-            <CreateQuizPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path={ROUTES.QUIZ_CREATE}
+          element={
+            <ProtectedRoute>
+              <CreateQuizPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/quizzes/:id/take"
-        element={
-          <ProtectedRoute>
-            <QuizPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/quizzes/:id/take"
+          element={
+            <ProtectedRoute>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/quizzes/:id/history"
-        element={
-          <ProtectedRoute>
-            <QuizHistoryPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/quizzes/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditQuizPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path={ROUTES.GRAPHQL_PLAYGROUND}
-        element={
-          <ProtectedRoute>
-            <GraphQLPlaygroundPage />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        <Route
+          path="/quizzes/:id/history"
+          element={
+            <ProtectedRoute>
+              <QuizHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path={ROUTES.GRAPHQL_PLAYGROUND}
+          element={
+            <ProtectedRoute>
+              <GraphQLPlaygroundPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </ToastProvider>
   );
 }
 

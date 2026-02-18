@@ -49,6 +49,7 @@ export const ROUTES = {
   QUIZ_CREATE: '/quizzes/create',
   QUIZ_DETAIL: (id: string) => `/quizzes/${id}`,
   QUIZ_TAKE: (id: string) => `/quizzes/${id}/take`,
+  QUIZ_EDIT: (id: string) => `/quizzes/${id}/edit`,
   QUIZ_HISTORY: (id: string) => `/quizzes/${id}/history`,
   PROFILE: '/profile',
   GRAPHQL_PLAYGROUND: '/playground',

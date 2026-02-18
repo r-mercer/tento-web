@@ -58,18 +58,48 @@ export function useCreateQuizDraft() {
   });
 }
 
-/**
- * Update a quiz
- * TODO: Uncomment when quiz update API is ready
- */
 export function useUpdateQuiz(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: unknown) => quizzesApi.updateQuiz(data),
+    onMutate: async (newData: any) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.quiz(id) });
+      const previous = queryClient.getQueryData(queryKeys.quiz(id));
+
+      // Build an optimistic version by shallow-merging fields
+      let optimistic = previous as any;
+      if (previous) {
+        optimistic = { ...previous, ...newData };
+
+        // If questions are included, merge per-question and per-option text
+        if (previous.questions && newData.questions) {
+          const byId = new Map((previous.questions as any[]).map((q) => [q.id, q]));
+          optimistic.questions = newData.questions.map((nq: any) => {
+            const existing = byId.get(nq.id) || {};
+            const mergedOptions = (existing.options || []).map((opt: any) => {
+              const patchedOpt = (nq.options || []).find((o: any) => o.id === opt.id);
+              return patchedOpt ? { ...opt, ...patchedOpt } : opt;
+            });
+            return { ...existing, ...nq, options: mergedOptions.length ? mergedOptions : existing.options } as any;
+          });
+        }
+      }
+
+      queryClient.setQueryData(queryKeys.quiz(id), optimistic);
+      return { previous };
+    },
+    onError: (_err, _newData, context: any) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKeys.quiz(id), context.previous);
+      }
+    },
     onSuccess: (updatedQuiz: any) => {
       queryClient.setQueryData(queryKeys.quiz(id), updatedQuiz);
       queryClient.invalidateQueries({ queryKey: queryKeys.quizzes });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.quiz(id) });
     },
   });
 }
