@@ -26,7 +26,8 @@ import {
   MessageBar,
   MessageBarBody,
 } from "@fluentui/react-components";
-import { lightTheme } from "./styles/fluentTheme";
+import { lightTheme, darkTheme } from "./styles/fluentTheme";
+import { useTheme } from "./contexts/ThemeContext";
 import type { Quiz, QuizStatus } from "./types/api";
 
 function HomePage() {
@@ -515,8 +516,11 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 // ============================================================================
 
 function App() {
+  const { resolvedTheme } = useTheme();
+  const theme = resolvedTheme === "dark" ? darkTheme : lightTheme;
+
   return (
-    <FluentProvider theme={lightTheme}>
+    <FluentProvider theme={theme}>
       <ToastProvider>
         <Routes>
           <Route path={ROUTES.HOME} element={<HomePage />} />

@@ -39,8 +39,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading] = useState(false);
   const navigate = useNavigate();
 
-  useInactivityTimeout(30);
-  useSessionValidation(5);
+  useInactivityTimeout(30, !!user);
+  useSessionValidation(5, !!user);
 
   useEffect(() => {
     const unsubscribe = authEvents.on("session-expired", () => {

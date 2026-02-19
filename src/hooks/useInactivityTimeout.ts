@@ -1,10 +1,7 @@
 import { useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import { authEvents } from "../utils/auth-events";
 
-export function useInactivityTimeout(timeoutMinutes: number = 30): void {
-  const { isAuthenticated } = useAuth();
-
+export function useInactivityTimeout(timeoutMinutes: number = 30, isAuthenticated: boolean = false): void {
   useEffect(() => {
     if (!isAuthenticated) return;
 

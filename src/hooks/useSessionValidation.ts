@@ -1,12 +1,9 @@
 import { useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import { authEvents } from "../utils/auth-events";
 import { storage } from "../utils/storage";
 import * as usersApi from "../api/users";
 
-export function useSessionValidation(intervalMinutes: number = 5): void {
-  const { isAuthenticated } = useAuth();
-
+export function useSessionValidation(intervalMinutes: number = 5, isAuthenticated: boolean = false): void {
   useEffect(() => {
     if (!isAuthenticated) return;
 
