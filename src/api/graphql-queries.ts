@@ -116,16 +116,13 @@ export const QUIZ_FOR_RESULTS_QUERY = gql`
       attempt_limit: attemptLimit
       topic
       status
+      questions {
         id
         title
         description
         question_type: questionType
         order
         topic
-        options {
-          id
-          text
-        }
         options {
           id
           text

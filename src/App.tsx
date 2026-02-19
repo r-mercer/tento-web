@@ -9,7 +9,7 @@ import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { EditQuizPage } from "./pages/EditQuizPage";
 import { ToastProvider } from "./components/ui/ToastProvider";
-import { QuizPage, QuizHistoryPage } from "./components/quiz";
+import { QuizPage, QuizHistoryPage, QuizErrorBoundary } from "./components/quiz";
 import { AppCard } from "./components/ui/AppCard";
 import {
   FluentProvider,
@@ -567,7 +567,9 @@ function App() {
             path="/quizzes/:id/take"
             element={
               <ProtectedRoute>
-                <QuizPage />
+                <QuizErrorBoundary>
+                  <QuizPage />
+                </QuizErrorBoundary>
               </ProtectedRoute>
             }
           />
@@ -585,7 +587,9 @@ function App() {
             path="/quizzes/:id/history"
             element={
               <ProtectedRoute>
-                <QuizHistoryPage />
+                <QuizErrorBoundary>
+                  <QuizHistoryPage />
+                </QuizErrorBoundary>
               </ProtectedRoute>
             }
           />

@@ -32,7 +32,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const navigate = useNavigate();
 
   const { data: quizForTaking, isLoading, error } = useQuizForTaking(quizId);
-  const { data: quizForResults } = useQuizForResults(quizId, false);
+  const { data: quizForResults, refetch: refetchResults } = useQuizForResults(quizId, false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(new Map());
@@ -41,6 +41,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const [showResults, setShowResults] = useState(false);
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [shouldFetchResults, setShouldFetchResults] = useState(false);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
 
   const submitMutation = useSubmitQuizAttempt();
 
@@ -120,17 +121,24 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       setAttempt(result);
       setIsSubmitted(true);
       setShouldFetchResults(true);
+      setIsLoadingResults(true);
+      
+      // Trigger a fresh fetch of results to avoid stale data
+      await refetchResults();
+      
       onAttemptComplete?.(result);
     } catch (err) {
       console.error("Failed to submit quiz:", err);
+      setIsLoadingResults(false);
     }
   };
 
   useEffect(() => {
-    if (shouldFetchResults && quizForResults) {
+    if (shouldFetchResults && quizForResults && isLoadingResults) {
+      setIsLoadingResults(false);
       setShowResults(true);
     }
-  }, [shouldFetchResults, quizForResults]);
+  }, [shouldFetchResults, quizForResults, isLoadingResults]);
 
   const handleRetake = () => {
     setCurrentQuestionIndex(0);
@@ -139,6 +147,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     setAttempt(null);
     setShowResults(false);
     setShouldFetchResults(false);
+    setIsLoadingResults(false);
     setAttemptNumber(attemptNumber + 1);
   };
 
@@ -151,6 +160,15 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
         <Spinner size="small" />
         <Body1>Loading quiz...</Body1>
+      </div>
+    );
+  }
+
+  if (isLoadingResults) {
+    return (
+      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Spinner size="small" />
+        <Body1>Loading results...</Body1>
       </div>
     );
   }
