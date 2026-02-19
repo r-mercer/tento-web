@@ -8,6 +8,8 @@ export interface AuthResponse {
   id: string;
   username: string;
   email: string;
+  role: "admin" | "user";
+  full_name?: string;
 }
 
 export interface RefreshTokenRequest {
@@ -29,7 +31,6 @@ export interface User {
   email: string;
   full_name?: string;
   github_id?: string;
-  avatar_url?: string;
   role: "admin" | "user";
   created_at: string;
   updated_at: string;

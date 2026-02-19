@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   // Auth
   AUTH_GITHUB_CALLBACK: '/auth/github/callback',
   AUTH_REFRESH: '/auth/refresh',
+  AUTH_LOGOUT: '/auth/logout',
   
   // Users
   USERS: '/api/users',

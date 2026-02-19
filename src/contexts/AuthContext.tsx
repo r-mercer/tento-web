@@ -5,7 +5,7 @@ import { authEvents } from "../utils/auth-events";
 import { isTokenExpired, getTimeUntilExpiry } from "../utils/jwt";
 import { useInactivityTimeout } from "../hooks/useInactivityTimeout";
 import { useSessionValidation } from "../hooks/useSessionValidation";
-import { refreshAccessToken } from "../api/auth";
+import { refreshAccessToken, logout as apiLogout } from "../api/auth";
 import { ROUTES } from "../utils/constants";
 import type { User } from "../types/api";
 
@@ -92,7 +92,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       email: userData.email || "",
       full_name: userData.full_name,
       github_id: userData.github_id,
-      avatar_url: userData.avatar_url,
       role: userData.role || "user",
       created_at: userData.created_at || new Date().toISOString(),
       updated_at: userData.updated_at || new Date().toISOString(),
@@ -103,9 +102,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const logout = useCallback(() => {
+    const refreshToken = storage.getRefreshToken();
+    
     storage.clear();
     setUser(null);
     authEvents.emit("logout");
+    
+    if (refreshToken) {
+      apiLogout(refreshToken).catch(() => {
+        // Silently ignore errors - token may already be invalid
+      });
+    }
   }, []);
 
   const value: AuthContextType = {
