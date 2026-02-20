@@ -56,6 +56,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const [shouldFetchResults, setShouldFetchResults] = useState(false);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const submitMutation = useSubmitQuizAttempt();
 
@@ -163,6 +164,8 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
     console.log("[QuizForm] Submitting payload:", payload);
 
+    setSubmitError(null);
+
     try {
       const result = await submitMutation.mutateAsync(payload);
       setAttempt(result);
@@ -177,9 +180,12 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       await refetchResults();
       
       onAttemptComplete?.(result);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to submit quiz:", err);
       setIsLoadingResults(false);
+      
+      const errorMessage = err?.message || "Failed to submit quiz. Please try again.";
+      setSubmitError(errorMessage);
     }
   };
 
@@ -303,6 +309,12 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
           total={shuffledQuestions.length}
           answered={answeredCount}
         />
+
+        {submitError && (
+          <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+            <MessageBarBody>{submitError}</MessageBarBody>
+          </MessageBar>
+        )}
 
         <QuestionCard
           question={currentQuestionData}

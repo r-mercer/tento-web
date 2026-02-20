@@ -7,7 +7,7 @@ interface ProgressIndicatorProps {
 }
 
 export function ProgressIndicator({ current, total, answered }: ProgressIndicatorProps) {
-  const percentage = (current / total) * 100;
+  const percentage = (answered / total) * 100;
 
   return (
     <div style={{ marginBottom: "1rem" }}>
