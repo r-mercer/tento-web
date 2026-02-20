@@ -86,12 +86,13 @@ export const QUIZ_FOR_TAKING_QUERY = gql`
       topic
       status
       url
-      created_at
+      created_at: createdAt
       questions {
         id
         title
         description
-        question_type
+        question_type: questionType
+        option_count: optionCount
         order
         topic
         options {
@@ -212,12 +213,12 @@ export const SUBMIT_QUIZ_ATTEMPT_MUTATION = gql`
   mutation SubmitQuizAttempt($input: SubmitQuizAttemptInput!) {
     submitQuizAttempt(input: $input) {
       id
-      quiz_id
-      points_earned
-      total_possible
+      quiz_id: quizId
+      points_earned: pointsEarned
+      total_possible: totalPossible
       passed
-      attempt_number
-      submitted_at
+      attempt_number: attemptNumber
+      submitted_at: submittedAt
     }
   }
 `;

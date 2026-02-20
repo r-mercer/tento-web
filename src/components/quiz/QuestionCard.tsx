@@ -20,8 +20,16 @@ export function QuestionCard({
   const options = question.options || [];
   const selectedValue = userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
 
+  const questionType = (() => {
+    const t = question.question_type?.toUpperCase();
+    if (t === "SINGLE") return "Single";
+    if (t === "MULTI") return "Multi";
+    if (t === "BOOL") return "Bool";
+    return "Single";
+  })();
+
   const renderOptions = () => {
-    switch (question.question_type) {
+    switch (questionType) {
       case "Single":
         return (
           <SingleChoiceOptions

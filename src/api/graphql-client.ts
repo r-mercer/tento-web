@@ -47,8 +47,17 @@ export async function executeGraphQLQuery<T>(
   query: string,
   variables?: Record<string, unknown>
 ): Promise<T> {
-  const data = await graphqlClient.request<T>(query, variables);
-  return data;
+  try {
+    const data = await graphqlClient.request<T>(query, variables);
+    return data;
+  } catch (error) {
+    console.error("GraphQL Query Error:", {
+      query: query.substring(0, 100),
+      variables,
+      error,
+    });
+    throw error;
+  }
 }
 
 export default graphqlClient;

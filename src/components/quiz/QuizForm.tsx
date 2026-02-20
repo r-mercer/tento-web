@@ -39,6 +39,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const { data: quizForTaking, isLoading, error } = useQuizForTaking(quizId);
   const { data: quizForResults, refetch: refetchResults } = useQuizForResults(quizId, false);
 
+  console.log("[QuizForm] quizForTaking:", quizForTaking);
+  console.log("[QuizForm] questions:", quizForTaking?.questions);
+  console.log("[QuizForm] question types:", quizForTaking?.questions?.map(q => q.question_type));
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(() => {
     if (typeof window === "undefined") return new Map();
@@ -151,7 +155,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       selected_option_ids: userAnswers.get(question.id) || [],
     }));
 
-    const payload: SubmitQuizAttemptPayload = { quiz_id: quizId, answers };
+    const payload = { quizId: quizId, answers };
 
     try {
       const result = await submitMutation.mutateAsync(payload);
@@ -216,10 +220,18 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   }
 
   if (error) {
+    console.error("Quiz loading error:", error);
     return (
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
         <MessageBar intent="error">
-          <MessageBarBody>Failed to load quiz. Please try again later.</MessageBarBody>
+          <MessageBarBody>
+            Failed to load quiz. Please try again later.
+            {error?.message && (
+              <div style={{ marginTop: "8px", fontSize: "12px" }}>
+                Error: {error.message}
+              </div>
+            )}
+          </MessageBarBody>
         </MessageBar>
       </div>
     );
