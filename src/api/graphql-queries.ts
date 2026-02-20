@@ -109,7 +109,7 @@ export const QUIZ_FOR_RESULTS_QUERY = gql`
     quizForResults(id: $id) {
       id
       name
-      created_by_user_id
+      created_by_user_id: createdByUserId
       title
       description
       question_count: questionCount

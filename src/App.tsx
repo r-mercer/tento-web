@@ -102,9 +102,20 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-      <Spinner size="small" />
-      <Body1>Authenticating...</Body1>
+    <div style={{ 
+      padding: "2rem", 
+      display: "flex", 
+      flexDirection: "column",
+      alignItems: "center", 
+      gap: "1rem",
+      minHeight: "100vh",
+      justifyContent: "center"
+    }}>
+      <Spinner size="large" />
+      <Title2>Authenticating with GitHub...</Title2>
+      <Body1 style={{ color: "var(--color-text-secondary)" }}>
+        Please wait while we verify your credentials
+      </Body1>
     </div>
   );
 }

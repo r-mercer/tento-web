@@ -72,7 +72,7 @@ export function useSubmitQuizAttempt() {
     onSuccess: (_, payload) => {
       // Invalidate attempts list for this quiz
       queryClient.invalidateQueries({
-        queryKey: queryKeys.quizAttempts(payload.quiz_id),
+        queryKey: queryKeys.quizAttempts(payload.quizId),
       });
       
       // Invalidate user quizzes to update progress/attempt counts

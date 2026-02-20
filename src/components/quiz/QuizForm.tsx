@@ -37,11 +37,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const navigate = useNavigate();
 
   const { data: quizForTaking, isLoading, error } = useQuizForTaking(quizId);
-  const { data: quizForResults, refetch: refetchResults } = useQuizForResults(quizId, false);
-
-  console.log("[QuizForm] quizForTaking:", quizForTaking);
-  console.log("[QuizForm] questions:", quizForTaking?.questions);
-  console.log("[QuizForm] question types:", quizForTaking?.questions?.map(q => q.question_type));
+  const { data: quizForResults, refetch: refetchResults, error: resultsError } = useQuizForResults(quizId, false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(() => {
@@ -62,6 +58,14 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
 
   const submitMutation = useSubmitQuizAttempt();
+
+  // Debug logging
+  console.log("[QuizForm] quizForTaking:", quizForTaking);
+  console.log("[QuizForm] questions:", quizForTaking?.questions);
+  console.log("[QuizForm] question types:", quizForTaking?.questions?.map(q => q.question_type));
+  console.log("[QuizForm] quizForResults:", quizForResults);
+  console.log("[QuizForm] isLoadingResults:", isLoadingResults);
+  console.log("[QuizForm] resultsError:", resultsError);
 
   // Persist answers to localStorage
   useEffect(() => {
@@ -150,12 +154,14 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
     setShowSubmitDialog(false);
 
-    const answers: QuestionAnswerSubmission[] = shuffledQuestions.map((question) => ({
-      question_id: question.id,
-      selected_option_ids: userAnswers.get(question.id) || [],
+    const answers = shuffledQuestions.map((question) => ({
+      questionId: question.id,
+      selectedOptionIds: userAnswers.get(question.id) || [],
     }));
 
     const payload = { quizId: quizId, answers };
+
+    console.log("[QuizForm] Submitting payload:", payload);
 
     try {
       const result = await submitMutation.mutateAsync(payload);
