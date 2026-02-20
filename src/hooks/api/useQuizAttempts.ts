@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import * as quizzesApi from '../../api/quizzes';
+import { useAuth } from '../../hooks/useAuth';
 import type { SubmitQuizAttemptPayload } from '../../types/api';
 
 // ============================================================================
@@ -63,6 +64,7 @@ export function useQuizAttempt(attemptId: string, enabled = true) {
  */
 export function useSubmitQuizAttempt() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: (payload: SubmitQuizAttemptPayload) =>
@@ -72,6 +74,13 @@ export function useSubmitQuizAttempt() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.quizAttempts(payload.quiz_id),
       });
+      
+      // Invalidate user quizzes to update progress/attempt counts
+      if (user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.userQuizzes(user.id),
+        });
+      }
     },
   });
 }

@@ -7,6 +7,11 @@ import {
   Body1,
   MessageBar,
   MessageBarBody,
+  Dialog,
+  DialogSurface,
+  DialogTitle,
+  DialogBody,
+  DialogActions,
 } from "@fluentui/react-components";
 import {
   useQuizForTaking,
@@ -35,15 +40,34 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   const { data: quizForResults, refetch: refetchResults } = useQuizForResults(quizId, false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(new Map());
+  const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(() => {
+    if (typeof window === "undefined") return new Map();
+    try {
+      const saved = localStorage.getItem(`quiz-progress-${quizId}`);
+      return saved ? new Map(JSON.parse(saved)) : new Map();
+    } catch {
+      return new Map();
+    }
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [attempt, setAttempt] = useState<QuizAttemptResponse | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [shouldFetchResults, setShouldFetchResults] = useState(false);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
 
   const submitMutation = useSubmitQuizAttempt();
+
+  // Persist answers to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined" && userAnswers.size > 0) {
+      localStorage.setItem(
+        `quiz-progress-${quizId}`,
+        JSON.stringify(Array.from(userAnswers.entries()))
+      );
+    }
+  }, [userAnswers, quizId]);
 
   const answeredCount = useMemo(() => {
     let count = 0;
@@ -106,8 +130,21 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitClick = () => {
     if (!quizForTaking || !shuffledQuestions) return;
+
+    const unansweredCount = shuffledQuestions.length - answeredCount;
+    if (unansweredCount > 0) {
+      setShowSubmitDialog(true);
+    } else {
+      executeSubmit();
+    }
+  };
+
+  const executeSubmit = async () => {
+    if (!quizForTaking || !shuffledQuestions) return;
+
+    setShowSubmitDialog(false);
 
     const answers: QuestionAnswerSubmission[] = shuffledQuestions.map((question) => ({
       question_id: question.id,
@@ -122,6 +159,9 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       setIsSubmitted(true);
       setShouldFetchResults(true);
       setIsLoadingResults(true);
+      
+      // Clear localStorage on successful submission
+      localStorage.removeItem(`quiz-progress-${quizId}`);
       
       // Trigger a fresh fetch of results to avoid stale data
       await refetchResults();
@@ -149,6 +189,8 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     setShouldFetchResults(false);
     setIsLoadingResults(false);
     setAttemptNumber(attemptNumber + 1);
+    // Clear localStorage when retaking
+    localStorage.removeItem(`quiz-progress-${quizId}`);
   };
 
   const handleReview = () => {
@@ -208,58 +250,79 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   const isLastQuestion = currentQuestionIndex === shuffledQuestions.length - 1;
   const userAnswerIds = userAnswers.get(currentQuestionData.id) || [];
+  const unansweredCount = shuffledQuestions.length - answeredCount;
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "1.5rem" }}>
-        <Title1 style={{ marginBottom: "0.5rem" }}>{quizForTaking.name}</Title1>
-        <Body1 style={{ color: "var(--color-text-secondary)" }}>
-          {quizForTaking.description}
-        </Body1>
-      </div>
+    <>
+      <Dialog open={showSubmitDialog} onOpenChange={(_, data) => setShowSubmitDialog(data.open)}>
+        <DialogSurface>
+          <DialogTitle>Unanswered Questions</DialogTitle>
+          <DialogBody>
+            You have {unansweredCount} unanswered question{unansweredCount === 1 ? "" : "s"}. 
+            Are you sure you want to submit?
+          </DialogBody>
+          <DialogActions>
+            <Button appearance="outline" onClick={() => setShowSubmitDialog(false)}>
+              Continue Editing
+            </Button>
+            <Button appearance="primary" onClick={executeSubmit}>
+              Submit Anyway
+            </Button>
+          </DialogActions>
+        </DialogSurface>
+      </Dialog>
 
-      <ProgressIndicator
-        current={currentQuestionIndex + 1}
-        total={shuffledQuestions.length}
-        answered={answeredCount}
-      />
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <Title1 style={{ marginBottom: "0.5rem" }}>{quizForTaking.name}</Title1>
+          <Body1 style={{ color: "var(--color-text-secondary)" }}>
+            {quizForTaking.description}
+          </Body1>
+        </div>
 
-      <QuestionCard
-        question={currentQuestionData}
-        userAnswerIds={userAnswerIds}
-        isSubmitted={false}
-        onAnswerChange={handleAnswerChange}
-      />
+        <ProgressIndicator
+          current={currentQuestionIndex + 1}
+          total={shuffledQuestions.length}
+          answered={answeredCount}
+        />
 
-      <div style={{ display: "flex", gap: "1rem", justifyContent: "space-between", marginTop: "1.5rem" }}>
-        <Button
-          appearance="outline"
-          onClick={handlePrevious}
-          disabled={currentQuestionIndex === 0}
-        >
-          Previous
-        </Button>
+        <QuestionCard
+          question={currentQuestionData}
+          userAnswerIds={userAnswerIds}
+          isSubmitted={false}
+          onAnswerChange={handleAnswerChange}
+        />
 
-        {isLastQuestion ? (
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "space-between", marginTop: "1.5rem" }}>
           <Button
-            appearance="primary"
-            onClick={handleSubmit}
-            disabled={submitMutation.isPending}
+            appearance="outline"
+            onClick={handlePrevious}
+            disabled={currentQuestionIndex === 0}
           >
-            {submitMutation.isPending ? "Submitting..." : "Submit Quiz"}
+            Previous
           </Button>
-        ) : (
-          <Button appearance="primary" onClick={handleNext}>
-            Next
-          </Button>
+
+          {isLastQuestion ? (
+            <Button
+              appearance="primary"
+              onClick={handleSubmitClick}
+              disabled={submitMutation.isPending}
+            >
+              {submitMutation.isPending ? "Submitting..." : "Submit Quiz"}
+            </Button>
+          ) : (
+            <Button appearance="primary" onClick={handleNext}>
+              Next
+            </Button>
+          )}
+        </div>
+
+        {submitMutation.isError && (
+          <MessageBar intent="error" style={{ marginTop: "1rem" }}>
+            <MessageBarBody>Failed to submit quiz. Please try again.</MessageBarBody>
+          </MessageBar>
         )}
       </div>
-
-      {submitMutation.isError && (
-        <MessageBar intent="error" style={{ marginTop: "1rem" }}>
-          <MessageBarBody>Failed to submit quiz. Please try again.</MessageBarBody>
-        </MessageBar>
-      )}
-    </div>
+    </>
   );
 }

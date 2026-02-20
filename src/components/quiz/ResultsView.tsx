@@ -28,12 +28,18 @@ export function ResultsView({
         maxWidth: "500px",
         margin: "0 auto",
       }}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
       <Title2 style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
         Quiz Complete!
       </Title2>
 
-      <Title1 style={{ color: "var(--color-primary)", marginBottom: "0.5rem" }}>
+      <Title1 
+        style={{ color: "var(--color-primary)", marginBottom: "0.5rem" }}
+        aria-label={`You scored ${attempt.points_earned} out of ${attempt.total_possible} points`}
+      >
         {attempt.points_earned}/{attempt.total_possible}
       </Title1>
 
@@ -46,6 +52,10 @@ export function ResultsView({
         color={isPassed ? "success" : "danger"}
         size="large"
         style={{ marginBottom: "2rem" }}
+        aria-label={isPassed 
+          ? `Congratulations! You passed with ${percentage}%` 
+          : `You did not pass. You scored ${percentage}%. Required: ${quiz.required_score}%`
+        }
       >
         {isPassed ? "Passed" : "Failed"}
       </Badge>
