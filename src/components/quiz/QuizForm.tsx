@@ -16,7 +16,7 @@ import {
   shorthands,
   tokens,
 } from "@fluentui/react-components";
-import { LAYOUT } from "../../styles/layoutRhythm";
+import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
 import {
   useQuizForTaking,
   useQuizForResults,
@@ -39,7 +39,7 @@ interface QuizFormProps {
 
 const useStyles = makeStyles({
   loadingRow: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalM,
@@ -49,9 +49,11 @@ const useStyles = makeStyles({
     maxWidth: LAYOUT.maxWidth.content,
     ...shorthands.margin(0, "auto"),
   },
-  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0) },
-  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0) },
-  mutedText: { color: tokens.colorNeutralForeground3 },
+  header: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.headerBottom.compact, 0),
+  },
+  title: { ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0) },
+  mutedText: { color: TYPOGRAPHY.mutedForeground },
   smallErrorDetail: {
     ...shorthands.margin(tokens.spacingVerticalXXS, 0, 0, 0),
     fontSize: tokens.fontSizeBase200,

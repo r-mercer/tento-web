@@ -36,7 +36,7 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import { lightTheme, darkTheme } from "./styles/fluentTheme";
-import { LAYOUT } from "./styles/layoutRhythm";
+import { LAYOUT, TYPOGRAPHY } from "./styles/layoutRhythm";
 import { useTheme } from "./contexts/ThemeContext";
 import type { Quiz, QuizStatus } from "./types/api";
 
@@ -57,8 +57,10 @@ const useStyles = makeStyles({
     minHeight: "100vh",
     justifyContent: "center",
   },
-  mutedText: { color: tokens.colorNeutralForeground3 },
-  sectionTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0) },
+  mutedText: { color: TYPOGRAPHY.mutedForeground },
+  sectionTitle: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
+  },
   quizCard: {
     display: "flex",
     flexDirection: "column",
@@ -68,7 +70,7 @@ const useStyles = makeStyles({
     display: "flex",
     gap: tokens.spacingHorizontalM,
     fontSize: tokens.fontSizeBase200,
-    color: tokens.colorNeutralForeground3,
+    color: TYPOGRAPHY.mutedForeground,
   },
   row: { display: "flex", gap: tokens.spacingHorizontalS },
   grow: { flex: 1 },
@@ -94,7 +96,7 @@ const useStyles = makeStyles({
     width: "100%",
   },
   loadingCenterRow: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     textAlign: "center",
     display: "flex",
     justifyContent: "center",
@@ -102,7 +104,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalM,
   },
   loadingCenterCol: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
@@ -133,7 +135,7 @@ const useStyles = makeStyles({
     ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0),
   },
   quizzesSummary: {
-    color: tokens.colorNeutralForeground3,
+    color: TYPOGRAPHY.mutedForeground,
     display: "block",
     ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
   },
@@ -149,15 +151,15 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   quizDescription: {
-    color: tokens.colorNeutralForeground3,
-    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+    color: TYPOGRAPHY.mutedForeground,
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
   },
   statsGrid: {
     display: "grid",
     gridTemplateColumns: `repeat(auto-fit, minmax(${LAYOUT.grid.statMin}, 1fr))`,
     gap: tokens.spacingHorizontalM,
     fontSize: tokens.fontSizeBase300,
-    color: tokens.colorNeutralForeground3,
+    color: TYPOGRAPHY.mutedForeground,
   },
   statValue: {
     display: "block",
@@ -174,7 +176,7 @@ const useStyles = makeStyles({
     ...shorthands.padding(tokens.spacingHorizontalXXL),
   },
   protectedLoading: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalM,

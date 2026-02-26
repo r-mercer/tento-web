@@ -9,6 +9,7 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import type { QuestionAttemptDetail, QuizQuestion } from "../../types/api";
+import { TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface QuestionResultCardProps {
   question: QuizQuestion;
@@ -18,15 +19,19 @@ interface QuestionResultCardProps {
 const useStyles = makeStyles({
   card: {
     ...shorthands.padding(tokens.spacingHorizontalL),
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
   },
-  section: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
-  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0) },
-  mutedText: { color: tokens.colorNeutralForeground3 },
-  subsection: { ...shorthands.margin(0, 0, tokens.spacingVerticalS, 0) },
+  section: { ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0) },
+  title: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
+  },
+  mutedText: { color: TYPOGRAPHY.mutedForeground },
+  subsection: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.subsectionBottom, 0),
+  },
   sectionHeading: {
     display: "block",
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
   },
   list: {
     ...shorthands.margin(0),
@@ -42,7 +47,7 @@ const useStyles = makeStyles({
   explanationTitle: {
     color: tokens.colorBrandForeground1,
     display: "block",
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
   },
   footer: {
     display: "flex",

@@ -16,6 +16,7 @@ import {
   shorthands,
   tokens,
 } from "@fluentui/react-components";
+import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
 type Props = {
@@ -50,34 +51,38 @@ interface UpdateQuizVariables {
 
 const useStyles = makeStyles({
   loading: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalM,
   },
   page: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
-    maxWidth: "800px",
+    ...shorthands.padding(LAYOUT.pagePadding),
+    maxWidth: LAYOUT.maxWidth.content,
     ...shorthands.margin(0, "auto"),
   },
   header: {
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalM,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.headerBottom.compact, 0),
   },
   card: {
     ...shorthands.padding(tokens.spacingHorizontalL),
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
   },
-  fieldBottom: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  fieldBottom: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
+  },
   divider: { ...shorthands.margin(tokens.spacingVerticalL, 0) },
-  questionTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  questionTitle: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
+  },
   optionsStack: {
     display: "flex",
     flexDirection: "column",
-    gap: tokens.spacingVerticalXS,
-    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+    gap: TYPOGRAPHY.spacing.subtitleTop,
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
   },
   actions: { display: "flex", gap: tokens.spacingHorizontalS },
 });

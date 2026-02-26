@@ -7,6 +7,7 @@ import {
   shorthands,
   tokens,
 } from "@fluentui/react-components";
+import { TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface ExplanationCardProps {
   explanation?: string;
@@ -16,7 +17,7 @@ interface ExplanationCardProps {
 
 const useStyles = makeStyles({
   card: {
-    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
     ...shorthands.padding(tokens.spacingHorizontalM),
     ...shorthands.borderLeft("4px", "solid", tokens.colorNeutralStroke1),
   },
@@ -29,7 +30,7 @@ const useStyles = makeStyles({
     borderLeftColor: tokens.colorPaletteRedBorder2,
   },
   label: {
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
   },
 });
 

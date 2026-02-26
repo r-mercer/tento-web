@@ -14,6 +14,7 @@ import {
 } from "@fluentui/react-components";
 import { useQuizAttempt } from "../../hooks/api/useQuizAttempts";
 import { QuestionResultCard } from "./QuestionResultCard";
+import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface AttemptDetailViewProps {
   attemptId: string;
@@ -27,14 +28,16 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalS,
   },
   page: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
-    maxWidth: "800px",
+    ...shorthands.padding(LAYOUT.pagePadding),
+    maxWidth: LAYOUT.maxWidth.content,
     ...shorthands.margin(0, "auto"),
   },
   backButton: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
-  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0) },
-  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0) },
-  mutedText: { color: tokens.colorNeutralForeground3 },
+  header: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.headerBottom.compact, 0),
+  },
+  title: { ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0) },
+  mutedText: { color: TYPOGRAPHY.mutedForeground },
   summaryCard: {
     ...shorthands.padding(tokens.spacingHorizontalL),
     ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
@@ -44,9 +47,13 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  scoreTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0) },
+  scoreTitle: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
+  },
   scorePercent: { color: tokens.colorBrandForeground1 },
-  questionsTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  questionsTitle: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
+  },
   resultsList: {
     display: "flex",
     flexDirection: "column",

@@ -10,6 +10,7 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import type { QuizAttemptResponse, Quiz } from "../../types/api";
+import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface ResultsViewProps {
   attempt: QuizAttemptResponse;
@@ -20,22 +21,22 @@ interface ResultsViewProps {
 
 const useStyles = makeStyles({
   card: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     textAlign: "center",
-    maxWidth: "500px",
+    maxWidth: LAYOUT.maxWidth.resultCard,
     ...shorthands.margin(0, "auto"),
   },
   subtitle: {
-    color: tokens.colorNeutralForeground3,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    color: TYPOGRAPHY.mutedForeground,
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.subtitleBottom, 0),
   },
   score: {
     color: tokens.colorBrandForeground1,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
   },
   percentage: {
-    color: tokens.colorNeutralForeground3,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    color: TYPOGRAPHY.mutedForeground,
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.subtitleBottom, 0),
   },
   badge: {
     ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0),

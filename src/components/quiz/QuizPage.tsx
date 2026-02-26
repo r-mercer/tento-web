@@ -11,11 +11,12 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import type { QuizAttemptResponse } from "../../types/api";
+import { LAYOUT } from "../../styles/layoutRhythm";
 
 const useStyles = makeStyles({
-  page: { ...shorthands.padding(tokens.spacingHorizontalXL) },
+  page: { ...shorthands.padding(LAYOUT.pagePadding) },
   loading: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
+    ...shorthands.padding(LAYOUT.pagePadding),
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalS,

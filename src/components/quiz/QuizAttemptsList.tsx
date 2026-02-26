@@ -14,6 +14,7 @@ import {
   shorthands,
   tokens,
 } from "@fluentui/react-components";
+import { TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface QuizAttemptsListProps {
   quizId: string;
@@ -31,11 +32,11 @@ const useStyles = makeStyles({
     textAlign: "center",
     ...shorthands.padding(tokens.spacingHorizontalL),
   },
-  mutedText: { color: tokens.colorNeutralForeground3 },
+  mutedText: { color: TYPOGRAPHY.mutedForeground },
   list: {
     display: "flex",
     flexDirection: "column",
-    gap: tokens.spacingVerticalXS,
+    gap: TYPOGRAPHY.spacing.subtitleTop,
   },
   card: {
     ...shorthands.padding(tokens.spacingHorizontalM),
@@ -52,7 +53,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalM,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
   },
   scoreText: {
     ...shorthands.margin(0, 0, 0, tokens.spacingHorizontalS),
@@ -62,7 +63,7 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
     ...shorthands.margin(tokens.spacingVerticalL, 0, 0, 0),
-    ...shorthands.padding(tokens.spacingVerticalM, 0, 0, 0),
+    ...shorthands.padding(TYPOGRAPHY.spacing.sectionBottom, 0, 0, 0),
     ...shorthands.borderTop("1px", "solid", tokens.colorNeutralStroke1),
   },
   pagerActions: {

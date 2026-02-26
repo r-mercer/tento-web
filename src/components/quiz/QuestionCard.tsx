@@ -10,6 +10,7 @@ import { SingleChoiceOptions } from "./SingleChoiceOptions";
 import { MultiChoiceOptions } from "./MultiChoiceOptions";
 import { BooleanOptions } from "./BooleanOptions";
 import type { QuizQuestionForTaking, QuizQuestion } from "../../types/api";
+import { TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface QuestionCardProps {
   question: QuizQuestionForTaking | QuizQuestion;
@@ -21,12 +22,14 @@ interface QuestionCardProps {
 const useStyles = makeStyles({
   card: {
     ...shorthands.padding(tokens.spacingHorizontalL),
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
   },
-  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0) },
+  title: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
+  },
   description: {
-    color: tokens.colorNeutralForeground3,
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+    color: TYPOGRAPHY.mutedForeground,
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.subtitleBottom, 0),
   },
   options: {
     display: "flex",

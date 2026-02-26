@@ -9,21 +9,23 @@ import {
   makeStyles,
   mergeClasses,
   shorthands,
-  tokens,
 } from "@fluentui/react-components";
+import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 const useStyles = makeStyles({
-  simplePage: { ...shorthands.padding(tokens.spacingHorizontalXL) },
+  simplePage: { ...shorthands.padding(LAYOUT.pagePadding) },
   page: {
-    ...shorthands.padding(tokens.spacingHorizontalXL),
-    maxWidth: "800px",
+    ...shorthands.padding(LAYOUT.pagePadding),
+    maxWidth: LAYOUT.maxWidth.content,
     ...shorthands.margin(0, "auto"),
   },
-  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0) },
+  header: {
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.headerBottom.standard, 0),
+  },
   subtitle: {
-    color: tokens.colorNeutralForeground3,
+    color: TYPOGRAPHY.mutedForeground,
     display: "block",
-    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
   },
 });
 

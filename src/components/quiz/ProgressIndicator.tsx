@@ -3,8 +3,8 @@ import {
   Text,
   makeStyles,
   shorthands,
-  tokens,
 } from "@fluentui/react-components";
+import { TYPOGRAPHY } from "../../styles/layoutRhythm";
 
 interface ProgressIndicatorProps {
   current: number;
@@ -13,10 +13,10 @@ interface ProgressIndicatorProps {
 }
 
 const useStyles = makeStyles({
-  root: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  root: { ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0) },
   label: {
     display: "block",
-    ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0),
+    ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
   },
   bar: { height: "8px" },
 });

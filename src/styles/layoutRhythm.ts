@@ -1,3 +1,5 @@
+import { tokens } from "@fluentui/react-components";
+
 export const LAYOUT = {
   pagePadding: "clamp(1rem, 3vw, 2.5rem)",
   navPadding: "clamp(1rem, 3vw, 2rem)",
@@ -14,5 +16,21 @@ export const LAYOUT = {
     recentCardMin: "260px",
     quizCardMin: "320px",
     statMin: "140px",
+  },
+} as const;
+
+export const TYPOGRAPHY = {
+  mutedForeground: tokens.colorNeutralForeground3,
+  spacing: {
+    titleBottom: tokens.spacingVerticalXS,
+    titleBottomCompact: tokens.spacingVerticalXXS,
+    subtitleTop: tokens.spacingVerticalXS,
+    subtitleBottom: tokens.spacingVerticalM,
+    sectionBottom: tokens.spacingVerticalM,
+    subsectionBottom: tokens.spacingVerticalS,
+    headerBottom: {
+      compact: tokens.spacingVerticalL,
+      standard: tokens.spacingVerticalXL,
+    },
   },
 } as const;
