@@ -9,8 +9,13 @@ import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { EditQuizPage } from "./pages/EditQuizPage";
 import { ToastProvider } from "./components/ui/ToastProvider";
-import { QuizPage, QuizHistoryPage, QuizErrorBoundary } from "./components/quiz";
+import {
+  QuizPage,
+  QuizHistoryPage,
+  QuizErrorBoundary,
+} from "./components/quiz";
 import { AppCard } from "./components/ui/AppCard";
+import { Navbar } from "./components/ui/Navbar";
 import {
   FluentProvider,
   Title1,
@@ -102,15 +107,17 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div style={{ 
-      padding: "2rem", 
-      display: "flex", 
-      flexDirection: "column",
-      alignItems: "center", 
-      gap: "1rem",
-      minHeight: "100vh",
-      justifyContent: "center"
-    }}>
+    <div
+      style={{
+        padding: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "1rem",
+        minHeight: "100vh",
+        justifyContent: "center",
+      }}
+    >
       <Spinner size="large" />
       <Title2>Authenticating with GitHub...</Title2>
       <Body1 style={{ color: "var(--color-text-secondary)" }}>
@@ -120,7 +127,9 @@ function AuthCallbackPage() {
   );
 }
 
-function getStatusBadgeColor(status: QuizStatus): "success" | "warning" | "important" | "informative" | "subtle" {
+function getStatusBadgeColor(
+  status: QuizStatus,
+): "success" | "warning" | "important" | "informative" | "subtle" {
   switch (status) {
     case "Ready":
       return "success";
@@ -145,16 +154,20 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
         )}
       </div>
 
-      <div style={{ display: "flex", gap: "1rem", fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          fontSize: "0.85rem",
+          color: "var(--color-text-secondary)",
+        }}
+      >
         <Text>{quiz.question_count} questions</Text>
         <Text>{quiz.required_score} to pass</Text>
       </div>
 
       <div style={{ display: "flex", gap: "0.5rem" }}>
-        <Badge
-          appearance="filled"
-          color={getStatusBadgeColor(quiz.status)}
-        >
+        <Badge appearance="filled" color={getStatusBadgeColor(quiz.status)}>
           {quiz.status}
         </Badge>
       </div>
@@ -168,11 +181,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
         >
           Take Quiz
         </Button>
-        <Button
-          appearance="outline"
-          as="a"
-          href={ROUTES.QUIZ_EDIT(quiz.id)}
-        >
+        <Button appearance="outline" as="a" href={ROUTES.QUIZ_EDIT(quiz.id)}>
           Edit
         </Button>
       </div>
@@ -224,12 +233,7 @@ function DashboardPage() {
           + Create New Quiz
         </Button>
 
-        <Button
-          appearance="outline"
-          as="a"
-          href={ROUTES.QUIZZES}
-          size="large"
-        >
+        <Button appearance="outline" as="a" href={ROUTES.QUIZZES} size="large">
           View All Quizzes
         </Button>
       </div>
@@ -238,7 +242,16 @@ function DashboardPage() {
         <Title2>Your Recent Quizzes</Title2>
 
         {isLoading && (
-          <div style={{ padding: "2rem", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
+          <div
+            style={{
+              padding: "2rem",
+              textAlign: "center",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
             <Spinner size="small" />
             <Body1 style={{ color: "var(--color-text-secondary)" }}>
               Loading quizzes...
@@ -248,7 +261,9 @@ function DashboardPage() {
 
         {error && (
           <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
-            <MessageBarBody>Error loading quizzes. Please try again later.</MessageBarBody>
+            <MessageBarBody>
+              Error loading quizzes. Please try again later.
+            </MessageBarBody>
           </MessageBar>
         )}
 
@@ -275,11 +290,7 @@ function DashboardPage() {
             >
               No quizzes yet. Create your first quiz to get started!
             </Body1>
-            <Button
-              appearance="primary"
-              as="a"
-              href={ROUTES.QUIZ_CREATE}
-            >
+            <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
               Create Your First Quiz
             </Button>
           </div>
@@ -319,7 +330,16 @@ function QuizzesPage() {
       </div>
 
       {isLoading && (
-        <div style={{ padding: "2rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
+        >
           <Spinner size="small" />
           <Body1 style={{ color: "var(--color-text-secondary)" }}>
             Loading quizzes...
@@ -372,7 +392,9 @@ function QuizzesPage() {
                 }}
               >
                 <div>
-                  <Title3 style={{ marginBottom: "0.25rem" }}>{quiz.name}</Title3>
+                  <Title3 style={{ marginBottom: "0.25rem" }}>
+                    {quiz.name}
+                  </Title3>
                   {quiz.title && (
                     <Body2 style={{ color: "var(--color-text-secondary)" }}>
                       {quiz.title}
@@ -401,26 +423,38 @@ function QuizzesPage() {
                 >
                   <div>
                     <Text size={200}>Questions</Text>
-                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
+                    <Text
+                      weight="semibold"
+                      style={{ display: "block", marginTop: "0.25rem" }}
+                    >
                       {quiz.question_count}
                     </Text>
                   </div>
                   <div>
                     <Text size={200}>Pass Score</Text>
-                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
+                    <Text
+                      weight="semibold"
+                      style={{ display: "block", marginTop: "0.25rem" }}
+                    >
                       {quiz.required_score}%
                     </Text>
                   </div>
                   <div>
                     <Text size={200}>Attempts</Text>
-                    <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
+                    <Text
+                      weight="semibold"
+                      style={{ display: "block", marginTop: "0.25rem" }}
+                    >
                       {quiz.attempt_limit}
                     </Text>
                   </div>
                   {quiz.topic && (
                     <div>
                       <Text size={200}>Topic</Text>
-                      <Text weight="semibold" style={{ display: "block", marginTop: "0.25rem" }}>
+                      <Text
+                        weight="semibold"
+                        style={{ display: "block", marginTop: "0.25rem" }}
+                      >
                         {quiz.topic}
                       </Text>
                     </div>
@@ -508,7 +542,14 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (isLoading) {
     return (
-      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div
+        style={{
+          padding: "2rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+        }}
+      >
         <Spinner size="small" />
         <Body1>Loading...</Body1>
       </div>
@@ -533,6 +574,7 @@ function App() {
   return (
     <FluentProvider theme={theme}>
       <ToastProvider>
+        <Navbar />
         <Routes>
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
