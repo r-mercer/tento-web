@@ -66,7 +66,7 @@ const useStyles = makeStyles({
   mutedText: { color: TYPOGRAPHY.mutedForeground },
   cardSubtitle: {
     display: "block",
-    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
+    ...shorthands.margin(TYPOGRAPHY.spacing.quizCardSubtitleTop, 0, 0, 0),
   },
   sectionTitle: {
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
@@ -347,7 +347,9 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
       <div>
         <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
         {quiz.title && (
-          <Body2 className={mergeClasses(styles.mutedText, styles.cardSubtitle)}>
+          <Body2
+            className={mergeClasses(styles.mutedText, styles.cardSubtitle)}
+          >
             {quiz.title}
           </Body2>
         )}

@@ -24,6 +24,7 @@ export const TYPOGRAPHY = {
   spacing: {
     titleBottom: tokens.spacingVerticalXS,
     titleBottomCompact: tokens.spacingVerticalXXS,
+    quizCardSubtitleTop: tokens.spacingVerticalXXS,
     subtitleTop: tokens.spacingVerticalXS,
     subtitleBottom: tokens.spacingVerticalM,
     sectionBottom: tokens.spacingVerticalM,
