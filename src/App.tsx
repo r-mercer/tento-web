@@ -2,18 +2,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 import { useUserQuizzes } from "./hooks/api/useQuizzes";
 import { ROUTES, GH_CLIENT_ID, GH_REDIRECT_URI } from "./utils/constants";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleGithubCallback } from "./api/auth";
-import { GraphQLPlaygroundPage } from "./pages/GraphQLPlaygroundPage";
-import { CreateQuizPage } from "./pages/CreateQuizPage";
-import { EditQuizPage } from "./pages/EditQuizPage";
 import { ToastProvider } from "./components/ui/ToastProvider";
-import {
-  QuizPage,
-  QuizHistoryPage,
-  QuizErrorBoundary,
-} from "./components/quiz";
 import { AppCard } from "./components/ui/AppCard";
 import { Navbar } from "./components/ui/Navbar";
 import {
@@ -39,6 +31,42 @@ import { lightTheme, darkTheme } from "./styles/fluentTheme";
 import { LAYOUT, TYPOGRAPHY } from "./styles/layoutRhythm";
 import { useTheme } from "./contexts/ThemeContext";
 import type { Quiz, QuizStatus } from "./types/api";
+
+const CreateQuizPage = lazy(() =>
+  import("./pages/CreateQuizPage").then((module) => ({
+    default: module.CreateQuizPage,
+  })),
+);
+
+const EditQuizPage = lazy(() =>
+  import("./pages/EditQuizPage").then((module) => ({
+    default: module.EditQuizPage,
+  })),
+);
+
+const GraphQLPlaygroundPage = lazy(() =>
+  import("./pages/GraphQLPlaygroundPage").then((module) => ({
+    default: module.GraphQLPlaygroundPage,
+  })),
+);
+
+const QuizPage = lazy(() =>
+  import("./components/quiz").then((module) => ({
+    default: module.QuizPage,
+  })),
+);
+
+const QuizHistoryPage = lazy(() =>
+  import("./components/quiz").then((module) => ({
+    default: module.QuizHistoryPage,
+  })),
+);
+
+const QuizErrorBoundary = lazy(() =>
+  import("./components/quiz").then((module) => ({
+    default: module.QuizErrorBoundary,
+  })),
+);
 
 const useStyles = makeStyles({
   pageBase: {
@@ -673,6 +701,17 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   return <>{children}</>;
 }
 
+function RouteFallback() {
+  const styles = useStyles();
+
+  return (
+    <div className={styles.protectedLoading} role="status" aria-live="polite">
+      <Spinner size="small" />
+      <Body1>Loading page...</Body1>
+    </div>
+  );
+}
+
 // ============================================================================
 // App Component
 // ============================================================================
@@ -685,87 +724,89 @@ function App() {
     <FluentProvider theme={theme}>
       <ToastProvider>
         <Navbar />
-        <Routes>
-          <Route path={ROUTES.HOME} element={<HomePage />} />
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path={ROUTES.HOME} element={<HomePage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
 
-          <Route
-            path={ROUTES.DASHBOARD}
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path={ROUTES.DASHBOARD}
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path={ROUTES.USERS}
-            element={
-              <ProtectedRoute>
-                <UsersPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path={ROUTES.USERS}
+              element={
+                <ProtectedRoute>
+                  <UsersPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path={ROUTES.QUIZZES}
-            element={
-              <ProtectedRoute>
-                <QuizzesPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path={ROUTES.QUIZZES}
+              element={
+                <ProtectedRoute>
+                  <QuizzesPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path={ROUTES.QUIZ_CREATE}
-            element={
-              <ProtectedRoute>
-                <CreateQuizPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path={ROUTES.QUIZ_CREATE}
+              element={
+                <ProtectedRoute>
+                  <CreateQuizPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/quizzes/:id/take"
-            element={
-              <ProtectedRoute>
-                <QuizErrorBoundary>
-                  <QuizPage />
-                </QuizErrorBoundary>
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/quizzes/:id/take"
+              element={
+                <ProtectedRoute>
+                  <QuizErrorBoundary>
+                    <QuizPage />
+                  </QuizErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/quizzes/:id/edit"
-            element={
-              <ProtectedRoute>
-                <EditQuizPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/quizzes/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditQuizPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/quizzes/:id/history"
-            element={
-              <ProtectedRoute>
-                <QuizErrorBoundary>
-                  <QuizHistoryPage />
-                </QuizErrorBoundary>
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/quizzes/:id/history"
+              element={
+                <ProtectedRoute>
+                  <QuizErrorBoundary>
+                    <QuizHistoryPage />
+                  </QuizErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path={ROUTES.GRAPHQL_PLAYGROUND}
-            element={
-              <ProtectedRoute>
-                <GraphQLPlaygroundPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+            <Route
+              path={ROUTES.GRAPHQL_PLAYGROUND}
+              element={
+                <ProtectedRoute>
+                  <GraphQLPlaygroundPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
       </ToastProvider>
     </FluentProvider>
   );
