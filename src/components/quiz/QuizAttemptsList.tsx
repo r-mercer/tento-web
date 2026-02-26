@@ -9,6 +9,10 @@ import {
   MessageBar,
   MessageBarBody,
   Card,
+  makeStyles,
+  mergeClasses,
+  shorthands,
+  tokens,
 } from "@fluentui/react-components";
 
 interface QuizAttemptsListProps {
@@ -17,20 +21,75 @@ interface QuizAttemptsListProps {
   selectedAttemptId?: string;
 }
 
+const useStyles = makeStyles({
+  loading: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+  },
+  empty: {
+    textAlign: "center",
+    ...shorthands.padding(tokens.spacingHorizontalL),
+  },
+  mutedText: { color: tokens.colorNeutralForeground3 },
+  list: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXS,
+  },
+  card: {
+    ...shorthands.padding(tokens.spacingHorizontalM),
+    cursor: "pointer",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  cardSelected: {
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+  },
+  cardHeading: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+  },
+  scoreText: {
+    ...shorthands.margin(0, 0, 0, tokens.spacingHorizontalS),
+  },
+  pager: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    ...shorthands.margin(tokens.spacingVerticalL, 0, 0, 0),
+    ...shorthands.padding(tokens.spacingVerticalM, 0, 0, 0),
+    ...shorthands.borderTop("1px", "solid", tokens.colorNeutralStroke1),
+  },
+  pagerActions: {
+    display: "flex",
+    gap: tokens.spacingHorizontalS,
+  },
+});
+
 export function QuizAttemptsList({
   quizId,
   onSelectAttempt,
   selectedAttemptId,
 }: QuizAttemptsListProps) {
+  const styles = useStyles();
   const [currentPage, setCurrentPage] = useState(0);
   const limit = 10;
   const offset = currentPage * limit;
 
-  const { data: attemptsData, isLoading, error } = useQuizAttempts(quizId, limit, offset);
+  const {
+    data: attemptsData,
+    isLoading,
+    error,
+  } = useQuizAttempts(quizId, limit, offset);
 
   if (isLoading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <div className={styles.loading}>
         <Spinner size="small" />
         <Body1>Loading attempts...</Body1>
       </div>
@@ -40,15 +99,17 @@ export function QuizAttemptsList({
   if (error) {
     return (
       <MessageBar intent="error">
-        <MessageBarBody>Failed to load attempts. Please try again.</MessageBarBody>
+        <MessageBarBody>
+          Failed to load attempts. Please try again.
+        </MessageBarBody>
       </MessageBar>
     );
   }
 
   if (!attemptsData || attemptsData.data.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "1.5rem" }}>
-        <Body1 style={{ color: "var(--color-text-secondary)" }}>
+      <div className={styles.empty}>
+        <Body1 className={styles.mutedText}>
           No attempts yet. Start by taking the quiz!
         </Body1>
       </div>
@@ -62,24 +123,18 @@ export function QuizAttemptsList({
 
   return (
     <div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div className={styles.list}>
         {attempts.map((attempt) => (
           <Card
             key={attempt.id}
             onClick={() => onSelectAttempt(attempt.id)}
-            style={{
-              padding: "1rem",
-              cursor: "pointer",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor:
-                selectedAttemptId === attempt.id ? "var(--color-primary)" : undefined,
-              color: selectedAttemptId === attempt.id ? "white" : undefined,
-            }}
+            className={mergeClasses(
+              styles.card,
+              selectedAttemptId === attempt.id && styles.cardSelected,
+            )}
           >
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
+              <div className={styles.cardHeading}>
                 <Text weight="semibold">Attempt #{attempt.attempt_number}</Text>
                 <Badge
                   appearance="filled"
@@ -93,8 +148,12 @@ export function QuizAttemptsList({
                 <Text weight="semibold">
                   {attempt.points_earned}/{attempt.total_possible} points
                 </Text>
-                <Text size={200} style={{ marginLeft: "0.5rem" }}>
-                  ({Math.round((attempt.points_earned / attempt.total_possible) * 100)}%)
+                <Text size={200} className={styles.scoreText}>
+                  (
+                  {Math.round(
+                    (attempt.points_earned / attempt.total_possible) * 100,
+                  )}
+                  %)
                 </Text>
               </div>
             </div>
@@ -111,20 +170,12 @@ export function QuizAttemptsList({
         ))}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: "1.5rem",
-          paddingTop: "1rem",
-          borderTop: "1px solid var(--color-border)",
-        }}
-      >
-        <Text size={200} style={{ color: "var(--color-text-secondary)" }}>
-          Showing {offset + 1}-{Math.min(offset + limit, pagination.total)} of {pagination.total} attempts
+      <div className={styles.pager}>
+        <Text size={200} className={styles.mutedText}>
+          Showing {offset + 1}-{Math.min(offset + limit, pagination.total)} of{" "}
+          {pagination.total} attempts
         </Text>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className={styles.pagerActions}>
           <Button
             appearance="outline"
             onClick={() => setCurrentPage(currentPage - 1)}

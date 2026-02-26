@@ -1,16 +1,35 @@
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { QuizForm } from "./QuizForm";
-import { Body1, Spinner, MessageBar, MessageBarBody } from "@fluentui/react-components";
+import {
+  Body1,
+  MessageBar,
+  MessageBarBody,
+  Spinner,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import type { QuizAttemptResponse } from "../../types/api";
 
+const useStyles = makeStyles({
+  page: { ...shorthands.padding(tokens.spacingHorizontalXL) },
+  loading: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+  },
+});
+
 export function QuizPage() {
+  const styles = useStyles();
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
 
   if (!id) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.page}>
         <MessageBar intent="error">
           <MessageBarBody>Quiz not found</MessageBarBody>
         </MessageBar>
@@ -20,7 +39,7 @@ export function QuizPage() {
 
   if (authLoading) {
     return (
-      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <div className={styles.loading}>
         <Spinner size="small" />
         <Body1>Loading...</Body1>
       </div>
@@ -29,7 +48,7 @@ export function QuizPage() {
 
   if (!user) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.page}>
         <MessageBar intent="warning">
           <MessageBarBody>Please log in to take this quiz</MessageBarBody>
         </MessageBar>

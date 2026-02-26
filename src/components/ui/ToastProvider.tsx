@@ -1,5 +1,10 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { MessageBar } from "@fluentui/react-components";
+import {
+  MessageBar,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 
 type Toast = {
   id: number;
@@ -11,7 +16,21 @@ const ToastContext = createContext<{
   push: (t: Omit<Toast, "id">) => void;
 }>({ push: () => {} });
 
+const useStyles = makeStyles({
+  container: {
+    position: "fixed",
+    top: tokens.spacingVerticalM,
+    right: tokens.spacingHorizontalM,
+    zIndex: 9999,
+    width: "min(360px, calc(100vw - 2rem))",
+  },
+  item: {
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0),
+  },
+});
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const styles = useStyles();
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const push = useCallback((t: Omit<Toast, "id">) => {
@@ -26,17 +45,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ push }}>
       {children}
-      <div
-        style={{
-          position: "fixed",
-          right: 16,
-          top: 16,
-          zIndex: 9999,
-          width: 360,
-        }}
-      >
+      <div className={styles.container}>
         {toasts.map((t) => (
-          <div key={t.id} style={{ marginBottom: 8 }}>
+          <div key={t.id} className={styles.item}>
             <MessageBar
               intent={
                 t.type === "success"

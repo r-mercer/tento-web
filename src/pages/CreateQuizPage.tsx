@@ -15,9 +15,43 @@ import {
   Body1,
   MessageBar,
   MessageBarBody,
+  makeStyles,
+  shorthands,
+  tokens,
 } from "@fluentui/react-components";
 
+const useStyles = makeStyles({
+  page: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    maxWidth: "600px",
+    ...shorthands.margin(0, "auto"),
+  },
+  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0) },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+    display: "block",
+    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+  },
+  cardForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalL,
+  },
+  gridRow: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: tokens.spacingHorizontalM,
+  },
+  actions: {
+    display: "flex",
+    gap: tokens.spacingHorizontalM,
+    justifyContent: "flex-end",
+    ...shorthands.margin(tokens.spacingVerticalM, 0, 0, 0),
+  },
+});
+
 export function CreateQuizPage() {
+  const styles = useStyles();
   const navigate = useNavigate();
   const createQuizMutation = useCreateQuizDraft();
   const { user } = useAuth();
@@ -102,18 +136,17 @@ export function CreateQuizPage() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
-      <header style={{ marginBottom: "2rem" }}>
+    <div className={styles.page}>
+      <header className={styles.header}>
         <Title1>Create New Quiz</Title1>
-        <Body1
-          style={{ color: "var(--color-text-secondary)", display: "block", marginTop: "0.5rem" }}
-        >
-          Create a quiz draft from a URL. The AI will generate questions automatically.
+        <Body1 className={styles.subtitle}>
+          Create a quiz draft from a URL. The AI will generate questions
+          automatically.
         </Body1>
       </header>
 
       <form onSubmit={handleSubmit}>
-        <AppCard style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <AppCard className={styles.cardForm}>
           <Field
             label="Quiz Name"
             required
@@ -144,7 +177,7 @@ export function CreateQuizPage() {
             />
           </Field>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+          <div className={styles.gridRow}>
             <Field
               label="Number of Questions"
               required
@@ -153,7 +186,9 @@ export function CreateQuizPage() {
             >
               <SpinButton
                 value={formData.question_count}
-                onChange={(_e, data) => handleInputChange("question_count", data.value ?? 1)}
+                onChange={(_e, data) =>
+                  handleInputChange("question_count", data.value ?? 1)
+                }
                 min={1}
                 max={50}
               />
@@ -167,7 +202,9 @@ export function CreateQuizPage() {
             >
               <SpinButton
                 value={formData.required_score}
-                onChange={(_e, data) => handleInputChange("required_score", data.value ?? 0)}
+                onChange={(_e, data) =>
+                  handleInputChange("required_score", data.value ?? 0)
+                }
                 min={0}
                 max={formData.question_count}
               />
@@ -181,14 +218,16 @@ export function CreateQuizPage() {
             >
               <SpinButton
                 value={formData.attempt_limit}
-                onChange={(_e, data) => handleInputChange("attempt_limit", data.value ?? 1)}
+                onChange={(_e, data) =>
+                  handleInputChange("attempt_limit", data.value ?? 1)
+                }
                 min={1}
                 max={10}
               />
             </Field>
           </div>
 
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+          <div className={styles.actions}>
             <Button
               appearance="secondary"
               onClick={() => navigate(ROUTES.QUIZZES)}
@@ -201,13 +240,17 @@ export function CreateQuizPage() {
               type="submit"
               disabled={createQuizMutation.isPending}
             >
-              {createQuizMutation.isPending ? "Creating..." : "Create Quiz Draft"}
+              {createQuizMutation.isPending
+                ? "Creating..."
+                : "Create Quiz Draft"}
             </Button>
           </div>
 
           {createQuizMutation.isError && (
             <MessageBar intent="error">
-              <MessageBarBody>Failed to create quiz draft. Please try again.</MessageBarBody>
+              <MessageBarBody>
+                Failed to create quiz draft. Please try again.
+              </MessageBarBody>
             </MessageBar>
           )}
         </AppCard>

@@ -30,16 +30,163 @@ import {
   Badge,
   MessageBar,
   MessageBarBody,
+  makeStyles,
+  mergeClasses,
+  shorthands,
+  tokens,
 } from "@fluentui/react-components";
 import { lightTheme, darkTheme } from "./styles/fluentTheme";
+import { LAYOUT } from "./styles/layoutRhythm";
 import { useTheme } from "./contexts/ThemeContext";
 import type { Quiz, QuizStatus } from "./types/api";
 
+const useStyles = makeStyles({
+  pageBase: {
+    ...shorthands.padding(LAYOUT.pagePadding),
+    ...shorthands.margin(0, "auto"),
+  },
+  pageMax560: { maxWidth: LAYOUT.maxWidth.narrow },
+  pageMax900: { maxWidth: LAYOUT.maxWidth.hero },
+  pageMax1200: { maxWidth: LAYOUT.maxWidth.wide },
+  pageMax800: { maxWidth: LAYOUT.maxWidth.content },
+  centeredColumn: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: tokens.spacingVerticalM,
+    minHeight: "100vh",
+    justifyContent: "center",
+  },
+  mutedText: { color: tokens.colorNeutralForeground3 },
+  sectionTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0) },
+  quizCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+  },
+  quizMeta: {
+    display: "flex",
+    gap: tokens.spacingHorizontalM,
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+  },
+  row: { display: "flex", gap: tokens.spacingHorizontalS },
+  grow: { flex: 1 },
+  dashboardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: tokens.spacingHorizontalM,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXXL, 0),
+  },
+  dashboardActions: {
+    ...shorthands.margin(
+      tokens.spacingVerticalL,
+      0,
+      tokens.spacingVerticalXXL,
+      0,
+    ),
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalS,
+    maxWidth: LAYOUT.maxWidth.dashboardActions,
+    width: "100%",
+  },
+  loadingCenterRow: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+  },
+  loadingCenterCol: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: tokens.spacingVerticalXS,
+  },
+  messageBarBottom: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  recentGrid: {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fill, minmax(${LAYOUT.grid.recentCardMin}, 1fr))`,
+    gap: tokens.spacingHorizontalL,
+  },
+  emptyCenter: {
+    textAlign: "center",
+    ...shorthands.padding(tokens.spacingHorizontalXXL),
+  },
+  blockText: {
+    display: "block",
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  usersPlaceholder: { ...shorthands.margin(tokens.spacingVerticalS, 0, 0, 0) },
+  quizzesHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: tokens.spacingHorizontalS,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0),
+  },
+  quizzesSummary: {
+    color: tokens.colorNeutralForeground3,
+    display: "block",
+    ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
+  },
+  quizzesGrid: {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fill, minmax(${LAYOUT.grid.quizCardMin}, 1fr))`,
+    gap: tokens.spacingHorizontalL,
+  },
+  quizzesCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    cursor: "pointer",
+  },
+  quizDescription: {
+    color: tokens.colorNeutralForeground3,
+    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+  },
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fit, minmax(${LAYOUT.grid.statMin}, 1fr))`,
+    gap: tokens.spacingHorizontalM,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground3,
+  },
+  statValue: {
+    display: "block",
+    ...shorthands.margin(tokens.spacingVerticalXXS, 0, 0, 0),
+  },
+  quizActions: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: tokens.spacingHorizontalS,
+    marginTop: "auto",
+  },
+  emptyCard: {
+    textAlign: "center",
+    ...shorthands.padding(tokens.spacingHorizontalXXL),
+  },
+  protectedLoading: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+  },
+});
+
 function HomePage() {
   const { isAuthenticated, user } = useAuth();
+  const styles = useStyles();
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className={mergeClasses(styles.pageBase, styles.pageMax900)}>
       <Title1>Tento - Home</Title1>
       {isAuthenticated ? (
         <div>
@@ -58,13 +205,14 @@ function HomePage() {
 }
 
 function LoginPage() {
+  const styles = useStyles();
   const handleLogin = () => {
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GH_CLIENT_ID}&redirect_uri=${encodeURIComponent(GH_REDIRECT_URI || "")}&scope=read:user user:email`;
     window.location.href = githubAuthUrl;
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className={mergeClasses(styles.pageBase, styles.pageMax560)}>
       <Title1>Login</Title1>
       <Button appearance="primary" onClick={handleLogin}>
         Login with GitHub
@@ -74,6 +222,7 @@ function LoginPage() {
 }
 
 function AuthCallbackPage() {
+  const styles = useStyles();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -107,20 +256,10 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "1rem",
-        minHeight: "100vh",
-        justifyContent: "center",
-      }}
-    >
+    <div className={mergeClasses(styles.pageBase, styles.centeredColumn)}>
       <Spinner size="large" />
       <Title2>Authenticating with GitHub...</Title2>
-      <Body1 style={{ color: "var(--color-text-secondary)" }}>
+      <Body1 className={styles.mutedText}>
         Please wait while we verify your credentials
       </Body1>
     </div>
@@ -143,41 +282,31 @@ function getStatusBadgeColor(
 }
 
 function QuizCard({ quiz }: { quiz: Quiz }) {
+  const styles = useStyles();
   return (
-    <AppCard style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <AppCard className={styles.quizCard}>
       <div>
-        <Title3 style={{ marginBottom: "0.25rem" }}>{quiz.name}</Title3>
-        {quiz.title && (
-          <Body2 style={{ color: "var(--color-text-secondary)" }}>
-            {quiz.title}
-          </Body2>
-        )}
+        <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
+        {quiz.title && <Body2 className={styles.mutedText}>{quiz.title}</Body2>}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          fontSize: "0.85rem",
-          color: "var(--color-text-secondary)",
-        }}
-      >
+      <div className={styles.quizMeta}>
         <Text>{quiz.question_count} questions</Text>
         <Text>{quiz.required_score} to pass</Text>
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.row}>
         <Badge appearance="filled" color={getStatusBadgeColor(quiz.status)}>
           {quiz.status}
         </Badge>
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.row}>
         <Button
           appearance="primary"
           as="a"
           href={ROUTES.QUIZ_TAKE(quiz.id)}
-          style={{ flex: 1 }}
+          className={styles.grow}
         >
           Take Quiz
         </Button>
@@ -190,40 +319,23 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
 }
 
 function DashboardPage() {
+  const styles = useStyles();
   const { user, logout } = useAuth();
   const { data: quizzes, isLoading, error } = useUserQuizzes(user?.id || "");
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2rem",
-        }}
-      >
+    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
+      <div className={styles.dashboardHeader}>
         <div>
-          <Title1 style={{ marginBottom: "0.5rem" }}>Dashboard</Title1>
-          <Body1 style={{ color: "var(--color-text-secondary)" }}>
-            Welcome, {user?.username}!
-          </Body1>
+          <Title1 className={styles.sectionTitle}>Dashboard</Title1>
+          <Body1 className={styles.mutedText}>Welcome, {user?.username}!</Body1>
         </div>
         <Button appearance="subtle" onClick={logout}>
           Logout
         </Button>
       </div>
 
-      <div
-        style={{
-          marginTop: "2rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          maxWidth: "400px",
-          marginBottom: "3rem",
-        }}
-      >
+      <div className={styles.dashboardActions}>
         <Button
           appearance="primary"
           as="a"
@@ -242,25 +354,14 @@ function DashboardPage() {
         <Title2>Your Recent Quizzes</Title2>
 
         {isLoading && (
-          <div
-            style={{
-              padding: "2rem",
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
+          <div className={styles.loadingCenterRow}>
             <Spinner size="small" />
-            <Body1 style={{ color: "var(--color-text-secondary)" }}>
-              Loading quizzes...
-            </Body1>
+            <Body1 className={styles.mutedText}>Loading quizzes...</Body1>
           </div>
         )}
 
         {error && (
-          <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+          <MessageBar intent="error" className={styles.messageBarBottom}>
             <MessageBarBody>
               Error loading quizzes. Please try again later.
             </MessageBarBody>
@@ -268,26 +369,14 @@ function DashboardPage() {
         )}
 
         {!isLoading && quizzes && quizzes.length > 0 ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: "1rem",
-            }}
-          >
+          <div className={styles.recentGrid}>
             {quizzes.slice(0, 3).map((quiz: Quiz) => (
               <QuizCard key={quiz.id} quiz={quiz} />
             ))}
           </div>
         ) : !isLoading && (!quizzes || quizzes.length === 0) ? (
-          <div style={{ textAlign: "center", padding: "3rem" }}>
-            <Body1
-              style={{
-                color: "var(--color-text-secondary)",
-                marginBottom: "1rem",
-                display: "block",
-              }}
-            >
+          <div className={styles.emptyCenter}>
+            <Body1 className={mergeClasses(styles.mutedText, styles.blockText)}>
               No quizzes yet. Create your first quiz to get started!
             </Body1>
             <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
@@ -301,28 +390,25 @@ function DashboardPage() {
 }
 
 function UsersPage() {
+  const styles = useStyles();
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
       <Title1>Users</Title1>
-      <Body1>Users list coming soon...</Body1>
+      <Body1 className={styles.usersPlaceholder}>
+        Users list coming soon...
+      </Body1>
     </div>
   );
 }
 
 function QuizzesPage() {
+  const styles = useStyles();
   const { user } = useAuth();
   const { data: quizzes, isLoading, error } = useUserQuizzes(user?.id || "");
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2rem",
-        }}
-      >
+    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
+      <div className={styles.quizzesHeader}>
         <Title1>My Quizzes</Title1>
         <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
           + Create Quiz
@@ -330,28 +416,15 @@ function QuizzesPage() {
       </div>
 
       {isLoading && (
-        <div
-          style={{
-            padding: "2rem",
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.5rem",
-          }}
-        >
+        <div className={styles.loadingCenterCol}>
           <Spinner size="small" />
-          <Body1 style={{ color: "var(--color-text-secondary)" }}>
-            Loading quizzes...
-          </Body1>
-          <Body2 style={{ color: "var(--color-text-secondary)" }}>
-            This may take a moment...
-          </Body2>
+          <Body1 className={styles.mutedText}>Loading quizzes...</Body1>
+          <Body2 className={styles.mutedText}>This may take a moment...</Body2>
         </div>
       )}
 
       {error && (
-        <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+        <MessageBar intent="error" className={styles.messageBarBottom}>
           <MessageBarBody>
             <strong>Error loading quizzes</strong>
             <br />
@@ -364,104 +437,54 @@ function QuizzesPage() {
 
       {!isLoading && quizzes && quizzes.length > 0 ? (
         <div>
-          <Body1
-            style={{
-              color: "var(--color-text-secondary)",
-              marginBottom: "1.5rem",
-              display: "block",
-            }}
-          >
+          <Body1 className={styles.quizzesSummary}>
             You have {quizzes.length} quiz{quizzes.length !== 1 ? "zes" : ""}
           </Body1>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-              gap: "1.5rem",
-            }}
-          >
+          <div className={styles.quizzesGrid}>
             {quizzes.map((quiz: Quiz) => (
-              <AppCard
-                key={quiz.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                  transition: "box-shadow 0.2s, border-color 0.2s",
-                  cursor: "pointer",
-                }}
-              >
+              <AppCard key={quiz.id} className={styles.quizzesCard}>
                 <div>
-                  <Title3 style={{ marginBottom: "0.25rem" }}>
-                    {quiz.name}
-                  </Title3>
+                  <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
                   {quiz.title && (
-                    <Body2 style={{ color: "var(--color-text-secondary)" }}>
-                      {quiz.title}
-                    </Body2>
+                    <Body2 className={styles.mutedText}>{quiz.title}</Body2>
                   )}
                   {quiz.description && (
-                    <Body2
-                      style={{
-                        color: "var(--color-text-secondary)",
-                        marginTop: "0.5rem",
-                      }}
-                    >
+                    <Body2 className={styles.quizDescription}>
                       {quiz.description}
                     </Body2>
                   )}
                 </div>
 
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "1rem",
-                    fontSize: "0.9rem",
-                    color: "var(--color-text-secondary)",
-                  }}
-                >
+                <div className={styles.statsGrid}>
                   <div>
                     <Text size={200}>Questions</Text>
-                    <Text
-                      weight="semibold"
-                      style={{ display: "block", marginTop: "0.25rem" }}
-                    >
+                    <Text weight="semibold" className={styles.statValue}>
                       {quiz.question_count}
                     </Text>
                   </div>
                   <div>
                     <Text size={200}>Pass Score</Text>
-                    <Text
-                      weight="semibold"
-                      style={{ display: "block", marginTop: "0.25rem" }}
-                    >
+                    <Text weight="semibold" className={styles.statValue}>
                       {quiz.required_score}%
                     </Text>
                   </div>
                   <div>
                     <Text size={200}>Attempts</Text>
-                    <Text
-                      weight="semibold"
-                      style={{ display: "block", marginTop: "0.25rem" }}
-                    >
+                    <Text weight="semibold" className={styles.statValue}>
                       {quiz.attempt_limit}
                     </Text>
                   </div>
                   {quiz.topic && (
                     <div>
                       <Text size={200}>Topic</Text>
-                      <Text
-                        weight="semibold"
-                        style={{ display: "block", marginTop: "0.25rem" }}
-                      >
+                      <Text weight="semibold" className={styles.statValue}>
                         {quiz.topic}
                       </Text>
                     </div>
                   )}
                 </div>
 
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div className={styles.row}>
                   <Badge
                     appearance="filled"
                     color={getStatusBadgeColor(quiz.status)}
@@ -470,18 +493,12 @@ function QuizzesPage() {
                   </Badge>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginTop: "auto",
-                  }}
-                >
+                <div className={styles.quizActions}>
                   <Button
                     appearance="primary"
                     as="a"
                     href={ROUTES.QUIZ_TAKE(quiz.id)}
-                    style={{ flex: 1 }}
+                    className={styles.grow}
                   >
                     Take Quiz
                   </Button>
@@ -489,7 +506,7 @@ function QuizzesPage() {
                     appearance="outline"
                     as="a"
                     href={ROUTES.QUIZ_EDIT(quiz.id)}
-                    style={{ flex: 1 }}
+                    className={styles.grow}
                   >
                     Edit
                   </Button>
@@ -497,7 +514,7 @@ function QuizzesPage() {
                     appearance="outline"
                     as="a"
                     href={ROUTES.QUIZ_HISTORY(quiz.id)}
-                    style={{ flex: 1 }}
+                    className={styles.grow}
                   >
                     History
                   </Button>
@@ -507,17 +524,9 @@ function QuizzesPage() {
           </div>
         </div>
       ) : !isLoading && (!quizzes || quizzes.length === 0) ? (
-        <AppCard style={{ textAlign: "center", padding: "3rem" }}>
-          <Title2 style={{ color: "var(--color-text-secondary)" }}>
-            No quizzes yet
-          </Title2>
-          <Body1
-            style={{
-              color: "var(--color-text-secondary)",
-              marginBottom: "1rem",
-              display: "block",
-            }}
-          >
+        <AppCard className={styles.emptyCard}>
+          <Title2 className={styles.mutedText}>No quizzes yet</Title2>
+          <Body1 className={mergeClasses(styles.mutedText, styles.blockText)}>
             Create your first quiz to get started!
           </Body1>
           <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
@@ -538,18 +547,12 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const styles = useStyles();
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div
-        style={{
-          padding: "2rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
+      <div className={styles.protectedLoading}>
         <Spinner size="small" />
         <Body1>Loading...</Body1>
       </div>

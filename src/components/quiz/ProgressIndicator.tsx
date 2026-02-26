@@ -1,4 +1,10 @@
-import { ProgressBar, Text } from "@fluentui/react-components";
+import {
+  ProgressBar,
+  Text,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 
 interface ProgressIndicatorProps {
   current: number;
@@ -6,15 +12,29 @@ interface ProgressIndicatorProps {
   answered: number;
 }
 
-export function ProgressIndicator({ current, total, answered }: ProgressIndicatorProps) {
+const useStyles = makeStyles({
+  root: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  label: {
+    display: "block",
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0),
+  },
+  bar: { height: "8px" },
+});
+
+export function ProgressIndicator({
+  current,
+  total,
+  answered,
+}: ProgressIndicatorProps) {
+  const styles = useStyles();
   const percentage = (answered / total) * 100;
 
   return (
-    <div style={{ marginBottom: "1rem" }}>
-      <Text style={{ display: "block", marginBottom: "0.5rem" }}>
+    <div className={styles.root}>
+      <Text className={styles.label}>
         Question {current} of {total} ({answered} answered)
       </Text>
-      <ProgressBar value={percentage / 100} style={{ height: "8px" }} />
+      <ProgressBar value={percentage / 100} className={styles.bar} />
     </div>
   );
 }

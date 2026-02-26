@@ -1,4 +1,11 @@
-import { Card, Title2, Body1 } from "@fluentui/react-components";
+import {
+  Body1,
+  Card,
+  Title2,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import { SingleChoiceOptions } from "./SingleChoiceOptions";
 import { MultiChoiceOptions } from "./MultiChoiceOptions";
 import { BooleanOptions } from "./BooleanOptions";
@@ -11,12 +18,30 @@ interface QuestionCardProps {
   onAnswerChange: (optionId: string, isChecked?: boolean) => void;
 }
 
+const useStyles = makeStyles({
+  card: {
+    ...shorthands.padding(tokens.spacingHorizontalL),
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0) },
+  description: {
+    color: tokens.colorNeutralForeground3,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  options: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXS,
+  },
+});
+
 export function QuestionCard({
   question,
   userAnswerIds,
   isSubmitted,
   onAnswerChange,
 }: QuestionCardProps) {
+  const styles = useStyles();
   const options = question.options || [];
   const selectedValue = userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
 
@@ -54,7 +79,9 @@ export function QuestionCard({
             options={options}
             selectedValues={userAnswerIds}
             disabled={isSubmitted}
-            onChange={(optionId, isChecked) => onAnswerChange(optionId, isChecked)}
+            onChange={(optionId, isChecked) =>
+              onAnswerChange(optionId, isChecked)
+            }
           />
         );
       default:
@@ -63,16 +90,12 @@ export function QuestionCard({
   };
 
   return (
-    <Card style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-      <Title2 style={{ marginBottom: "0.25rem" }}>{question.title}</Title2>
+    <Card className={styles.card}>
+      <Title2 className={styles.title}>{question.title}</Title2>
       {question.description && (
-        <Body1 style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
-          {question.description}
-        </Body1>
+        <Body1 className={styles.description}>{question.description}</Body1>
       )}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {renderOptions()}
-      </div>
+      <div className={styles.options}>{renderOptions()}</div>
     </Card>
   );
 }

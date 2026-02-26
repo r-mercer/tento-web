@@ -3,16 +3,41 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { QuizAttemptsList } from "./QuizAttemptsList";
 import { AttemptDetailView } from "./AttemptDetailView";
-import { Title1, Body1 } from "@fluentui/react-components";
+import {
+  Body1,
+  Title1,
+  makeStyles,
+  mergeClasses,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
+
+const useStyles = makeStyles({
+  simplePage: { ...shorthands.padding(tokens.spacingHorizontalXL) },
+  page: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    maxWidth: "800px",
+    ...shorthands.margin(0, "auto"),
+  },
+  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0) },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+    display: "block",
+    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+  },
+});
 
 export function QuizHistoryPage() {
+  const styles = useStyles();
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
-  const [selectedAttemptId, setSelectedAttemptId] = useState<string | undefined>();
+  const [selectedAttemptId, setSelectedAttemptId] = useState<
+    string | undefined
+  >();
 
   if (!id) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.simplePage}>
         <Body1>Quiz not found</Body1>
       </div>
     );
@@ -20,7 +45,7 @@ export function QuizHistoryPage() {
 
   if (authLoading) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.simplePage}>
         <Body1>Loading...</Body1>
       </div>
     );
@@ -28,7 +53,7 @@ export function QuizHistoryPage() {
 
   if (!user) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.simplePage}>
         <Body1>Please log in to view attempt history</Body1>
       </div>
     );
@@ -44,10 +69,10 @@ export function QuizHistoryPage() {
   }
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "2rem" }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
         <Title1>Quiz Attempt History</Title1>
-        <Body1 style={{ color: "var(--color-text-secondary)", display: "block", marginTop: "0.5rem" }}>
+        <Body1 className={mergeClasses(styles.subtitle)}>
           View all your attempts and detailed results for this quiz
         </Body1>
       </div>

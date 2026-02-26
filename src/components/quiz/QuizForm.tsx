@@ -12,7 +12,11 @@ import {
   DialogTitle,
   DialogBody,
   DialogActions,
+  makeStyles,
+  shorthands,
+  tokens,
 } from "@fluentui/react-components";
+import { LAYOUT } from "../../styles/layoutRhythm";
 import {
   useQuizForTaking,
   useQuizForResults,
@@ -33,11 +37,45 @@ interface QuizFormProps {
   onAttemptComplete?: (attempt: QuizAttemptResponse) => void;
 }
 
+const useStyles = makeStyles({
+  loadingRow: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+  },
+  page: {
+    ...shorthands.padding(LAYOUT.pagePadding),
+    maxWidth: LAYOUT.maxWidth.content,
+    ...shorthands.margin(0, "auto"),
+  },
+  header: { ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0) },
+  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0) },
+  mutedText: { color: tokens.colorNeutralForeground3 },
+  smallErrorDetail: {
+    ...shorthands.margin(tokens.spacingVerticalXXS, 0, 0, 0),
+    fontSize: tokens.fontSizeBase200,
+  },
+  messageBottom: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  navActions: {
+    display: "flex",
+    gap: tokens.spacingHorizontalM,
+    justifyContent: "space-between",
+    ...shorthands.margin(tokens.spacingVerticalL, 0, 0, 0),
+  },
+  messageTop: { ...shorthands.margin(tokens.spacingVerticalM, 0, 0, 0) },
+});
+
 export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
+  const styles = useStyles();
   const navigate = useNavigate();
 
   const { data: quizForTaking, isLoading, error } = useQuizForTaking(quizId);
-  const { data: quizForResults, refetch: refetchResults, error: resultsError } = useQuizForResults(quizId, false);
+  const {
+    data: quizForResults,
+    refetch: refetchResults,
+    error: resultsError,
+  } = useQuizForResults(quizId, false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<string, string[]>>(() => {
@@ -63,7 +101,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   // Debug logging
   console.log("[QuizForm] quizForTaking:", quizForTaking);
   console.log("[QuizForm] questions:", quizForTaking?.questions);
-  console.log("[QuizForm] question types:", quizForTaking?.questions?.map(q => q.question_type));
+  console.log(
+    "[QuizForm] question types:",
+    quizForTaking?.questions?.map((q) => q.question_type),
+  );
   console.log("[QuizForm] quizForResults:", quizForResults);
   console.log("[QuizForm] isLoadingResults:", isLoadingResults);
   console.log("[QuizForm] resultsError:", resultsError);
@@ -73,7 +114,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     if (typeof window !== "undefined" && userAnswers.size > 0) {
       localStorage.setItem(
         `quiz-progress-${quizId}`,
-        JSON.stringify(Array.from(userAnswers.entries()))
+        JSON.stringify(Array.from(userAnswers.entries())),
       );
     }
   }, [userAnswers, quizId]);
@@ -102,7 +143,9 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   }, [quizForTaking?.questions, attemptNumber]);
 
   const currentQuestionData =
-    shuffledQuestions.length > 0 ? shuffledQuestions[currentQuestionIndex] : null;
+    shuffledQuestions.length > 0
+      ? shuffledQuestions[currentQuestionIndex]
+      : null;
 
   const handleAnswerChange = (optionId: string, isChecked?: boolean) => {
     if (isSubmitted || !currentQuestionData) return;
@@ -155,12 +198,14 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
     setShowSubmitDialog(false);
 
-    const answers = shuffledQuestions.map((question) => ({
-      questionId: question.id,
-      selectedOptionIds: userAnswers.get(question.id) || [],
-    }));
+    const answers: QuestionAnswerSubmission[] = shuffledQuestions.map(
+      (question) => ({
+        question_id: question.id,
+        selected_option_ids: userAnswers.get(question.id) || [],
+      }),
+    );
 
-    const payload = { quizId: quizId, answers };
+    const payload: SubmitQuizAttemptPayload = { quiz_id: quizId, answers };
 
     console.log("[QuizForm] Submitting payload:", payload);
 
@@ -172,19 +217,20 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       setIsSubmitted(true);
       setShouldFetchResults(true);
       setIsLoadingResults(true);
-      
+
       // Clear localStorage on successful submission
       localStorage.removeItem(`quiz-progress-${quizId}`);
-      
+
       // Trigger a fresh fetch of results to avoid stale data
       await refetchResults();
-      
+
       onAttemptComplete?.(result);
     } catch (err: any) {
       console.error("Failed to submit quiz:", err);
       setIsLoadingResults(false);
-      
-      const errorMessage = err?.message || "Failed to submit quiz. Please try again.";
+
+      const errorMessage =
+        err?.message || "Failed to submit quiz. Please try again.";
       setSubmitError(errorMessage);
     }
   };
@@ -215,7 +261,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   if (isLoading) {
     return (
-      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className={styles.loadingRow}>
         <Spinner size="small" />
         <Body1>Loading quiz...</Body1>
       </div>
@@ -224,7 +270,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   if (isLoadingResults) {
     return (
-      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className={styles.loadingRow}>
         <Spinner size="small" />
         <Body1>Loading results...</Body1>
       </div>
@@ -234,12 +280,12 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   if (error) {
     console.error("Quiz loading error:", error);
     return (
-      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <div className={styles.page}>
         <MessageBar intent="error">
           <MessageBarBody>
             Failed to load quiz. Please try again later.
             {error?.message && (
-              <div style={{ marginTop: "8px", fontSize: "12px" }}>
+              <div className={styles.smallErrorDetail}>
                 Error: {error.message}
               </div>
             )}
@@ -251,10 +297,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   if (showResults && attempt && quizForResults) {
     return (
-      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-        <div style={{ marginBottom: "1.5rem" }}>
-          <Title1 style={{ marginBottom: "0.5rem" }}>{quizForResults.name}</Title1>
-          <Body1 style={{ color: "var(--color-text-secondary)" }}>
+      <div className={styles.page}>
+        <div className={styles.header}>
+          <Title1 className={styles.title}>{quizForResults.name}</Title1>
+          <Body1 className={styles.mutedText}>
             {quizForResults.description}
           </Body1>
         </div>
@@ -278,15 +324,21 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   return (
     <>
-      <Dialog open={showSubmitDialog} onOpenChange={(_, data) => setShowSubmitDialog(data.open)}>
+      <Dialog
+        open={showSubmitDialog}
+        onOpenChange={(_, data) => setShowSubmitDialog(data.open)}
+      >
         <DialogSurface>
           <DialogTitle>Unanswered Questions</DialogTitle>
           <DialogBody>
-            You have {unansweredCount} unanswered question{unansweredCount === 1 ? "" : "s"}. 
-            Are you sure you want to submit?
+            You have {unansweredCount} unanswered question
+            {unansweredCount === 1 ? "" : "s"}. Are you sure you want to submit?
           </DialogBody>
           <DialogActions>
-            <Button appearance="outline" onClick={() => setShowSubmitDialog(false)}>
+            <Button
+              appearance="outline"
+              onClick={() => setShowSubmitDialog(false)}
+            >
               Continue Editing
             </Button>
             <Button appearance="primary" onClick={executeSubmit}>
@@ -296,10 +348,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         </DialogSurface>
       </Dialog>
 
-      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-        <div style={{ marginBottom: "1.5rem" }}>
-          <Title1 style={{ marginBottom: "0.5rem" }}>{quizForTaking.name}</Title1>
-          <Body1 style={{ color: "var(--color-text-secondary)" }}>
+      <div className={styles.page}>
+        <div className={styles.header}>
+          <Title1 className={styles.title}>{quizForTaking.name}</Title1>
+          <Body1 className={styles.mutedText}>
             {quizForTaking.description}
           </Body1>
         </div>
@@ -311,7 +363,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         />
 
         {submitError && (
-          <MessageBar intent="error" style={{ marginBottom: "1rem" }}>
+          <MessageBar intent="error" className={styles.messageBottom}>
             <MessageBarBody>{submitError}</MessageBarBody>
           </MessageBar>
         )}
@@ -323,7 +375,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
           onAnswerChange={handleAnswerChange}
         />
 
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "space-between", marginTop: "1.5rem" }}>
+        <div className={styles.navActions}>
           <Button
             appearance="outline"
             onClick={handlePrevious}
@@ -348,8 +400,10 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         </div>
 
         {submitMutation.isError && (
-          <MessageBar intent="error" style={{ marginTop: "1rem" }}>
-            <MessageBarBody>Failed to submit quiz. Please try again.</MessageBarBody>
+          <MessageBar intent="error" className={styles.messageTop}>
+            <MessageBarBody>
+              Failed to submit quiz. Please try again.
+            </MessageBarBody>
           </MessageBar>
         )}
       </div>

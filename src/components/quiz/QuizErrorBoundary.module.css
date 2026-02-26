@@ -1,0 +1,13 @@
+.container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.message {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin-bottom: 0.5rem;
+}

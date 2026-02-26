@@ -12,6 +12,9 @@ import {
   Divider,
   Card,
   Badge,
+  makeStyles,
+  shorthands,
+  tokens,
 } from "@fluentui/react-components";
 import type { Quiz, QuizQuestion, QuizQuestionOption } from "../../types/api";
 
@@ -23,11 +26,14 @@ type Props = {
 interface DirtyFields {
   title?: boolean;
   description?: boolean;
-  questions?: Record<string, {
-    title?: boolean;
-    description?: boolean;
-    options?: Record<string, boolean>;
-  }>;
+  questions?: Record<
+    string,
+    {
+      title?: boolean;
+      description?: boolean;
+      options?: Record<string, boolean>;
+    }
+  >;
 }
 
 interface UpdateQuizVariables {
@@ -42,7 +48,42 @@ interface UpdateQuizVariables {
   }>;
 }
 
+const useStyles = makeStyles({
+  loading: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+  },
+  page: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    maxWidth: "800px",
+    ...shorthands.margin(0, "auto"),
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
+  },
+  card: {
+    ...shorthands.padding(tokens.spacingHorizontalL),
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  fieldBottom: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  divider: { ...shorthands.margin(tokens.spacingVerticalL, 0) },
+  questionTitle: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  optionsStack: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXS,
+    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+  },
+  actions: { display: "flex", gap: tokens.spacingHorizontalS },
+});
+
 export function QuizEditor({ quizId, onSaved }: Props) {
+  const styles = useStyles();
   const { data: quiz, isLoading } = useQuiz(quizId);
   const updateMutation = useUpdateQuiz(quizId);
   const toast = useToast();
@@ -72,8 +113,8 @@ export function QuizEditor({ quizId, onSaved }: Props) {
   }, [dirtyFields]);
 
   const updateField = <K extends keyof Quiz>(key: K, value: Quiz[K]) => {
-    setEditedQuiz(prev => prev ? { ...prev, [key]: value } : null);
-    setDirtyFields(prev => ({ ...prev, [key]: true }));
+    setEditedQuiz((prev) => (prev ? { ...prev, [key]: value } : null));
+    setDirtyFields((prev) => ({ ...prev, [key]: true }));
   };
 
   const updateQuestion = (index: number, patch: Partial<QuizQuestion>) => {
@@ -81,7 +122,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
     const question = editedQuiz.questions[index];
     if (!question) return;
 
-    setEditedQuiz(prev => {
+    setEditedQuiz((prev) => {
       if (!prev?.questions) return prev;
       const questions = prev.questions.map((q, i) =>
         i === index ? { ...q, ...patch } : q,
@@ -90,10 +131,10 @@ export function QuizEditor({ quizId, onSaved }: Props) {
     });
 
     const fieldUpdates: Record<string, boolean> = {};
-    if ('title' in patch) fieldUpdates.title = true;
-    if ('description' in patch) fieldUpdates.description = true;
+    if ("title" in patch) fieldUpdates.title = true;
+    if ("description" in patch) fieldUpdates.description = true;
 
-    setDirtyFields(prev => ({
+    setDirtyFields((prev) => ({
       ...prev,
       questions: {
         ...prev.questions,
@@ -111,7 +152,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
     const option = question?.options?.[oIndex];
     if (!question || !option) return;
 
-    setEditedQuiz(prev => {
+    setEditedQuiz((prev) => {
       if (!prev?.questions) return prev;
       const questions = prev.questions.map((q, i) => {
         if (i !== qIndex) return q;
@@ -123,7 +164,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
       return { ...prev, questions };
     });
 
-    setDirtyFields(prev => ({
+    setDirtyFields((prev) => ({
       ...prev,
       questions: {
         ...prev.questions,
@@ -152,19 +193,21 @@ export function QuizEditor({ quizId, onSaved }: Props) {
 
     if (dirtyFields.questions) {
       const dirtyQuestions = Object.entries(dirtyFields.questions)
-        .filter(([, qDirty]) =>
-          qDirty.title || qDirty.description ||
-          (qDirty.options && Object.values(qDirty.options).some(Boolean))
+        .filter(
+          ([, qDirty]) =>
+            qDirty.title ||
+            qDirty.description ||
+            (qDirty.options && Object.values(qDirty.options).some(Boolean)),
         )
         .map(([qId, qDirty]) => {
-          const question = editedQuiz.questions?.find(q => q.id === qId);
+          const question = editedQuiz.questions?.find((q) => q.id === qId);
           if (!question) return null;
 
-          const qPayload: { 
-            id: string; 
-            title?: string; 
-            description?: string; 
-            options?: Array<{ id: string; text: string }> 
+          const qPayload: {
+            id: string;
+            title?: string;
+            description?: string;
+            options?: Array<{ id: string; text: string }>;
           } = { id: qId };
 
           if (qDirty.title) qPayload.title = question.title;
@@ -174,7 +217,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
             const dirtyOptions = Object.entries(qDirty.options)
               .filter(([, isDirty]) => isDirty)
               .map(([oId]) => {
-                const opt = question.options?.find(o => o.id === oId);
+                const opt = question.options?.find((o) => o.id === oId);
                 if (!opt) return null;
                 return { id: oId, text: opt.text };
               })
@@ -229,7 +272,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
 
   if (isLoading || !editedQuiz) {
     return (
-      <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className={styles.loading}>
         <Spinner size="small" />
         <span>Loading editor...</span>
       </div>
@@ -239,14 +282,18 @@ export function QuizEditor({ quizId, onSaved }: Props) {
   const hasChanges = hasDirtyFields();
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
         <Title2>Edit Quiz</Title2>
-        {hasChanges && <Badge appearance="filled" color="warning">Unsaved changes</Badge>}
+        {hasChanges && (
+          <Badge appearance="filled" color="warning">
+            Unsaved changes
+          </Badge>
+        )}
       </div>
 
-      <Card style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-        <Field label="Title" style={{ marginBottom: "1rem" }}>
+      <Card className={styles.card}>
+        <Field label="Title" className={styles.fieldBottom}>
           <Input
             value={editedQuiz.title ?? ""}
             onChange={(_, v) => updateField("title", v.value)}
@@ -262,20 +309,20 @@ export function QuizEditor({ quizId, onSaved }: Props) {
         </Field>
       </Card>
 
-      <Divider style={{ margin: "1.5rem 0" }} />
+      <Divider className={styles.divider} />
 
       {(editedQuiz.questions || []).map((question, qi) => (
-        <Card key={question.id} style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-          <Title3 style={{ marginBottom: "1rem" }}>Question {qi + 1}</Title3>
+        <Card key={question.id} className={styles.card}>
+          <Title3 className={styles.questionTitle}>Question {qi + 1}</Title3>
 
-          <Field label="Question Title" style={{ marginBottom: "1rem" }}>
+          <Field label="Question Title" className={styles.fieldBottom}>
             <Input
               value={question.title ?? ""}
               onChange={(_, v) => updateQuestion(qi, { title: v.value })}
             />
           </Field>
 
-          <Field label="Question Description" style={{ marginBottom: "1rem" }}>
+          <Field label="Question Description" className={styles.fieldBottom}>
             <Textarea
               value={question.description ?? ""}
               onChange={(_, v) => updateQuestion(qi, { description: v.value })}
@@ -284,7 +331,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
           </Field>
 
           <Field label="Options">
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+            <div className={styles.optionsStack}>
               {question.options?.map((opt: QuizQuestionOption, oi: number) => (
                 <Input
                   key={opt.id}
@@ -298,7 +345,7 @@ export function QuizEditor({ quizId, onSaved }: Props) {
         </Card>
       ))}
 
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.actions}>
         <Button
           appearance="primary"
           onClick={handleSave}

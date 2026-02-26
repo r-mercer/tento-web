@@ -1,4 +1,14 @@
-import { Card, Title2, Title1, Body1, Button, Badge } from "@fluentui/react-components";
+import {
+  Card,
+  Title2,
+  Title1,
+  Body1,
+  Button,
+  Badge,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import type { QuizAttemptResponse, Quiz } from "../../types/api";
 
 interface ResultsViewProps {
@@ -8,12 +18,43 @@ interface ResultsViewProps {
   onReview: () => void;
 }
 
+const useStyles = makeStyles({
+  card: {
+    ...shorthands.padding(tokens.spacingHorizontalXL),
+    textAlign: "center",
+    maxWidth: "500px",
+    ...shorthands.margin(0, "auto"),
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  score: {
+    color: tokens.colorBrandForeground1,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXS, 0),
+  },
+  percentage: {
+    color: tokens.colorNeutralForeground3,
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  badge: {
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXL, 0),
+  },
+  actions: {
+    display: "flex",
+    gap: tokens.spacingHorizontalM,
+    justifyContent: "center",
+    flexWrap: "wrap",
+  },
+});
+
 export function ResultsView({
   attempt,
   quiz,
   onRetake,
   onReview,
 }: ResultsViewProps) {
+  const styles = useStyles();
   const percentage = Math.round(
     (attempt.points_earned / attempt.total_possible) * 100,
   );
@@ -22,45 +63,37 @@ export function ResultsView({
 
   return (
     <Card
-      style={{
-        padding: "2rem",
-        textAlign: "center",
-        maxWidth: "500px",
-        margin: "0 auto",
-      }}
+      className={styles.card}
       role="status"
       aria-live="polite"
       aria-atomic="true"
     >
-      <Title2 style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
-        Quiz Complete!
-      </Title2>
+      <Title2 className={styles.subtitle}>Quiz Complete!</Title2>
 
-      <Title1 
-        style={{ color: "var(--color-primary)", marginBottom: "0.5rem" }}
+      <Title1
+        className={styles.score}
         aria-label={`You scored ${attempt.points_earned} out of ${attempt.total_possible} points`}
       >
         {attempt.points_earned}/{attempt.total_possible}
       </Title1>
 
-      <Body1 style={{ color: "var(--color-text-secondary)", marginBottom: "1rem" }}>
-        {percentage}%
-      </Body1>
+      <Body1 className={styles.percentage}>{percentage}%</Body1>
 
       <Badge
         appearance="filled"
         color={isPassed ? "success" : "danger"}
         size="large"
-        style={{ marginBottom: "2rem" }}
-        aria-label={isPassed 
-          ? `Congratulations! You passed with ${percentage}%` 
-          : `You did not pass. You scored ${percentage}%. Required: ${quiz.required_score}%`
+        className={styles.badge}
+        aria-label={
+          isPassed
+            ? `Congratulations! You passed with ${percentage}%`
+            : `You did not pass. You scored ${percentage}%. Required: ${quiz.required_score}%`
         }
       >
         {isPassed ? "Passed" : "Failed"}
       </Badge>
 
-      <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+      <div className={styles.actions}>
         <Button
           appearance="primary"
           onClick={onRetake}

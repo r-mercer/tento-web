@@ -1,5 +1,8 @@
-import { Checkbox } from "@fluentui/react-components";
-import type { QuizQuestionOptionForTaking, QuizQuestionOption } from "../../types/api";
+import { Checkbox, makeStyles, tokens } from "@fluentui/react-components";
+import type {
+  QuizQuestionOptionForTaking,
+  QuizQuestionOption,
+} from "../../types/api";
 
 interface MultiChoiceOptionsProps {
   options: (QuizQuestionOptionForTaking | QuizQuestionOption)[];
@@ -8,14 +11,24 @@ interface MultiChoiceOptionsProps {
   onChange: (optionId: string, isChecked: boolean) => void;
 }
 
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXS,
+  },
+});
+
 export function MultiChoiceOptions({
   options,
   selectedValues,
   disabled,
   onChange,
 }: MultiChoiceOptionsProps) {
+  const styles = useStyles();
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    <div className={styles.root}>
       {options.map((option) => (
         <Checkbox
           key={option.id}

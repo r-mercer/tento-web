@@ -1,52 +1,100 @@
 import { Link, useLocation } from "react-router-dom";
-import { Button, Avatar, Menu, MenuTrigger, MenuPopover, MenuList, MenuItem } from "@fluentui/react-components";
+import {
+  Button,
+  Avatar,
+  Menu,
+  MenuTrigger,
+  MenuPopover,
+  MenuList,
+  MenuItem,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../utils/constants";
+import { LAYOUT } from "../../styles/layoutRhythm";
 
 const NAV_LINKS = [
   { label: "Dashboard", href: ROUTES.DASHBOARD },
   { label: "My Quizzes", href: ROUTES.QUIZZES },
 ] as const;
 
+const useStyles = makeStyles({
+  nav: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    rowGap: tokens.spacingVerticalS,
+    columnGap: tokens.spacingHorizontalM,
+    ...shorthands.padding(tokens.spacingVerticalM, LAYOUT.navPadding),
+    ...shorthands.borderBottom("1px", "solid", tokens.colorNeutralStroke1),
+    backgroundColor: tokens.colorNeutralBackground1,
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
+  },
+  leftGroup: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: "clamp(0.75rem, 2vw, 1.75rem)",
+  },
+  brand: {
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightSemibold,
+    textDecorationLine: "none",
+    color: tokens.colorNeutralForeground1,
+  },
+  linkGroup: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: tokens.spacingHorizontalS,
+  },
+  actions: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
+  },
+  profileButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+    cursor: "pointer",
+  },
+  username: {
+    fontSize: tokens.fontSizeBase200,
+    maxWidth: "10rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+});
+
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+  const styles = useStyles();
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0.75rem 1.5rem",
-        borderBottom: "1px solid var(--colorNeutralStroke1)",
-        backgroundColor: "var(--colorNeutralBackground1)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-        <Link
-          to={ROUTES.HOME}
-          style={{
-            fontSize: "1.25rem",
-            fontWeight: 600,
-            textDecoration: "none",
-            color: "var(--colorNeutralForeground1)",
-          }}
-        >
+    <nav className={styles.nav}>
+      <div className={styles.leftGroup}>
+        <Link to={ROUTES.HOME} className={styles.brand}>
           Tento
         </Link>
 
         {isAuthenticated && (
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div className={styles.linkGroup}>
             {NAV_LINKS.map((link) => (
               <Button
+                key={link.href}
                 as="a"
                 href={link.href}
-                appearance={location.pathname === link.href ? "primary" : "subtle"}
-                style={{ textDecoration: "none" }}
+                appearance={
+                  location.pathname === link.href ? "primary" : "subtle"
+                }
               >
                 {link.label}
               </Button>
@@ -55,25 +103,13 @@ export function Navbar() {
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className={styles.actions}>
         {isAuthenticated && user ? (
           <Menu>
             <MenuTrigger>
-              <Button
-                appearance="subtle"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  cursor: "pointer",
-                }}
-              >
-                <Avatar
-                  name={user.username}
-                  size={28}
-                  style={{ backgroundColor: "var(--colorBrandBackground)" }}
-                />
-                <span style={{ fontSize: "0.875rem" }}>{user.username}</span>
+              <Button appearance="subtle" className={styles.profileButton}>
+                <Avatar name={user.username} size={28} />
+                <span className={styles.username}>{user.username}</span>
               </Button>
             </MenuTrigger>
             <MenuPopover>

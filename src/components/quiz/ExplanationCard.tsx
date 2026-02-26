@@ -1,4 +1,12 @@
-import { Card, Text, Body1 } from "@fluentui/react-components";
+import {
+  Body1,
+  Card,
+  Text,
+  makeStyles,
+  mergeClasses,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 
 interface ExplanationCardProps {
   explanation?: string;
@@ -6,7 +14,32 @@ interface ExplanationCardProps {
   isVisible: boolean;
 }
 
-export function ExplanationCard({ explanation, isCorrect, isVisible }: ExplanationCardProps) {
+const useStyles = makeStyles({
+  card: {
+    ...shorthands.margin(tokens.spacingVerticalXS, 0, 0, 0),
+    ...shorthands.padding(tokens.spacingHorizontalM),
+    ...shorthands.borderLeft("4px", "solid", tokens.colorNeutralStroke1),
+  },
+  cardCorrect: {
+    backgroundColor: tokens.colorPaletteGreenBackground1,
+    borderLeftColor: tokens.colorPaletteGreenBorder2,
+  },
+  cardIncorrect: {
+    backgroundColor: tokens.colorPaletteRedBackground1,
+    borderLeftColor: tokens.colorPaletteRedBorder2,
+  },
+  label: {
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+  },
+});
+
+export function ExplanationCard({
+  explanation,
+  isCorrect,
+  isVisible,
+}: ExplanationCardProps) {
+  const styles = useStyles();
+
   if (!isVisible || !explanation) {
     return null;
   }
@@ -16,14 +49,12 @@ export function ExplanationCard({ explanation, isCorrect, isVisible }: Explanati
 
   return (
     <Card
-      style={{
-        marginTop: "0.5rem",
-        padding: "0.75rem",
-        backgroundColor: isCorrect ? "var(--color-success-bg, #efe)" : "var(--color-error-bg, #fee)",
-        borderLeft: `4px solid ${isCorrect ? "var(--color-success, #060)" : "var(--color-error, #c00)"}`,
-      }}
+      className={mergeClasses(
+        styles.card,
+        isCorrect ? styles.cardCorrect : styles.cardIncorrect,
+      )}
     >
-      <Text weight="semibold" style={{ marginBottom: "0.25rem" }}>
+      <Text weight="semibold" className={styles.label}>
         {icon} {label}
       </Text>
       <Body1>{explanation}</Body1>

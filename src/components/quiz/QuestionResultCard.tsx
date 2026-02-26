@@ -1,4 +1,13 @@
-import { Card, Title3, Body1, Text, Badge } from "@fluentui/react-components";
+import {
+  Badge,
+  Body1,
+  Card,
+  Text,
+  Title3,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import type { QuestionAttemptDetail, QuizQuestion } from "../../types/api";
 
 interface QuestionResultCardProps {
@@ -6,48 +15,89 @@ interface QuestionResultCardProps {
   result: QuestionAttemptDetail;
 }
 
-export function QuestionResultCard({ question, result }: QuestionResultCardProps) {
+const useStyles = makeStyles({
+  card: {
+    ...shorthands.padding(tokens.spacingHorizontalL),
+    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
+  },
+  section: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
+  title: { ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0) },
+  mutedText: { color: tokens.colorNeutralForeground3 },
+  subsection: { ...shorthands.margin(0, 0, tokens.spacingVerticalS, 0) },
+  sectionHeading: {
+    display: "block",
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+  },
+  list: {
+    ...shorthands.margin(0),
+    paddingLeft: "1.25rem",
+  },
+  listItemMuted: { color: tokens.colorNeutralForeground1 },
+  listItemCorrect: { color: tokens.colorPaletteGreenForeground1 },
+  explanation: {
+    ...shorthands.padding(tokens.spacingHorizontalM),
+    ...shorthands.borderLeft("4px", "solid", tokens.colorBrandStroke1),
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  explanationTitle: {
+    color: tokens.colorBrandForeground1,
+    display: "block",
+    ...shorthands.margin(0, 0, tokens.spacingVerticalXXS, 0),
+  },
+  footer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    ...shorthands.padding(tokens.spacingVerticalS, 0, 0, 0),
+    ...shorthands.borderTop("1px", "solid", tokens.colorNeutralStroke1),
+  },
+});
+
+export function QuestionResultCard({
+  question,
+  result,
+}: QuestionResultCardProps) {
+  const styles = useStyles();
   const correctOptions = question.options?.filter((opt) => opt.correct) || [];
-  const userSelectedOptions = question.options?.filter((opt) =>
-    result.user_selected_option_ids.includes(opt.id)
-  ) || [];
+  const userSelectedOptions =
+    question.options?.filter((opt) =>
+      result.user_selected_option_ids.includes(opt.id),
+    ) || [];
 
   return (
-    <Card style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-      <div style={{ marginBottom: "1rem" }}>
-        <Title3 style={{ marginBottom: "0.25rem" }}>{question.title}</Title3>
+    <Card className={styles.card}>
+      <div className={styles.section}>
+        <Title3 className={styles.title}>{question.title}</Title3>
         {question.description && (
-          <Body1 style={{ color: "var(--color-text-secondary)" }}>
-            {question.description}
-          </Body1>
+          <Body1 className={styles.mutedText}>{question.description}</Body1>
         )}
       </div>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <div style={{ marginBottom: "0.75rem" }}>
-          <Text weight="semibold" style={{ display: "block", marginBottom: "0.25rem" }}>
+      <div className={styles.section}>
+        <div className={styles.subsection}>
+          <Text weight="semibold" className={styles.sectionHeading}>
             Your Answer{userSelectedOptions.length > 1 ? "s" : ""}:
           </Text>
           {userSelectedOptions.length > 0 ? (
-            <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+            <ul className={styles.list}>
               {userSelectedOptions.map((opt) => (
-                <li key={opt.id} style={{ color: "var(--color-text-primary)" }}>
+                <li key={opt.id} className={styles.listItemMuted}>
                   {opt.text}
                 </li>
               ))}
             </ul>
           ) : (
-            <Text style={{ color: "var(--color-text-secondary)" }}>No answer selected</Text>
+            <Text className={styles.mutedText}>No answer selected</Text>
           )}
         </div>
 
-        <div style={{ marginBottom: "0.75rem" }}>
-          <Text weight="semibold" style={{ display: "block", marginBottom: "0.25rem" }}>
+        <div className={styles.subsection}>
+          <Text weight="semibold" className={styles.sectionHeading}>
             Correct Answer{correctOptions.length > 1 ? "s" : ""}:
           </Text>
-          <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+          <ul className={styles.list}>
             {correctOptions.map((opt) => (
-              <li key={opt.id} style={{ color: "var(--color-success)" }}>
+              <li key={opt.id} className={styles.listItemCorrect}>
                 {opt.text}
               </li>
             ))}
@@ -55,17 +105,8 @@ export function QuestionResultCard({ question, result }: QuestionResultCardProps
         </div>
 
         {result.explanation && (
-          <Card
-            style={{
-              padding: "0.75rem",
-              borderLeft: "4px solid var(--color-primary)",
-              backgroundColor: "var(--color-surface)",
-            }}
-          >
-            <Text
-              weight="semibold"
-              style={{ color: "var(--color-primary)", display: "block", marginBottom: "0.25rem" }}
-            >
+          <Card className={styles.explanation}>
+            <Text weight="semibold" className={styles.explanationTitle}>
               Explanation
             </Text>
             <Body1>{result.explanation}</Body1>
@@ -73,15 +114,7 @@ export function QuestionResultCard({ question, result }: QuestionResultCardProps
         )}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingTop: "0.75rem",
-          borderTop: "1px solid var(--color-border)",
-        }}
-      >
+      <div className={styles.footer}>
         <Badge
           appearance="filled"
           color={result.is_correct ? "success" : "danger"}
