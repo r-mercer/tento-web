@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     paddingLeft: "1.25rem",
   },
   listItemMuted: { color: tokens.colorNeutralForeground1 },
-  listItemCorrect: { color: tokens.colorPaletteGreenForeground1 },
+  listItemCorrect: { color: tokens.colorStatusSuccessForeground1 },
   explanation: {
     ...shorthands.padding(tokens.spacingHorizontalM),
     ...shorthands.borderLeft("4px", "solid", tokens.colorBrandStroke1),

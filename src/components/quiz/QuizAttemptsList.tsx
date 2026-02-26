@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useQuizAttempts } from "../../hooks/api/useQuizAttempts";
 import {
   Button,
   Badge,
   Body1,
   Text,
-  Spinner,
   MessageBar,
   MessageBarBody,
   Card,
@@ -25,8 +24,8 @@ interface QuizAttemptsListProps {
 const useStyles = makeStyles({
   loading: {
     display: "flex",
-    alignItems: "center",
-    gap: tokens.spacingHorizontalS,
+    flexDirection: "column",
+    gap: TYPOGRAPHY.spacing.subtitleTop,
   },
   empty: {
     textAlign: "center",
@@ -44,6 +43,13 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  cardInteractive: {
+    ...shorthands.outline("2px", "solid", "transparent"),
+    outlineOffset: "2px",
+    ":focus-visible": {
+      outlineColor: tokens.colorStrokeFocus2,
+    },
   },
   cardSelected: {
     backgroundColor: tokens.colorBrandBackground,
@@ -70,6 +76,27 @@ const useStyles = makeStyles({
     display: "flex",
     gap: tokens.spacingHorizontalS,
   },
+  loadingCard: {
+    ...shorthands.padding(tokens.spacingHorizontalM),
+    minHeight: "88px",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    gap: TYPOGRAPHY.spacing.subtitleTop,
+  },
+  skeletonLine: {
+    height: "12px",
+    width: "100%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonLineShort: {
+    height: "12px",
+    width: "45%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
 });
 
 export function QuizAttemptsList({
@@ -88,18 +115,32 @@ export function QuizAttemptsList({
     error,
   } = useQuizAttempts(quizId, limit, offset);
 
+  const handleCardKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+    attemptId: string,
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelectAttempt(attemptId);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className={styles.loading}>
-        <Spinner size="small" />
-        <Body1>Loading attempts...</Body1>
+      <div className={styles.loading} role="status" aria-live="polite">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Card key={index} className={styles.loadingCard} aria-hidden="true">
+            <div className={styles.skeletonLineShort} />
+            <div className={styles.skeletonLine} />
+          </Card>
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <MessageBar intent="error">
+      <MessageBar intent="error" aria-live="assertive">
         <MessageBarBody>
           Failed to load attempts. Please try again.
         </MessageBarBody>
@@ -129,8 +170,14 @@ export function QuizAttemptsList({
           <Card
             key={attempt.id}
             onClick={() => onSelectAttempt(attempt.id)}
+            onKeyDown={(event) => handleCardKeyDown(event, attempt.id)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Open details for attempt ${attempt.attempt_number}`}
+            aria-pressed={selectedAttemptId === attempt.id}
             className={mergeClasses(
               styles.card,
+              styles.cardInteractive,
               selectedAttemptId === attempt.id && styles.cardSelected,
             )}
           >

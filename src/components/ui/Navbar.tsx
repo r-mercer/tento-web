@@ -62,7 +62,6 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: tokens.spacingHorizontalS,
-    cursor: "pointer",
   },
   username: {
     fontSize: tokens.fontSizeBase200,
@@ -92,6 +91,9 @@ export function Navbar() {
                 key={link.href}
                 as="a"
                 href={link.href}
+                aria-current={
+                  location.pathname === link.href ? "page" : undefined
+                }
                 appearance={
                   location.pathname === link.href ? "primary" : "subtle"
                 }

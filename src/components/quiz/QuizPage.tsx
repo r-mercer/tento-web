@@ -30,17 +30,17 @@ export function QuizPage() {
 
   if (!id) {
     return (
-      <div className={styles.page}>
-        <MessageBar intent="error">
+      <main className={styles.page}>
+        <MessageBar intent="error" aria-live="assertive">
           <MessageBarBody>Quiz not found</MessageBarBody>
         </MessageBar>
-      </div>
+      </main>
     );
   }
 
   if (authLoading) {
     return (
-      <div className={styles.loading}>
+      <div className={styles.loading} role="status" aria-live="polite">
         <Spinner size="small" />
         <Body1>Loading...</Body1>
       </div>
@@ -49,11 +49,11 @@ export function QuizPage() {
 
   if (!user) {
     return (
-      <div className={styles.page}>
-        <MessageBar intent="warning">
+      <main className={styles.page}>
+        <MessageBar intent="warning" aria-live="assertive">
           <MessageBarBody>Please log in to take this quiz</MessageBarBody>
         </MessageBar>
-      </div>
+      </main>
     );
   }
 

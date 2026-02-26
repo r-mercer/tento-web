@@ -39,15 +39,15 @@ export function QuizHistoryPage() {
 
   if (!id) {
     return (
-      <div className={styles.simplePage}>
+      <main className={styles.simplePage}>
         <Body1>Quiz not found</Body1>
-      </div>
+      </main>
     );
   }
 
   if (authLoading) {
     return (
-      <div className={styles.simplePage}>
+      <div className={styles.simplePage} role="status" aria-live="polite">
         <Body1>Loading...</Body1>
       </div>
     );
@@ -55,9 +55,9 @@ export function QuizHistoryPage() {
 
   if (!user) {
     return (
-      <div className={styles.simplePage}>
+      <main className={styles.simplePage}>
         <Body1>Please log in to view attempt history</Body1>
-      </div>
+      </main>
     );
   }
 
@@ -71,9 +71,9 @@ export function QuizHistoryPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <main className={styles.page} aria-labelledby="quiz-history-title">
       <div className={styles.header}>
-        <Title1>Quiz Attempt History</Title1>
+        <Title1 id="quiz-history-title">Quiz Attempt History</Title1>
         <Body1 className={mergeClasses(styles.subtitle)}>
           View all your attempts and detailed results for this quiz
         </Body1>
@@ -84,6 +84,6 @@ export function QuizHistoryPage() {
         onSelectAttempt={setSelectedAttemptId}
         selectedAttemptId={selectedAttemptId}
       />
-    </div>
+    </main>
   );
 }

@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.subtitleBottom, 0),
   },
   score: {
-    color: tokens.colorBrandForeground1,
+    color: tokens.colorBrandForeground2,
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
   },
   percentage: {

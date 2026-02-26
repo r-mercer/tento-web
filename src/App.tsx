@@ -57,7 +57,17 @@ const useStyles = makeStyles({
     minHeight: "100vh",
     justifyContent: "center",
   },
+  loginActions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    ...shorthands.margin(tokens.spacingVerticalM, 0, 0, 0),
+  },
   mutedText: { color: TYPOGRAPHY.mutedForeground },
+  cardSubtitle: {
+    display: "block",
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
+  },
   sectionTitle: {
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottom, 0),
   },
@@ -111,6 +121,47 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: tokens.spacingVerticalXS,
   },
+  loadingSkeletonGrid: {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fill, minmax(${LAYOUT.grid.recentCardMin}, 1fr))`,
+    gap: tokens.spacingHorizontalL,
+    ...shorthands.margin(tokens.spacingVerticalM, 0, 0, 0),
+  },
+  loadingSkeletonCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    minHeight: "180px",
+  },
+  skeletonLine: {
+    height: "12px",
+    width: "100%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonLineShort: {
+    height: "12px",
+    width: "55%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonLineTiny: {
+    height: "10px",
+    width: "35%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonActions: {
+    display: "flex",
+    gap: tokens.spacingHorizontalS,
+    marginTop: "auto",
+  },
+  skeletonButton: {
+    height: "32px",
+    flex: 1,
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
   messageBarBottom: { ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0) },
   recentGrid: {
     display: "grid",
@@ -148,7 +199,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: tokens.spacingVerticalM,
-    cursor: "pointer",
   },
   quizDescription: {
     color: TYPOGRAPHY.mutedForeground,
@@ -188,7 +238,7 @@ function HomePage() {
   const styles = useStyles();
 
   return (
-    <div className={mergeClasses(styles.pageBase, styles.pageMax900)}>
+    <main className={mergeClasses(styles.pageBase, styles.pageMax900)}>
       <Title1>Tento - Home</Title1>
       {isAuthenticated ? (
         <div>
@@ -202,7 +252,7 @@ function HomePage() {
           <Link href={ROUTES.LOGIN}>Login with GitHub</Link>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 
@@ -214,12 +264,14 @@ function LoginPage() {
   };
 
   return (
-    <div className={mergeClasses(styles.pageBase, styles.pageMax560)}>
+    <main className={mergeClasses(styles.pageBase, styles.pageMax560)}>
       <Title1>Login</Title1>
-      <Button appearance="primary" onClick={handleLogin}>
-        Login with GitHub
-      </Button>
-    </div>
+      <div className={styles.loginActions}>
+        <Button appearance="primary" onClick={handleLogin}>
+          Login with GitHub
+        </Button>
+      </div>
+    </main>
   );
 }
 
@@ -258,13 +310,18 @@ function AuthCallbackPage() {
   }, [searchParams, navigate, login]);
 
   return (
-    <div className={mergeClasses(styles.pageBase, styles.centeredColumn)}>
+    <main
+      className={mergeClasses(styles.pageBase, styles.centeredColumn)}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <Spinner size="large" />
       <Title2>Authenticating with GitHub...</Title2>
       <Body1 className={styles.mutedText}>
         Please wait while we verify your credentials
       </Body1>
-    </div>
+    </main>
   );
 }
 
@@ -289,7 +346,11 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
     <AppCard className={styles.quizCard}>
       <div>
         <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
-        {quiz.title && <Body2 className={styles.mutedText}>{quiz.title}</Body2>}
+        {quiz.title && (
+          <Body2 className={mergeClasses(styles.mutedText, styles.cardSubtitle)}>
+            {quiz.title}
+          </Body2>
+        )}
       </div>
 
       <div className={styles.quizMeta}>
@@ -320,16 +381,51 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
   );
 }
 
+function QuizCardSkeleton({ count = 3 }: { count?: number }) {
+  const styles = useStyles();
+
+  return (
+    <div
+      className={styles.loadingSkeletonGrid}
+      role="status"
+      aria-live="polite"
+      aria-label="Loading quizzes"
+      aria-busy="true"
+    >
+      {Array.from({ length: count }).map((_, index) => (
+        <AppCard
+          key={index}
+          className={styles.loadingSkeletonCard}
+          aria-hidden="true"
+        >
+          <div className={styles.skeletonLineShort} />
+          <div className={styles.skeletonLine} />
+          <div className={styles.skeletonLineTiny} />
+          <div className={styles.skeletonActions}>
+            <div className={styles.skeletonButton} />
+            <div className={styles.skeletonButton} />
+          </div>
+        </AppCard>
+      ))}
+    </div>
+  );
+}
+
 function DashboardPage() {
   const styles = useStyles();
   const { user, logout } = useAuth();
   const { data: quizzes, isLoading, error } = useUserQuizzes(user?.id || "");
 
   return (
-    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
+    <main
+      className={mergeClasses(styles.pageBase, styles.pageMax1200)}
+      aria-labelledby="dashboard-page-title"
+    >
       <div className={styles.dashboardHeader}>
         <div>
-          <Title1 className={styles.sectionTitle}>Dashboard</Title1>
+          <Title1 id="dashboard-page-title" className={styles.sectionTitle}>
+            Dashboard
+          </Title1>
           <Body1 className={styles.mutedText}>Welcome, {user?.username}!</Body1>
         </div>
         <Button appearance="subtle" onClick={logout}>
@@ -352,18 +448,17 @@ function DashboardPage() {
         </Button>
       </div>
 
-      <div>
-        <Title2>Your Recent Quizzes</Title2>
+      <section aria-labelledby="recent-quizzes-title">
+        <Title2 id="recent-quizzes-title">Your Recent Quizzes</Title2>
 
-        {isLoading && (
-          <div className={styles.loadingCenterRow}>
-            <Spinner size="small" />
-            <Body1 className={styles.mutedText}>Loading quizzes...</Body1>
-          </div>
-        )}
+        {isLoading && <QuizCardSkeleton count={3} />}
 
         {error && (
-          <MessageBar intent="error" className={styles.messageBarBottom}>
+          <MessageBar
+            intent="error"
+            className={styles.messageBarBottom}
+            aria-live="assertive"
+          >
             <MessageBarBody>
               Error loading quizzes. Please try again later.
             </MessageBarBody>
@@ -386,20 +481,20 @@ function DashboardPage() {
             </Button>
           </div>
         ) : null}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 
 function UsersPage() {
   const styles = useStyles();
   return (
-    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
+    <main className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
       <Title1>Users</Title1>
       <Body1 className={styles.usersPlaceholder}>
         Users list coming soon...
       </Body1>
-    </div>
+    </main>
   );
 }
 
@@ -409,24 +504,25 @@ function QuizzesPage() {
   const { data: quizzes, isLoading, error } = useUserQuizzes(user?.id || "");
 
   return (
-    <div className={mergeClasses(styles.pageBase, styles.pageMax1200)}>
+    <main
+      className={mergeClasses(styles.pageBase, styles.pageMax1200)}
+      aria-labelledby="quizzes-page-title"
+    >
       <div className={styles.quizzesHeader}>
-        <Title1>My Quizzes</Title1>
+        <Title1 id="quizzes-page-title">My Quizzes</Title1>
         <Button appearance="primary" as="a" href={ROUTES.QUIZ_CREATE}>
           + Create Quiz
         </Button>
       </div>
 
-      {isLoading && (
-        <div className={styles.loadingCenterCol}>
-          <Spinner size="small" />
-          <Body1 className={styles.mutedText}>Loading quizzes...</Body1>
-          <Body2 className={styles.mutedText}>This may take a moment...</Body2>
-        </div>
-      )}
+      {isLoading && <QuizCardSkeleton count={6} />}
 
       {error && (
-        <MessageBar intent="error" className={styles.messageBarBottom}>
+        <MessageBar
+          intent="error"
+          className={styles.messageBarBottom}
+          aria-live="assertive"
+        >
           <MessageBarBody>
             <strong>Error loading quizzes</strong>
             <br />
@@ -448,7 +544,14 @@ function QuizzesPage() {
                 <div>
                   <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
                   {quiz.title && (
-                    <Body2 className={styles.mutedText}>{quiz.title}</Body2>
+                    <Body2
+                      className={mergeClasses(
+                        styles.mutedText,
+                        styles.cardSubtitle,
+                      )}
+                    >
+                      {quiz.title}
+                    </Body2>
                   )}
                   {quiz.description && (
                     <Body2 className={styles.quizDescription}>
@@ -536,7 +639,7 @@ function QuizzesPage() {
           </Button>
         </AppCard>
       ) : null}
-    </div>
+    </main>
   );
 }
 
@@ -554,7 +657,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (isLoading) {
     return (
-      <div className={styles.protectedLoading}>
+      <div className={styles.protectedLoading} role="status" aria-live="polite">
         <Spinner size="small" />
         <Body1>Loading...</Body1>
       </div>

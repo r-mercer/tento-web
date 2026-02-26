@@ -50,7 +50,7 @@ const useStyles = makeStyles({
   scoreTitle: {
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.titleBottomCompact, 0),
   },
-  scorePercent: { color: tokens.colorBrandForeground1 },
+  scorePercent: { color: tokens.colorBrandForeground2 },
   questionsTitle: {
     ...shorthands.margin(0, 0, TYPOGRAPHY.spacing.sectionBottom, 0),
   },
@@ -77,7 +77,7 @@ export function AttemptDetailView({
 
   if (isLoading) {
     return (
-      <div className={styles.loading}>
+      <div className={styles.loading} role="status" aria-live="polite">
         <Spinner size="small" />
         <Body1>Loading attempt details...</Body1>
       </div>
@@ -86,7 +86,7 @@ export function AttemptDetailView({
 
   if (error) {
     return (
-      <MessageBar intent="error">
+      <MessageBar intent="error" aria-live="assertive">
         <MessageBarBody>
           Failed to load attempt details. Please try again.
         </MessageBarBody>
@@ -96,7 +96,7 @@ export function AttemptDetailView({
 
   if (!reviewData) {
     return (
-      <MessageBar intent="warning">
+      <MessageBar intent="warning" aria-live="assertive">
         <MessageBarBody>Attempt not found.</MessageBarBody>
       </MessageBar>
     );
@@ -108,7 +108,7 @@ export function AttemptDetailView({
   );
 
   return (
-    <div className={styles.page}>
+    <main className={styles.page} aria-labelledby="attempt-review-title">
       <Button
         appearance="outline"
         onClick={onBack}
@@ -118,7 +118,9 @@ export function AttemptDetailView({
       </Button>
 
       <div className={styles.header}>
-        <Title1 className={styles.title}>{quiz.name} - Attempt Review</Title1>
+        <Title1 id="attempt-review-title" className={styles.title}>
+          {quiz.name} - Attempt Review
+        </Title1>
         <Body1 className={styles.mutedText}>
           Attempt #{attempt.attempt_number} •{" "}
           {new Date(attempt.submitted_at).toLocaleDateString()}
@@ -171,6 +173,6 @@ export function AttemptDetailView({
           ← Back to Attempts
         </Button>
       </div>
-    </div>
+    </main>
   );
 }

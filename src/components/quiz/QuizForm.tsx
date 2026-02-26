@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
-  Spinner,
   Title1,
   Body1,
   MessageBar,
@@ -41,8 +40,36 @@ const useStyles = makeStyles({
   loadingRow: {
     ...shorthands.padding(LAYOUT.pagePadding),
     display: "flex",
-    alignItems: "center",
-    gap: tokens.spacingHorizontalM,
+    flexDirection: "column",
+    gap: TYPOGRAPHY.spacing.sectionBottom,
+  },
+  loadingCard: {
+    width: "100%",
+    maxWidth: LAYOUT.maxWidth.content,
+    ...shorthands.padding(tokens.spacingHorizontalL),
+    ...shorthands.borderRadius(tokens.borderRadiusLarge),
+    backgroundColor: tokens.colorNeutralBackground2,
+    display: "flex",
+    flexDirection: "column",
+    gap: TYPOGRAPHY.spacing.subtitleTop,
+  },
+  skeletonLine: {
+    height: "12px",
+    width: "100%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonLineShort: {
+    height: "12px",
+    width: "45%",
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonAnswerRow: {
+    display: "flex",
+    flexDirection: "column",
+    gap: TYPOGRAPHY.spacing.subtitleTop,
+    ...shorthands.margin(TYPOGRAPHY.spacing.subtitleTop, 0, 0, 0),
   },
   page: {
     ...shorthands.padding(LAYOUT.pagePadding),
@@ -263,18 +290,30 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   if (isLoading) {
     return (
-      <div className={styles.loadingRow}>
-        <Spinner size="small" />
-        <Body1>Loading quiz...</Body1>
+      <div className={styles.loadingRow} role="status" aria-live="polite">
+        <Body1 className={styles.mutedText}>Loading quiz...</Body1>
+        <div className={styles.loadingCard} aria-hidden="true">
+          <div className={styles.skeletonLineShort} />
+          <div className={styles.skeletonLine} />
+          <div className={styles.skeletonAnswerRow}>
+            <div className={styles.skeletonLine} />
+            <div className={styles.skeletonLine} />
+            <div className={styles.skeletonLine} />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (isLoadingResults) {
     return (
-      <div className={styles.loadingRow}>
-        <Spinner size="small" />
-        <Body1>Loading results...</Body1>
+      <div className={styles.loadingRow} role="status" aria-live="polite">
+        <Body1 className={styles.mutedText}>Loading results...</Body1>
+        <div className={styles.loadingCard} aria-hidden="true">
+          <div className={styles.skeletonLineShort} />
+          <div className={styles.skeletonLine} />
+          <div className={styles.skeletonLine} />
+        </div>
       </div>
     );
   }
@@ -282,8 +321,8 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   if (error) {
     console.error("Quiz loading error:", error);
     return (
-      <div className={styles.page}>
-        <MessageBar intent="error">
+      <main className={styles.page}>
+        <MessageBar intent="error" aria-live="assertive">
           <MessageBarBody>
             Failed to load quiz. Please try again later.
             {error?.message && (
@@ -293,15 +332,17 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
             )}
           </MessageBarBody>
         </MessageBar>
-      </div>
+      </main>
     );
   }
 
   if (showResults && attempt && quizForResults) {
     return (
-      <div className={styles.page}>
+      <main className={styles.page} aria-labelledby="quiz-results-title">
         <div className={styles.header}>
-          <Title1 className={styles.title}>{quizForResults.name}</Title1>
+          <Title1 id="quiz-results-title" className={styles.title}>
+            {quizForResults.name}
+          </Title1>
           <Body1 className={styles.mutedText}>
             {quizForResults.description}
           </Body1>
@@ -312,7 +353,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
           onRetake={handleRetake}
           onReview={handleReview}
         />
-      </div>
+      </main>
     );
   }
 
@@ -350,9 +391,11 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         </DialogSurface>
       </Dialog>
 
-      <div className={styles.page}>
+      <main className={styles.page} aria-labelledby="quiz-taking-title">
         <div className={styles.header}>
-          <Title1 className={styles.title}>{quizForTaking.name}</Title1>
+          <Title1 id="quiz-taking-title" className={styles.title}>
+            {quizForTaking.name}
+          </Title1>
           <Body1 className={styles.mutedText}>
             {quizForTaking.description}
           </Body1>
@@ -365,7 +408,11 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         />
 
         {submitError && (
-          <MessageBar intent="error" className={styles.messageBottom}>
+          <MessageBar
+            intent="error"
+            className={styles.messageBottom}
+            aria-live="assertive"
+          >
             <MessageBarBody>{submitError}</MessageBarBody>
           </MessageBar>
         )}
@@ -402,13 +449,17 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         </div>
 
         {submitMutation.isError && (
-          <MessageBar intent="error" className={styles.messageTop}>
+          <MessageBar
+            intent="error"
+            className={styles.messageTop}
+            aria-live="assertive"
+          >
             <MessageBarBody>
               Failed to submit quiz. Please try again.
             </MessageBarBody>
           </MessageBar>
         )}
-      </div>
+      </main>
     </>
   );
 }

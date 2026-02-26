@@ -20,7 +20,7 @@ export const LAYOUT = {
 } as const;
 
 export const TYPOGRAPHY = {
-  mutedForeground: tokens.colorNeutralForeground3,
+  mutedForeground: tokens.colorNeutralForeground2,
   spacing: {
     titleBottom: tokens.spacingVerticalXS,
     titleBottomCompact: tokens.spacingVerticalXXS,
