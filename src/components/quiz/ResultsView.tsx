@@ -11,6 +11,7 @@ import {
 } from "@fluentui/react-components";
 import type { QuizAttemptResponse, Quiz } from "../../types/api";
 import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
+import { formatPassThreshold } from "../../utils/quizScoring";
 
 interface ResultsViewProps {
   attempt: QuizAttemptResponse;
@@ -59,6 +60,10 @@ export function ResultsView({
   const percentage = Math.round(
     (attempt.points_earned / attempt.total_possible) * 100,
   );
+  const requiredThreshold = formatPassThreshold(
+    quiz.required_score,
+    quiz.question_count,
+  );
   const isPassed = attempt.passed;
   const canRetake = attempt.attempt_number < quiz.attempt_limit;
 
@@ -88,7 +93,7 @@ export function ResultsView({
         aria-label={
           isPassed
             ? `Congratulations! You passed with ${percentage}%`
-            : `You did not pass. You scored ${percentage}%. Required: ${quiz.required_score}%`
+            : `You did not pass. You scored ${percentage}%. Required: ${requiredThreshold}`
         }
       >
         {isPassed ? "Passed" : "Failed"}

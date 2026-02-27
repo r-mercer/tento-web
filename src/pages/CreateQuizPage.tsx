@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateQuizDraft } from "../hooks/api/useQuizzes";
 import { useAuth } from "../contexts/AuthContext";
 import { ROUTES } from "../utils/constants";
+import { calculatePassPercentage } from "../utils/quizScoring";
 import { AppCard } from "../components/ui/AppCard";
 import type { CreateQuizDraftRequest } from "../types/api";
 import {
@@ -71,6 +72,10 @@ export function CreateQuizPage() {
   const [errors, setErrors] = useState<
     Partial<Record<keyof CreateQuizDraftRequest, string>>
   >({});
+  const requiredScorePercentage = calculatePassPercentage(
+    formData.required_score,
+    formData.question_count,
+  );
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof CreateQuizDraftRequest, string>> = {};
@@ -202,6 +207,7 @@ export function CreateQuizPage() {
               required
               validationState={errors.required_score ? "error" : "none"}
               validationMessage={errors.required_score}
+              hint={`${requiredScorePercentage}% of total marks (${formData.required_score}/${formData.question_count})`}
             >
               <SpinButton
                 value={formData.required_score}

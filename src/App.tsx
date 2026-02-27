@@ -30,6 +30,7 @@ import {
 import { lightTheme, darkTheme } from "./styles/fluentTheme";
 import { LAYOUT, TYPOGRAPHY } from "./styles/layoutRhythm";
 import { useTheme } from "./contexts/ThemeContext";
+import { formatPassThreshold } from "./utils/quizScoring";
 import type { Quiz, QuizStatus } from "./types/api";
 
 const CreateQuizPage = lazy(() =>
@@ -370,6 +371,10 @@ function getStatusBadgeColor(
 
 function QuizCard({ quiz }: { quiz: Quiz }) {
   const styles = useStyles();
+  const passThreshold = formatPassThreshold(
+    quiz.required_score,
+    quiz.question_count,
+  );
   return (
     <AppCard className={styles.quizCard}>
       <div>
@@ -385,7 +390,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
 
       <div className={styles.quizMeta}>
         <Text>{quiz.question_count} questions</Text>
-        <Text>{quiz.required_score} to pass</Text>
+        <Text>{passThreshold} to pass</Text>
       </div>
 
       <div className={styles.row}>
@@ -569,93 +574,100 @@ function QuizzesPage() {
             You have {quizzes.length} quiz{quizzes.length !== 1 ? "zes" : ""}
           </Body1>
           <div className={styles.quizzesGrid}>
-            {quizzes.map((quiz: Quiz) => (
-              <AppCard key={quiz.id} className={styles.quizzesCard}>
-                <div>
-                  <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
-                  {quiz.title && (
-                    <Body2
-                      className={mergeClasses(
-                        styles.mutedText,
-                        styles.cardSubtitle,
-                      )}
-                    >
-                      {quiz.title}
-                    </Body2>
-                  )}
-                  {quiz.description && (
-                    <Body2 className={styles.quizDescription}>
-                      {quiz.description}
-                    </Body2>
-                  )}
-                </div>
+            {quizzes.map((quiz: Quiz) => {
+              const passThreshold = formatPassThreshold(
+                quiz.required_score,
+                quiz.question_count,
+              );
 
-                <div className={styles.statsGrid}>
+              return (
+                <AppCard key={quiz.id} className={styles.quizzesCard}>
                   <div>
-                    <Text size={200}>Questions</Text>
-                    <Text weight="semibold" className={styles.statValue}>
-                      {quiz.question_count}
-                    </Text>
+                    <Title3 className={styles.sectionTitle}>{quiz.name}</Title3>
+                    {quiz.title && (
+                      <Body2
+                        className={mergeClasses(
+                          styles.mutedText,
+                          styles.cardSubtitle,
+                        )}
+                      >
+                        {quiz.title}
+                      </Body2>
+                    )}
+                    {quiz.description && (
+                      <Body2 className={styles.quizDescription}>
+                        {quiz.description}
+                      </Body2>
+                    )}
                   </div>
-                  <div>
-                    <Text size={200}>Pass Score</Text>
-                    <Text weight="semibold" className={styles.statValue}>
-                      {quiz.required_score}%
-                    </Text>
-                  </div>
-                  <div>
-                    <Text size={200}>Attempts</Text>
-                    <Text weight="semibold" className={styles.statValue}>
-                      {quiz.attempt_limit}
-                    </Text>
-                  </div>
-                  {quiz.topic && (
+
+                  <div className={styles.statsGrid}>
                     <div>
-                      <Text size={200}>Topic</Text>
+                      <Text size={200}>Questions</Text>
                       <Text weight="semibold" className={styles.statValue}>
-                        {quiz.topic}
+                        {quiz.question_count}
                       </Text>
                     </div>
-                  )}
-                </div>
+                    <div>
+                      <Text size={200}>Pass Score</Text>
+                      <Text weight="semibold" className={styles.statValue}>
+                        {passThreshold}
+                      </Text>
+                    </div>
+                    <div>
+                      <Text size={200}>Attempts</Text>
+                      <Text weight="semibold" className={styles.statValue}>
+                        {quiz.attempt_limit}
+                      </Text>
+                    </div>
+                    {quiz.topic && (
+                      <div>
+                        <Text size={200}>Topic</Text>
+                        <Text weight="semibold" className={styles.statValue}>
+                          {quiz.topic}
+                        </Text>
+                      </div>
+                    )}
+                  </div>
 
-                <div className={styles.row}>
-                  <Badge
-                    appearance="filled"
-                    color={getStatusBadgeColor(quiz.status)}
-                  >
-                    {quiz.status}
-                  </Badge>
-                </div>
+                  <div className={styles.row}>
+                    <Badge
+                      appearance="filled"
+                      color={getStatusBadgeColor(quiz.status)}
+                    >
+                      {quiz.status}
+                    </Badge>
+                  </div>
 
-                <div className={styles.quizActions}>
-                  <Button
-                    appearance="primary"
-                    as="a"
-                    href={ROUTES.QUIZ_TAKE(quiz.id)}
-                    className={styles.grow}
-                  >
-                    Take Quiz
-                  </Button>
-                  <Button
-                    appearance="outline"
-                    as="a"
-                    href={ROUTES.QUIZ_EDIT(quiz.id)}
-                    className={styles.grow}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    appearance="outline"
-                    as="a"
-                    href={ROUTES.QUIZ_HISTORY(quiz.id)}
-                    className={styles.grow}
-                  >
-                    History
-                  </Button>
-                </div>
-              </AppCard>
-            ))}
+                  <div className={styles.quizActions}>
+                    <Button
+                      appearance="primary"
+                      as="a"
+                      href={ROUTES.QUIZ_TAKE(quiz.id)}
+                      className={styles.grow}
+                    >
+                      Take Quiz
+                    </Button>
+                    <Button
+                      appearance="outline"
+                      as="a"
+                      href={ROUTES.QUIZ_EDIT(quiz.id)}
+                      className={styles.grow}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      appearance="outline"
+                      as="a"
+                      href={ROUTES.QUIZ_HISTORY(quiz.id)}
+                      className={styles.grow}
+                    >
+                      History
+                    </Button>
+                  </div>
+                </AppCard>
+              );
+            })}
           </div>
         </div>
       ) : !isLoading && (!quizzes || quizzes.length === 0) ? (

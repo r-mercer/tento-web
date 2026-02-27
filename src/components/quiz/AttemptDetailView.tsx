@@ -15,6 +15,7 @@ import {
 import { useQuizAttempt } from "../../hooks/api/useQuizAttempts";
 import { QuestionResultCard } from "./QuestionResultCard";
 import { LAYOUT, TYPOGRAPHY } from "../../styles/layoutRhythm";
+import { formatPassThreshold } from "../../utils/quizScoring";
 
 interface AttemptDetailViewProps {
   attemptId: string;
@@ -106,6 +107,10 @@ export function AttemptDetailView({
   const percentage = Math.round(
     (attempt.points_earned / attempt.total_possible) * 100,
   );
+  const passThreshold = formatPassThreshold(
+    quiz.required_score,
+    quiz.question_count,
+  );
 
   return (
     <main className={styles.page} aria-labelledby="attempt-review-title">
@@ -134,6 +139,9 @@ export function AttemptDetailView({
               Score: {attempt.points_earned}/{attempt.total_possible}
             </Title2>
             <Title1 className={styles.scorePercent}>{percentage}%</Title1>
+            <Body1 className={styles.mutedText}>
+              Pass threshold: {passThreshold}
+            </Body1>
           </div>
           <Badge
             appearance="filled"
