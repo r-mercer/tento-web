@@ -254,12 +254,14 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
       await refetchResults();
 
       onAttemptComplete?.(result);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to submit quiz:", err);
       setIsLoadingResults(false);
 
       const errorMessage =
-        err?.message || "Failed to submit quiz. Please try again.";
+        err instanceof Error
+          ? err.message
+          : "Failed to submit quiz. Please try again.";
       setSubmitError(errorMessage);
     }
   };

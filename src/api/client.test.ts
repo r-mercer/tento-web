@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { API_BASE_URL, ENDPOINTS } from "../utils/constants";
 
 type RequestInterceptor = (config: {
   headers?: Record<string, string>;
@@ -14,9 +13,8 @@ type ResponseErrorInterceptor = (error: {
 const {
   interceptorState,
   apiClientMock,
-  axiosPostMock,
   storageMock,
-  authEventsMock,
+  refreshSessionTokenMock,
 } = vi.hoisted(() => {
   const interceptorState: {
     requestFulfilled?: RequestInterceptor;
@@ -48,22 +46,16 @@ const {
   return {
     interceptorState,
     apiClientMock,
-    axiosPostMock: vi.fn(),
     storageMock: {
       getAccessToken: vi.fn(),
-      getRefreshToken: vi.fn(),
-      setTokens: vi.fn(),
     },
-    authEventsMock: {
-      emit: vi.fn(),
-    },
+    refreshSessionTokenMock: vi.fn(),
   };
 });
 
 vi.mock("axios", () => ({
   default: {
     create: vi.fn(() => apiClientMock),
-    post: (...args: unknown[]) => axiosPostMock(...args),
   },
 }));
 
@@ -71,8 +63,8 @@ vi.mock("../utils/storage", () => ({
   storage: storageMock,
 }));
 
-vi.mock("../utils/auth-events", () => ({
-  authEvents: authEventsMock,
+vi.mock("../utils/token-refresh", () => ({
+  refreshSessionToken: () => refreshSessionTokenMock(),
 }));
 
 import "./client";
@@ -80,10 +72,7 @@ import "./client";
 describe("api client interceptors", () => {
   beforeEach(() => {
     storageMock.getAccessToken.mockReset();
-    storageMock.getRefreshToken.mockReset();
-    storageMock.setTokens.mockReset();
-    authEventsMock.emit.mockReset();
-    axiosPostMock.mockReset();
+    refreshSessionTokenMock.mockReset();
     apiClientMock.mockClear();
   });
 
@@ -98,28 +87,8 @@ describe("api client interceptors", () => {
     expect(result.headers.Authorization).toBe("Bearer access-123");
   });
 
-  it("emits session-expired and rejects when 401 occurs without refresh token", async () => {
-    storageMock.getRefreshToken.mockReturnValue(null);
-
-    const error = {
-      response: { status: 401 },
-      config: { headers: {} as Record<string, string> },
-    };
-
-    await expect(interceptorState.responseRejected?.(error)).rejects.toBe(error);
-    expect(authEventsMock.emit).toHaveBeenCalledWith("session-expired", {
-      reason: "no-refresh-token",
-    });
-  });
-
-  it("refreshes token, stores new tokens, emits token-refreshed and retries request", async () => {
-    storageMock.getRefreshToken.mockReturnValue("refresh-123");
-    axiosPostMock.mockResolvedValue({
-      data: {
-        token: "new-access-token",
-        refresh_token: "new-refresh-token",
-      },
-    });
+  it("retries request after shared refresh succeeds", async () => {
+    refreshSessionTokenMock.mockResolvedValue("new-access-token");
 
     const error = {
       response: { status: 401 },
@@ -128,22 +97,13 @@ describe("api client interceptors", () => {
 
     await interceptorState.responseRejected?.(error);
 
-    expect(axiosPostMock).toHaveBeenCalledWith(
-      `${API_BASE_URL}${ENDPOINTS.AUTH_REFRESH}`,
-      { refresh_token: "refresh-123" },
-    );
-    expect(storageMock.setTokens).toHaveBeenCalledWith(
-      "new-access-token",
-      "new-refresh-token",
-    );
-    expect(authEventsMock.emit).toHaveBeenCalledWith("token-refreshed");
+    expect(refreshSessionTokenMock).toHaveBeenCalledTimes(1);
     expect(error.config.headers.Authorization).toBe("Bearer new-access-token");
     expect(apiClientMock).toHaveBeenCalledWith(error.config);
   });
 
-  it("emits session-expired when refresh call fails", async () => {
-    storageMock.getRefreshToken.mockReturnValue("refresh-123");
-    axiosPostMock.mockRejectedValue(new Error("refresh failed"));
+  it("rejects when shared refresh fails on 401", async () => {
+    refreshSessionTokenMock.mockRejectedValue(new Error("refresh failed"));
 
     const error = {
       response: { status: 401 },
@@ -153,9 +113,7 @@ describe("api client interceptors", () => {
     await expect(interceptorState.responseRejected?.(error)).rejects.toThrow(
       "refresh failed",
     );
-    expect(authEventsMock.emit).toHaveBeenCalledWith("session-expired", {
-      reason: "refresh-failed",
-    });
+    expect(refreshSessionTokenMock).toHaveBeenCalledTimes(1);
   });
 
   it("rejects non-401 responses without refresh flow", async () => {
@@ -165,7 +123,6 @@ describe("api client interceptors", () => {
     };
 
     await expect(interceptorState.responseRejected?.(error)).rejects.toBe(error);
-    expect(axiosPostMock).not.toHaveBeenCalled();
-    expect(authEventsMock.emit).not.toHaveBeenCalled();
+    expect(refreshSessionTokenMock).not.toHaveBeenCalled();
   });
 });

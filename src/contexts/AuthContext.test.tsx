@@ -57,6 +57,26 @@ function renderWithProvider() {
 }
 
 describe("AuthContext", () => {
+  it("starts anonymous and clears storage when stored token is expired", () => {
+    window.localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, createJwt(-60));
+    window.localStorage.setItem(
+      STORAGE_KEYS.USER,
+      JSON.stringify({
+        id: "user-1",
+        username: "riley",
+        email: "riley@example.com",
+        role: "user",
+      }),
+    );
+
+    renderWithProvider();
+
+    expect(screen.getByTestId("auth-state")).toHaveTextContent("anonymous");
+    expect(screen.getByTestId("username")).toHaveTextContent("");
+    expect(window.localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)).toBeNull();
+    expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+  });
+
   it("restores authenticated user from valid stored token", () => {
     window.localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, createJwt(3600));
     window.localStorage.setItem(

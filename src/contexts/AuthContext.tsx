@@ -1,11 +1,19 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../utils/storage";
 import { authEvents } from "../utils/auth-events";
 import { isTokenExpired, getTimeUntilExpiry } from "../utils/jwt";
+import { refreshSessionToken } from "../utils/token-refresh";
 import { useInactivityTimeout } from "../hooks/useInactivityTimeout";
 import { useSessionValidation } from "../hooks/useSessionValidation";
-import { refreshAccessToken, logout as apiLogout } from "../api/auth";
+import { logout as apiLogout } from "../api/auth";
 import { ROUTES } from "../utils/constants";
 import type { User } from "../types/api";
 
@@ -27,15 +35,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(() => {
     const token = storage.getAccessToken();
     const storedUser = storage.getUser<User>();
-    
+
     if (token && isTokenExpired(token)) {
       storage.clear();
       return null;
     }
-    
+
     return token && storedUser ? storedUser : null;
   });
-  
+
   const [isLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -64,17 +72,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (timeUntilExpiry > 0 && timeUntilExpiry <= buffer) {
         try {
-          const refreshToken = storage.getRefreshToken();
-          if (!refreshToken) {
-            authEvents.emit("session-expired", { reason: "no-refresh-token" });
-            return;
-          }
-
-          const response = await refreshAccessToken(refreshToken);
-          storage.setTokens(response.token, response.refresh_token);
-          authEvents.emit("token-refreshed");
+          await refreshSessionToken();
         } catch {
-          authEvents.emit("session-expired", { reason: "refresh-failed" });
+          return;
         }
       }
     };
@@ -83,31 +83,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => clearInterval(interval);
   }, [user]);
 
-  const login = useCallback((token: string, refreshToken: string, userData: Partial<User>) => {
-    storage.setTokens(token, refreshToken);
+  const login = useCallback(
+    (token: string, refreshToken: string, userData: Partial<User>) => {
+      storage.setTokens(token, refreshToken);
 
-    const fullUser: User = {
-      id: userData.id || "",
-      username: userData.username || "",
-      email: userData.email || "",
-      full_name: userData.full_name,
-      github_id: userData.github_id,
-      role: userData.role || "user",
-      created_at: userData.created_at || new Date().toISOString(),
-      updated_at: userData.updated_at || new Date().toISOString(),
-    };
+      const fullUser: User = {
+        id: userData.id || "",
+        username: userData.username || "",
+        email: userData.email || "",
+        full_name: userData.full_name,
+        github_id: userData.github_id,
+        role: userData.role || "user",
+        created_at: userData.created_at || new Date().toISOString(),
+        updated_at: userData.updated_at || new Date().toISOString(),
+      };
 
-    storage.setUser(fullUser);
-    setUser(fullUser);
-  }, []);
+      storage.setUser(fullUser);
+      setUser(fullUser);
+    },
+    [],
+  );
 
   const logout = useCallback(() => {
     const refreshToken = storage.getRefreshToken();
-    
+
     storage.clear();
     setUser(null);
     authEvents.emit("logout");
-    
+
     if (refreshToken) {
       apiLogout(refreshToken).catch(() => {
         // Silently ignore errors - token may already be invalid
