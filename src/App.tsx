@@ -303,7 +303,7 @@ function LoginPage() {
   );
 }
 
-function AuthCallbackPage() {
+export function AuthCallbackPage() {
   const styles = useStyles();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
