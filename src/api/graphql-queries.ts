@@ -213,12 +213,13 @@ export const SUBMIT_QUIZ_ATTEMPT_MUTATION = gql`
   mutation SubmitQuizAttempt($input: SubmitQuizAttemptInput!) {
     submitQuizAttempt(input: $input) {
       id
-      quiz_id: quizId
-      points_earned: pointsEarned
-      total_possible: totalPossible
+      quiz_id
+      points_earned
+      total_possible
+      required_score
       passed
-      attempt_number: attemptNumber
-      submitted_at: submittedAt
+      attempt_number
+      submitted_at
     }
   }
 `;

@@ -159,6 +159,7 @@ export interface QuizAttemptResponse {
   quiz_id: string;
   points_earned: number;
   total_possible: number;
+  required_score: number;
   passed: boolean;
   attempt_number: number;
   submitted_at: string;
