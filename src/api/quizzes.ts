@@ -118,10 +118,17 @@ export async function getQuizAttempt(
 export async function submitQuizAttempt(
   payload: SubmitQuizAttemptPayload
 ): Promise<QuizAttemptResponse> {
+  const input = {
+    quiz_id: payload.quizId,
+    answers: payload.answers.map((a) => ({
+      question_id: a.questionId,
+      selected_option_ids: a.selectedOptionIds,
+    })),
+  };
   const response = await graphqlClient.request<{
     submitQuizAttempt: QuizAttemptResponse;
   }>(SUBMIT_QUIZ_ATTEMPT_MUTATION, {
-    input: payload,
+    input,
   });
   return response.submitQuizAttempt;
 }
