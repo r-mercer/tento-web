@@ -143,6 +143,7 @@ export const QUIZ_ATTEMPTS_QUERY = gql`
         quizId
         pointsEarned
         totalPossible
+        requiredScore
         passed
         attemptNumber
         submittedAt
