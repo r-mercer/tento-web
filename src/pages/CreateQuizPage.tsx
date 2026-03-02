@@ -144,7 +144,7 @@ export function CreateQuizPage() {
   };
 
   return (
-    <div id="content" className={styles.page}>
+    <main id="content" className={styles.page}>
       <header className={styles.header}>
         <Title1>Create New Quiz</Title1>
         <Body1 className={styles.subtitle}>
@@ -264,6 +264,6 @@ export function CreateQuizPage() {
           )}
         </AppCard>
       </form>
-    </div>
+    </main>
   );
 }

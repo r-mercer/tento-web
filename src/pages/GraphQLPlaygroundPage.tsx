@@ -30,8 +30,8 @@ export function GraphQLPlaygroundPage() {
   });
 
   return (
-    <div id="content" className={styles.root}>
+    <main id="content" className={styles.root}>
       <GraphiQL fetcher={fetcher} />
-    </div>
+    </main>
   );
 }
