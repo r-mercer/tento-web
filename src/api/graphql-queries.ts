@@ -5,17 +5,17 @@ export const ALL_QUIZZES_QUERY = gql`
     quizzes {
       id
       name
-      created_by_user_id: createdByUserId
+      createdByUserId
       title
       description
-      question_count: questionCount
-      required_score: requiredScore
-      attempt_limit: attemptLimit
+      questionCount
+      requiredScore
+      attemptLimit
       topic
       status
       url
-      created_at: createdAt
-      modified_at: modifiedAt
+      createdAt
+      modifiedAt
     }
   }
 `;
@@ -25,22 +25,22 @@ export const GET_QUIZ_QUERY = gql`
     quiz(id: $id) {
       id
       name
-      created_by_user_id: createdByUserId
+      createdByUserId
       title
       description
-      question_count: questionCount
-      required_score: requiredScore
-      attempt_limit: attemptLimit
+      questionCount
+      requiredScore
+      attemptLimit
       topic
       status
       url
-      created_at: createdAt
-      modified_at: modifiedAt
+      createdAt
+      modifiedAt
       questions {
         id
         title
         description
-        question_type: questionType
+        questionType
         order
         topic
         options {
@@ -59,17 +59,17 @@ export const USER_QUIZZES_QUERY = gql`
     userQuizzes(userId: $userId) {
       id
       name
-      created_by_user_id: createdByUserId
+      createdByUserId
       title
       description
-      question_count: questionCount
-      required_score: requiredScore
-      attempt_limit: attemptLimit
+      questionCount
+      requiredScore
+      attemptLimit
       topic
       status
       url
-      created_at: createdAt
-      modified_at: modifiedAt
+      createdAt
+      modifiedAt
     }
   }
 `;
@@ -81,18 +81,18 @@ export const QUIZ_FOR_TAKING_QUERY = gql`
       name
       title
       description
-      question_count: questionCount
-      required_score: requiredScore
+      question_count
+      required_score
       topic
       status
       url
-      created_at: createdAt
+      created_at
       questions {
         id
         title
         description
-        question_type: questionType
-        option_count: optionCount
+        questionType
+        optionCount
         order
         topic
         options {
@@ -109,19 +109,19 @@ export const QUIZ_FOR_RESULTS_QUERY = gql`
     quizForResults(id: $id) {
       id
       name
-      created_by_user_id: createdByUserId
+      createdByUserId
       title
       description
-      question_count: questionCount
-      required_score: requiredScore
-      attempt_limit: attemptLimit
+      questionCount
+      requiredScore
+      attemptLimit
       topic
       status
       questions {
         id
         title
         description
-        question_type: questionType
+        questionType
         order
         topic
         options {
@@ -140,12 +140,12 @@ export const QUIZ_ATTEMPTS_QUERY = gql`
     quizAttempts(quizId: $quizId, offset: $offset, limit: $limit) {
       data {
         id
-        quiz_id: quizId
-        points_earned: pointsEarned
-        total_possible: totalPossible
+        quizId
+        pointsEarned
+        totalPossible
         passed
-        attempt_number: attemptNumber
-        submitted_at: submittedAt
+        attemptNumber
+        submittedAt
       }
       pagination {
         offset
@@ -161,29 +161,29 @@ export const QUIZ_ATTEMPT_QUERY = gql`
     quizAttempt(attemptId: $attemptId) {
       attempt {
         id
-        quiz_id: quizId
-        points_earned: pointsEarned
-        total_possible: totalPossible
+        quizId
+        pointsEarned
+        totalPossible
         passed
-        attempt_number: attemptNumber
-        submitted_at: submittedAt
+        attemptNumber
+        submittedAt
       }
       quiz {
         id
         name
-        created_by_user_id: createdByUserId
+        createdByUserId
         title
         description
-        question_count: questionCount
-        required_score: requiredScore
-        attempt_limit: attemptLimit
+        questionCount
+        requiredScore
+        attemptLimit
         topic
         status
         questions {
           id
           title
           description
-          question_type: questionType
+          questionType
           order
           options {
             id
@@ -194,11 +194,11 @@ export const QUIZ_ATTEMPT_QUERY = gql`
         }
       }
       questionResults {
-        question_id: questionId
-        user_selected_option_ids: userSelectedOptionIds
-        correct_option_ids: correctOptionIds
-        is_correct: isCorrect
-        points_earned: pointsEarned
+        questionId
+        userSelectedOptionIds
+        correctOptionIds
+        isCorrect
+        pointsEarned
         explanation
       }
     }
@@ -213,13 +213,13 @@ export const SUBMIT_QUIZ_ATTEMPT_MUTATION = gql`
   mutation SubmitQuizAttempt($input: SubmitQuizAttemptInput!) {
     submitQuizAttempt(input: $input) {
       id
-      quiz_id
-      points_earned
-      total_possible
-      required_score
+      quizId
+      pointsEarned
+      totalPossible
+      requiredScore
       passed
-      attempt_number
-      submitted_at
+      attemptNumber
+      submittedAt
     }
   }
 `;

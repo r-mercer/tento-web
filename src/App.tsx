@@ -372,8 +372,8 @@ function getStatusBadgeColor(
 function QuizCard({ quiz }: { quiz: Quiz }) {
   const styles = useStyles();
   const passThreshold = formatPassThreshold(
-    quiz.required_score,
-    quiz.question_count,
+    quiz.requiredScore,
+    quiz.questionCount,
   );
   return (
     <AppCard className={styles.quizCard}>
@@ -389,7 +389,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
       </div>
 
       <div className={styles.quizMeta}>
-        <Text>{quiz.question_count} questions</Text>
+        <Text>{quiz.questionCount} questions</Text>
         <Text>{passThreshold} to pass</Text>
       </div>
 
@@ -576,8 +576,8 @@ function QuizzesPage() {
           <div className={styles.quizzesGrid}>
             {quizzes.map((quiz: Quiz) => {
               const passThreshold = formatPassThreshold(
-                quiz.required_score,
-                quiz.question_count,
+                quiz.requiredScore,
+                quiz.questionCount,
               );
 
               return (
@@ -605,7 +605,7 @@ function QuizzesPage() {
                     <div>
                       <Text size={200}>Questions</Text>
                       <Text weight="semibold" className={styles.statValue}>
-                        {quiz.question_count}
+                        {quiz.questionCount}
                       </Text>
                     </div>
                     <div>
@@ -617,7 +617,7 @@ function QuizzesPage() {
                     <div>
                       <Text size={200}>Attempts</Text>
                       <Text weight="semibold" className={styles.statValue}>
-                        {quiz.attempt_limit}
+                        {quiz.attemptLimit}
                       </Text>
                     </div>
                     {quiz.topic && (

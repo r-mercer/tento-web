@@ -49,7 +49,7 @@ export function QuestionCard({
   const selectedValue = userAnswerIds.length > 0 ? userAnswerIds[0] : undefined;
 
   const questionType = (() => {
-    const t = question.question_type?.toUpperCase();
+    const t = question.questionType?.toUpperCase();
     if (t === "SINGLE") return "Single";
     if (t === "MULTI") return "Multi";
     if (t === "BOOL") return "Bool";

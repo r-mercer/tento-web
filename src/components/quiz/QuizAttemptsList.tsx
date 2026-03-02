@@ -173,7 +173,7 @@ export function QuizAttemptsList({
             onKeyDown={(event) => handleCardKeyDown(event, attempt.id)}
             role="button"
             tabIndex={0}
-            aria-label={`Open details for attempt ${attempt.attempt_number}`}
+            aria-label={`Open details for attempt ${attempt.attemptNumber}`}
             aria-pressed={selectedAttemptId === attempt.id}
             className={mergeClasses(
               styles.card,
@@ -183,7 +183,7 @@ export function QuizAttemptsList({
           >
             <div>
               <div className={styles.cardHeading}>
-                <Text weight="semibold">Attempt #{attempt.attempt_number}</Text>
+                <Text weight="semibold">Attempt #{attempt.attemptNumber}</Text>
                 <Badge
                   appearance="filled"
                   color={attempt.passed ? "success" : "danger"}
@@ -194,19 +194,19 @@ export function QuizAttemptsList({
               </div>
               <div>
                 <Text weight="semibold">
-                  {attempt.points_earned}/{attempt.total_possible} points
+                  {attempt.pointsEarned}/{attempt.totalPossible} points
                 </Text>
                 <Text size={200} className={styles.scoreText}>
                   (
                   {Math.round(
-                    (attempt.points_earned / attempt.total_possible) * 100,
+                    (attempt.pointsEarned / attempt.totalPossible) * 100,
                   )}
                   %)
                 </Text>
               </div>
             </div>
             <Text size={200}>
-              {new Date(attempt.submitted_at).toLocaleDateString(undefined, {
+              {new Date(attempt.submittedAt).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "short",
                 day: "numeric",

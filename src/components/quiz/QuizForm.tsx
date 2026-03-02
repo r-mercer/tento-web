@@ -132,7 +132,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
   console.log("[QuizForm] questions:", quizForTaking?.questions);
   console.log(
     "[QuizForm] question types:",
-    quizForTaking?.questions?.map((q) => q.question_type),
+    quizForTaking?.questions?.map((q) => q.questionType),
   );
   console.log("[QuizForm] quizForResults:", quizForResults);
   console.log("[QuizForm] isLoadingResults:", isLoadingResults);
@@ -184,8 +184,8 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
     let newAnswers: string[];
 
     if (
-      currentQuestionData.question_type === "Single" ||
-      currentQuestionData.question_type === "Bool"
+      currentQuestionData.questionType === "Single" ||
+      currentQuestionData.questionType === "Bool"
     ) {
       newAnswers = [optionId];
     } else {
@@ -229,12 +229,12 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
     const answers: QuestionAnswerSubmission[] = shuffledQuestions.map(
       (question) => ({
-        question_id: question.id,
-        selected_option_ids: userAnswers.get(question.id) || [],
+        questionId: question.id,
+        selectedOptionIds: userAnswers.get(question.id) || [],
       }),
     );
 
-    const payload: SubmitQuizAttemptPayload = { quiz_id: quizId, answers };
+    const payload: SubmitQuizAttemptPayload = { quizId: quizId, answers };
 
     console.log("[QuizForm] Submitting payload:", payload);
 

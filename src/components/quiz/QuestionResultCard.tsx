@@ -66,7 +66,7 @@ export function QuestionResultCard({
   const correctOptions = question.options?.filter((opt) => opt.correct) || [];
   const userSelectedOptions =
     question.options?.filter((opt) =>
-      result.user_selected_option_ids.includes(opt.id),
+      result.userSelectedOptionIds.includes(opt.id),
     ) || [];
 
   return (
@@ -122,12 +122,12 @@ export function QuestionResultCard({
       <div className={styles.footer}>
         <Badge
           appearance="filled"
-          color={result.is_correct ? "success" : "danger"}
+          color={result.isCorrect ? "success" : "danger"}
         >
-          {result.is_correct ? "Correct" : "Incorrect"}
+          {result.isCorrect ? "Correct" : "Incorrect"}
         </Badge>
         <Text size={400} weight="bold">
-          {result.points_earned}/1 point
+          {result.pointsEarned}/1 point
         </Text>
       </div>
     </Card>

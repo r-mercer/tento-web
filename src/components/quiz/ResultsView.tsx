@@ -58,14 +58,14 @@ export function ResultsView({
 }: ResultsViewProps) {
   const styles = useStyles();
   const percentage = Math.round(
-    (attempt.points_earned / attempt.total_possible) * 100,
+    (attempt.pointsEarned / attempt.totalPossible) * 100,
   );
   const requiredThreshold = formatPassThreshold(
-    quiz.required_score,
-    quiz.question_count,
+    quiz.requiredScore,
+    quiz.questionCount,
   );
   const isPassed = attempt.passed;
-  const canRetake = attempt.attempt_number < quiz.attempt_limit;
+  const canRetake = attempt.attemptNumber < quiz.attemptLimit;
 
   return (
     <Card
@@ -78,9 +78,9 @@ export function ResultsView({
 
       <Title1
         className={styles.score}
-        aria-label={`You scored ${attempt.points_earned} out of ${attempt.total_possible} points`}
+        aria-label={`You scored ${attempt.pointsEarned} out of ${attempt.totalPossible} points`}
       >
-        {attempt.points_earned}/{attempt.total_possible}
+        {attempt.pointsEarned}/{attempt.totalPossible}
       </Title1>
 
       <Body1 className={styles.percentage}>{percentage}%</Body1>

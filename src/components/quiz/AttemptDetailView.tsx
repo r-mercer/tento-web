@@ -103,13 +103,13 @@ export function AttemptDetailView({
     );
   }
 
-  const { attempt, quiz, question_results } = reviewData;
+  const { attempt, quiz, questionResults } = reviewData;
   const percentage = Math.round(
-    (attempt.points_earned / attempt.total_possible) * 100,
+    (attempt.pointsEarned / attempt.totalPossible) * 100,
   );
   const passThreshold = formatPassThreshold(
-    quiz.required_score,
-    quiz.question_count,
+    quiz.requiredScore,
+    quiz.questionCount,
   );
 
   return (
@@ -127,8 +127,8 @@ export function AttemptDetailView({
           {quiz.name} - Attempt Review
         </Title1>
         <Body1 className={styles.mutedText}>
-          Attempt #{attempt.attempt_number} •{" "}
-          {new Date(attempt.submitted_at).toLocaleDateString()}
+          Attempt #{attempt.attemptNumber} •{" "}
+          {new Date(attempt.submittedAt).toLocaleDateString()}
         </Body1>
       </div>
 
@@ -136,7 +136,7 @@ export function AttemptDetailView({
         <div className={styles.summaryContent}>
           <div>
             <Title2 className={styles.scoreTitle}>
-              Score: {attempt.points_earned}/{attempt.total_possible}
+              Score: {attempt.pointsEarned}/{attempt.totalPossible}
             </Title2>
             <Title1 className={styles.scorePercent}>{percentage}%</Title1>
             <Body1 className={styles.mutedText}>
@@ -155,19 +155,19 @@ export function AttemptDetailView({
 
       <div>
         <Title2 className={styles.questionsTitle}>
-          Questions ({question_results.length})
+          Questions ({questionResults.length})
         </Title2>
 
         <div className={styles.resultsList}>
-          {question_results.map((result) => {
+          {questionResults.map((result) => {
             const question = quiz.questions?.find(
-              (q) => q.id === result.question_id,
+              (q) => q.id === result.questionId,
             );
             if (!question) return null;
 
             return (
               <QuestionResultCard
-                key={result.question_id}
+                key={result.questionId}
                 question={question}
                 result={result}
               />

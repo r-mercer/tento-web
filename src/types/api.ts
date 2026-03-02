@@ -82,30 +82,30 @@ export interface QuizQuestion {
   id: string;
   title: string;
   description: string;
-  question_type: QuizQuestionType;
+  questionType: QuizQuestionType;
   options: QuizQuestionOption[];
-  option_count: number;
+  optionCount: number;
   order: number;
   topic: string;
-  created_at?: string;
-  modified_at?: string;
+  createdAt?: string;
+  modifiedAt?: string;
 }
 
 export interface Quiz {
   id: string;
   name: string;
-  created_by_user_id: string;
+  createdByUserId: string;
   title?: string;
   description?: string;
-  question_count: number;
-  required_score: number;
-  attempt_limit: number;
+  questionCount: number;
+  requiredScore: number;
+  attemptLimit: number;
   topic?: string;
   status: QuizStatus;
   questions?: QuizQuestion[];
   url: string;
-  created_at?: string;
-  modified_at?: string;
+  createdAt?: string;
+  modifiedAt?: string;
 }
 
 export interface CreateQuizDraftRequest {
@@ -128,12 +128,12 @@ export interface QuizQuestionForTaking {
   id: string;
   title: string;
   description: string;
-  question_type: QuizQuestionType;
+  questionType: QuizQuestionType;
   options: QuizQuestionOptionForTaking[];
-  option_count: number;
+  optionCount: number;
   order: number;
   topic: string;
-  created_at?: string;
+  createdAt?: string;
 }
 
 export interface QuizForTaking {
@@ -156,28 +156,28 @@ export interface QuizForTaking {
 
 export interface QuizAttemptResponse {
   id: string;
-  quiz_id: string;
-  points_earned: number;
-  total_possible: number;
-  required_score: number;
+  quizId: string;
+  pointsEarned: number;
+  totalPossible: number;
+  requiredScore: number;
   passed: boolean;
-  attempt_number: number;
-  submitted_at: string;
+  attemptNumber: number;
+  submittedAt: string;
 }
 
 export interface QuestionAttemptDetail {
-  question_id: string;
-  user_selected_option_ids: string[];
-  correct_option_ids: string[];
-  is_correct: boolean;
-  points_earned: number;
+  questionId: string;
+  userSelectedOptionIds: string[];
+  correctOptionIds: string[];
+  isCorrect: boolean;
+  pointsEarned: number;
   explanation: string;
 }
 
 export interface QuizAttemptReview {
   attempt: QuizAttemptResponse;
-  quiz: Quiz; // Full quiz with answers
-  question_results: QuestionAttemptDetail[];
+  quiz: Quiz;
+  questionResults: QuestionAttemptDetail[];
 }
 
 // ============================================================================
@@ -185,12 +185,12 @@ export interface QuizAttemptReview {
 // ============================================================================
 
 export interface QuestionAnswerSubmission {
-  question_id: string;
-  selected_option_ids: string[];
+  questionId: string;
+  selectedOptionIds: string[];
 }
 
 export interface SubmitQuizAttemptPayload {
-  quiz_id: string;
+  quizId: string;
   answers: QuestionAnswerSubmission[];
 }
 
