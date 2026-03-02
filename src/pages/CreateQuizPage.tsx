@@ -144,7 +144,7 @@ export function CreateQuizPage() {
   };
 
   return (
-    <div className={styles.page}>
+    <div id="content" className={styles.page}>
       <header className={styles.header}>
         <Title1>Create New Quiz</Title1>
         <Body1 className={styles.subtitle}>

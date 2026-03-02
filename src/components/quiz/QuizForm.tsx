@@ -340,7 +340,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
 
   if (showResults && attempt && quizForResults) {
     return (
-      <main className={styles.page} aria-labelledby="quiz-results-title">
+      <main id="content" className={styles.page} aria-labelledby="quiz-results-title">
         <div className={styles.header}>
           <Title1 id="quiz-results-title" className={styles.title}>
             {quizForResults.name}
@@ -393,7 +393,7 @@ export function QuizForm({ quizId, onAttemptComplete }: QuizFormProps) {
         </DialogSurface>
       </Dialog>
 
-      <main className={styles.page} aria-labelledby="quiz-taking-title">
+      <main id="content" className={styles.page} aria-labelledby="quiz-taking-title">
         <div className={styles.header}>
           <Title1 id="quiz-taking-title" className={styles.title}>
             {quizForTaking.name}

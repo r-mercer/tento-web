@@ -78,7 +78,8 @@ export function Navbar() {
   const styles = useStyles();
 
   return (
-    <nav className={styles.nav}>
+    <header role="banner">
+      <nav className={styles.nav} aria-label="Main navigation">
       <div className={styles.leftGroup}>
         <Link to={ROUTES.HOME} className={styles.brand}>
           Tento
@@ -132,6 +133,7 @@ export function Navbar() {
           </Button>
         )}
       </div>
-    </nav>
+      </nav>
+    </header>
   );
 }

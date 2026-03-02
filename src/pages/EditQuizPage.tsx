@@ -5,10 +5,10 @@ import styles from "../components/quiz/quiz.module.css";
 export function EditQuizPage() {
   const { id } = useParams<{ id: string }>();
 
-  if (!id) return <div className={styles.quizForm}>Quiz not found</div>;
+  if (!id) return <div id="content" className={styles.quizForm}>Quiz not found</div>;
 
   return (
-    <div className={styles.quizForm}>
+    <div id="content" className={styles.quizForm}>
       <QuizEditor quizId={id} />
     </div>
   );

@@ -22,6 +22,30 @@ body {
   min-height: 100vh;
 }
 
+/* Skip link styling for keyboard users */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  background: white;
+  color: black;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  text-decoration: none;
+}
+
 #root {
   min-height: 100vh;
   width: 100%;

@@ -28,7 +28,7 @@ export function MultiChoiceOptions({
   const styles = useStyles();
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} role="group" aria-label="Answer options">
       {options.map((option) => (
         <Checkbox
           key={option.id}

@@ -17,6 +17,7 @@ export function BooleanOptions({
   return (
     <RadioGroup
       value={selectedValue}
+      aria-label="Answer options"
       onChange={(_, data) => {
         if (!disabled && data.value) onChange(data.value);
       }}

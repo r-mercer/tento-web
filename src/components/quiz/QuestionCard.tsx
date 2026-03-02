@@ -92,9 +92,10 @@ export function QuestionCard({
     }
   };
 
+  const titleId = `question-title-${question.id}`;
   return (
-    <Card className={styles.card}>
-      <Title2 className={styles.title}>{question.title}</Title2>
+    <Card className={styles.card} aria-labelledby={titleId}>
+      <Title2 id={titleId} className={styles.title}>{question.title}</Title2>
       {question.description && (
         <Body1 className={styles.description}>{question.description}</Body1>
       )}
