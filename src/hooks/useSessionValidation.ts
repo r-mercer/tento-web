@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { AxiosError } from "axios";
 import { authEvents } from "../utils/auth-events";
 import { storage } from "../utils/storage";
 import * as usersApi from "../api/users";
@@ -13,8 +14,10 @@ export function useSessionValidation(intervalMinutes: number = 5, isAuthenticate
       
       try {
         await usersApi.getUser(user.id);
-      } catch {
-        authEvents.emit("session-expired", { reason: "validation-failed" });
+      } catch (error) {
+        if (error instanceof AxiosError && (error.response?.status === 401 || error.response?.status === 403)) {
+          authEvents.emit("session-expired", { reason: "validation-failed" });
+        }
       }
     };
 
