@@ -60,4 +60,4 @@ VITE_GH_REDIRECT_URI=http://localhost:5173/auth/callback
 
 - Authentication uses GitHub OAuth + JWT (access/refresh tokens).
 - Session management includes proactive token refresh, inactivity timeout, and periodic validation.
-- Frontend tests are not configured yet; use `npm run lint` and `npm run build` for verification.
+- Run `npm run test` or `npm run test:watch` to execute Vitest tests.

@@ -88,8 +88,7 @@ export async function executeGraphQLQuery<T>(
     
     console.error("GraphQL Query Error:", {
       query: query.substring(0, 100),
-      variables,
-      error,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
     throw error;
   }

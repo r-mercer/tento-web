@@ -41,6 +41,8 @@ export function useQuizAttempts(
   return useQuery({
     queryKey: queryKeys.quizAttempts(quizId, offset, limit),
     queryFn: () => quizzesApi.getQuizAttempts(quizId, limit, offset),
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 }
 

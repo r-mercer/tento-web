@@ -39,6 +39,8 @@ export function useUserQuizzes(userId: string) {
     queryKey: queryKeys.userQuizzes(userId),
     queryFn: () => quizzesApi.getUserQuizzes(userId),
     enabled: !!userId,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 }
 
