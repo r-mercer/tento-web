@@ -72,9 +72,9 @@ export function useSubmitQuizAttempt() {
     mutationFn: (payload: SubmitQuizAttemptPayload) =>
       quizzesApi.submitQuizAttempt(payload),
     onSuccess: (_, payload) => {
-      // Invalidate attempts list for this quiz
+      // Invalidate all attempts for this quiz (partial key match)
       queryClient.invalidateQueries({
-        queryKey: queryKeys.quizAttempts(payload.quizId),
+        queryKey: ['quizzes', payload.quizId, 'attempts'],
       });
       
       // Invalidate user quizzes to update progress/attempt counts

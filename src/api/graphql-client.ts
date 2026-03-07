@@ -72,10 +72,14 @@ export async function executeGraphQLQuery<T>(
       try {
         const newAccessToken = await refreshSessionToken();
         
-        const headers: Record<string, string> = {
-          ...(graphqlClient.requestConfig.headers || {}),
-          Authorization: `Bearer ${newAccessToken}`,
-        };
+        const existingHeaders = graphqlClient.requestConfig.headers || {};
+        const headers: Record<string, string> = {};
+        for (const [key, value] of Object.entries(existingHeaders)) {
+          if (typeof value === 'string') {
+            headers[key] = value;
+          }
+        }
+        headers.Authorization = `Bearer ${newAccessToken}`;
         
         (graphqlClient.requestConfig as { headers: Record<string, string> }).headers = headers;
         
